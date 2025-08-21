@@ -16,7 +16,7 @@ class TrafilaturaInferenceConfig:
     favor_precision: bool = True
     favor_recall: bool = True
     include_comments: bool = False
-    include_tables: bool = False
+    include_tables: bool = True
     # 可根据需要添加更多trafilatura支持的参数
     include_images: bool = False
     include_links: bool = False
