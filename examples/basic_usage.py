@@ -804,7 +804,7 @@ def demo_multi_extraction():
     # 配置文件路径
     data_dir = Path("../data")
     # dataset_path = data_dir / "sample_dataset.jsonl"
-    dataset_path = "/home/lulindong/Pycharm_projects/cc/WebMainBench_2456_v3_WebMainBench_dataset_merge_with_llm_webkit.jsonl"
+    dataset_path = "/home/lulindong/Pycharm_projects/cc/WebMainBench_1827_v1_WebMainBench_dataset_merge_with_llm_webkit_html_to_md.jsonl"
 
     print(f"📂 数据集文件: {dataset_path}")
 
@@ -957,7 +957,7 @@ def demo_llm_webkit_with_preprocessed_html_evaluation():
     print("1. 从真实数据集加载预处理HTML数据...")
     
     # 使用DataLoader加载真实的样本数据
-    dataset_path = Path("/home/lulindong/Pycharm_projects/cc/WebMainBench_2456_v2_WebMainBench_dataset_merge_with_llm_webkit.jsonl")
+    dataset_path = Path("/home/lulindong/Pycharm_projects/cc/WebMainBench_1827_v1_WebMainBench_dataset_merge_with_llm_webkit.jsonl")
     print(f"📂 数据集文件: {dataset_path}")
     
     if not dataset_path.exists():
