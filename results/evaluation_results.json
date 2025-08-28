@@ -1,0 +1,1481 @@
+[
+  {
+    "metadata": {
+      "dataset_name": "sample_dataset",
+      "extractor_name": "llm-webkit",
+      "timestamp": "2025-08-28T15:19:27.076411",
+      "total_samples": 4
+    },
+    "overall_metrics": {
+      "text_edit": 0.5981631971971921,
+      "code_edit": 0.5,
+      "table_edit": 0.0,
+      "table_TEDS": 0.0,
+      "formula_edit": 0.0,
+      "overall": 0.21963263943943842
+    },
+    "sample_results": [
+      {
+        "sample_id": "7cdb7231-9337-4104-a562-9b8f285add7d",
+        "extraction_success": true,
+        "extraction_time": 0.812293291091919,
+        "metrics": {
+          "code_edit": {
+            "score": 1.0,
+            "success": true,
+            "details": {
+              "distance": 0,
+              "predicted_length": 854,
+              "groundtruth_length": 854,
+              "normalized": true,
+              "predicted_code_length": 854,
+              "groundtruth_code_length": 854,
+              "content_type": "code"
+            }
+          },
+          "formula_edit": {
+            "score": 0.0,
+            "success": false,
+            "details": {
+              "predicted_formula_length": 0,
+              "groundtruth_formula_length": 0,
+              "content_type": "formula"
+            },
+            "error": "Both predicted and groundtruth are empty"
+          },
+          "text_edit": {
+            "score": 1.0,
+            "success": true,
+            "details": {
+              "distance": 0,
+              "predicted_length": 990,
+              "groundtruth_length": 990,
+              "normalized": true,
+              "predicted_text_length": 990,
+              "groundtruth_text_length": 990,
+              "content_type": "text"
+            }
+          },
+          "table_edit": {
+            "score": 0.0,
+            "success": false,
+            "details": {
+              "predicted_table_length": 0,
+              "groundtruth_table_length": 0,
+              "content_type": "table"
+            },
+            "error": "Both predicted and groundtruth are empty"
+          },
+          "table_TEDS": {
+            "score": 0.0,
+            "success": false,
+            "details": {
+              "content_type": "table",
+              "algorithm": "TEDS"
+            },
+            "error": "Skipped due to table_edit failure: unknown reason"
+          },
+          "overall": {
+            "score": 1.0,
+            "success": true,
+            "details": {
+              "source": "average_of_all_metrics",
+              "description": "Overall score as average of all successful metrics",
+              "successful_metrics": 2,
+              "failed_metrics": 3,
+              "individual_scores": {
+                "code_edit": 1.0,
+                "text_edit": 1.0
+              }
+            }
+          }
+        },
+        "sample_metadata": {
+          "url": "https://www.w3school.com.cn/python/numpy_creating_arrays.asp",
+          "domain": null,
+          "language": null,
+          "content_type": null,
+          "difficulty": null
+        }
+      },
+      {
+        "sample_id": "3026972b-8a26-48c3-bc00-c181138702f2",
+        "extraction_success": true,
+        "extraction_time": 0.06880021095275879,
+        "metrics": {
+          "code_edit": {
+            "score": 0.0,
+            "success": false,
+            "details": {
+              "predicted_code_length": 0,
+              "groundtruth_code_length": 0,
+              "content_type": "code"
+            },
+            "error": "Both predicted and groundtruth are empty"
+          },
+          "formula_edit": {
+            "score": 0.0,
+            "success": false,
+            "details": {
+              "predicted_formula_length": 0,
+              "groundtruth_formula_length": 0,
+              "content_type": "formula"
+            },
+            "error": "Both predicted and groundtruth are empty"
+          },
+          "text_edit": {
+            "score": 0.9939450015647748,
+            "success": true,
+            "details": {
+              "distance": 445,
+              "predicted_length": 73281,
+              "groundtruth_length": 73493,
+              "normalized": true,
+              "predicted_text_length": 73281,
+              "groundtruth_text_length": 73493,
+              "content_type": "text"
+            }
+          },
+          "table_edit": {
+            "score": 0.0,
+            "success": false,
+            "details": {
+              "predicted_table_length": 0,
+              "groundtruth_table_length": 0,
+              "content_type": "table"
+            },
+            "error": "Both predicted and groundtruth are empty"
+          },
+          "table_TEDS": {
+            "score": 0.0,
+            "success": false,
+            "details": {
+              "content_type": "table",
+              "algorithm": "TEDS"
+            },
+            "error": "Skipped due to table_edit failure: unknown reason"
+          },
+          "overall": {
+            "score": 0.9939450015647748,
+            "success": true,
+            "details": {
+              "source": "average_of_all_metrics",
+              "description": "Overall score as average of all successful metrics",
+              "successful_metrics": 1,
+              "failed_metrics": 4,
+              "individual_scores": {
+                "text_edit": 0.9939450015647748
+              }
+            }
+          }
+        },
+        "sample_metadata": {
+          "url": "https://www.triumphhq.com/terms-of-use/",
+          "domain": null,
+          "language": "en",
+          "content_type": null,
+          "difficulty": null
+        }
+      },
+      {
+        "sample_id": "ee0a113d-bdd5-48cf-ac9c-a7cadfbfb74b",
+        "extraction_success": true,
+        "extraction_time": 0.0381929874420166,
+        "metrics": {
+          "code_edit": {
+            "score": 0.0,
+            "success": false,
+            "details": {
+              "predicted_code_length": 0,
+              "groundtruth_code_length": 0,
+              "content_type": "code"
+            },
+            "error": "Both predicted and groundtruth are empty"
+          },
+          "formula_edit": {
+            "score": 0.0,
+            "success": false,
+            "details": {
+              "predicted_formula_length": 0,
+              "groundtruth_formula_length": 0,
+              "content_type": "formula"
+            },
+            "error": "Both predicted and groundtruth are empty"
+          },
+          "text_edit": {
+            "score": 0.3119022316684378,
+            "success": true,
+            "details": {
+              "distance": 3885,
+              "predicted_length": 1945,
+              "groundtruth_length": 5646,
+              "normalized": true,
+              "predicted_text_length": 1945,
+              "groundtruth_text_length": 5646,
+              "content_type": "text"
+            }
+          },
+          "table_edit": {
+            "score": 0.0,
+            "success": true,
+            "details": {
+              "distance": 179,
+              "predicted_length": 0,
+              "groundtruth_length": 179,
+              "normalized": true,
+              "predicted_table_length": 0,
+              "groundtruth_table_length": 179,
+              "content_type": "table"
+            }
+          },
+          "table_TEDS": {
+            "score": 0.0,
+            "success": true,
+            "details": {
+              "edit_distance": 26.0,
+              "predicted_nodes": 3,
+              "groundtruth_nodes": 19,
+              "max_nodes": 19,
+              "structure_only": false,
+              "algorithm": "TEDS",
+              "content_type": "table"
+            }
+          },
+          "overall": {
+            "score": 0.10396741055614593,
+            "success": true,
+            "details": {
+              "source": "average_of_all_metrics",
+              "description": "Overall score as average of all successful metrics",
+              "successful_metrics": 3,
+              "failed_metrics": 2,
+              "individual_scores": {
+                "text_edit": 0.3119022316684378,
+                "table_edit": 0.0,
+                "table_TEDS": 0.0
+              }
+            }
+          }
+        },
+        "sample_metadata": {
+          "url": "http://campbellhonda-newry.usedcars.honda.co.uk/en/used-cars/approved-cars/honda/civic-10-vtec-turbo-sr-5-door/details-r1bsa77",
+          "domain": null,
+          "language": "en",
+          "content_type": null,
+          "difficulty": null
+        }
+      },
+      {
+        "sample_id": "33e291cd-5b26-48b1-977f-3c63b45e6d13",
+        "extraction_success": true,
+        "extraction_time": 0.005263805389404297,
+        "metrics": {
+          "code_edit": {
+            "score": 0.0,
+            "success": true,
+            "details": {
+              "distance": 251,
+              "predicted_length": 251,
+              "groundtruth_length": 0,
+              "normalized": true,
+              "predicted_code_length": 251,
+              "groundtruth_code_length": 0,
+              "content_type": "code"
+            }
+          },
+          "formula_edit": {
+            "score": 0.0,
+            "success": false,
+            "details": {
+              "predicted_formula_length": 0,
+              "groundtruth_formula_length": 0,
+              "content_type": "formula"
+            },
+            "error": "Both predicted and groundtruth are empty"
+          },
+          "text_edit": {
+            "score": 0.08680555555555558,
+            "success": true,
+            "details": {
+              "distance": 263,
+              "predicted_length": 25,
+              "groundtruth_length": 288,
+              "normalized": true,
+              "predicted_text_length": 25,
+              "groundtruth_text_length": 288,
+              "content_type": "text"
+            }
+          },
+          "table_edit": {
+            "score": 0.0,
+            "success": false,
+            "details": {
+              "predicted_table_length": 0,
+              "groundtruth_table_length": 0,
+              "content_type": "table"
+            },
+            "error": "Both predicted and groundtruth are empty"
+          },
+          "table_TEDS": {
+            "score": 0.0,
+            "success": false,
+            "details": {
+              "content_type": "table",
+              "algorithm": "TEDS"
+            },
+            "error": "Skipped due to table_edit failure: unknown reason"
+          },
+          "overall": {
+            "score": 0.04340277777777779,
+            "success": true,
+            "details": {
+              "source": "average_of_all_metrics",
+              "description": "Overall score as average of all successful metrics",
+              "successful_metrics": 2,
+              "failed_metrics": 3,
+              "individual_scores": {
+                "code_edit": 0.0,
+                "text_edit": 0.08680555555555558
+              }
+            }
+          }
+        },
+        "sample_metadata": {
+          "url": "https://www.creativia.ch/en/product-page/logo-palm-institute",
+          "domain": null,
+          "language": "en",
+          "content_type": null,
+          "difficulty": null
+        }
+      }
+    ],
+    "category_metrics": {
+      "unknown": {
+        "text_edit": 0.5981631971971921,
+        "code_edit": 0.5,
+        "table_edit": 0.0,
+        "table_TEDS": 0.0,
+        "formula_edit": 0.0,
+        "overall": 0.21963263943943842
+      }
+    },
+    "error_analysis": {
+      "total_samples": 4,
+      "failed_count": 0,
+      "success_rate": 1.0,
+      "common_errors": {},
+      "sample_errors": []
+    },
+    "extractor_config": {
+      "use_preprocessed_html": true,
+      "preprocessed_html_field": "llm_webkit_html"
+    },
+    "metric_config": {}
+  },
+  {
+    "metadata": {
+      "dataset_name": "sample_dataset",
+      "extractor_name": "magic-html",
+      "timestamp": "2025-08-28T15:19:27.418715",
+      "total_samples": 4
+    },
+    "overall_metrics": {
+      "text_edit": 0.6624295334379949,
+      "code_edit": 0.10070257611241218,
+      "table_edit": 0.0,
+      "table_TEDS": 0.0,
+      "formula_edit": 0.0,
+      "overall": 0.1526264219100814
+    },
+    "sample_results": [
+      {
+        "sample_id": "7cdb7231-9337-4104-a562-9b8f285add7d",
+        "extraction_success": true,
+        "extraction_time": 0.034761905670166016,
+        "metrics": {
+          "code_edit": {
+            "score": 0.10070257611241218,
+            "success": true,
+            "details": {
+              "distance": 768,
+              "predicted_length": 86,
+              "groundtruth_length": 854,
+              "normalized": true,
+              "predicted_code_length": 86,
+              "groundtruth_code_length": 854,
+              "content_type": "code"
+            }
+          },
+          "formula_edit": {
+            "score": 0.0,
+            "success": false,
+            "details": {
+              "predicted_formula_length": 0,
+              "groundtruth_formula_length": 0,
+              "content_type": "formula"
+            },
+            "error": "Both predicted and groundtruth are empty"
+          },
+          "text_edit": {
+            "score": 0.516895459345301,
+            "success": true,
+            "details": {
+              "distance": 915,
+              "predicted_length": 1894,
+              "groundtruth_length": 990,
+              "normalized": true,
+              "predicted_text_length": 1894,
+              "groundtruth_text_length": 990,
+              "content_type": "text"
+            }
+          },
+          "table_edit": {
+            "score": 0.0,
+            "success": false,
+            "details": {
+              "predicted_table_length": 0,
+              "groundtruth_table_length": 0,
+              "content_type": "table"
+            },
+            "error": "Both predicted and groundtruth are empty"
+          },
+          "table_TEDS": {
+            "score": 0.0,
+            "success": false,
+            "details": {
+              "content_type": "table",
+              "algorithm": "TEDS"
+            },
+            "error": "Skipped due to table_edit failure: unknown reason"
+          },
+          "overall": {
+            "score": 0.3087990177288566,
+            "success": true,
+            "details": {
+              "source": "average_of_all_metrics",
+              "description": "Overall score as average of all successful metrics",
+              "successful_metrics": 2,
+              "failed_metrics": 3,
+              "individual_scores": {
+                "code_edit": 0.10070257611241218,
+                "text_edit": 0.516895459345301
+              }
+            }
+          }
+        },
+        "sample_metadata": {
+          "url": "https://www.w3school.com.cn/python/numpy_creating_arrays.asp",
+          "domain": null,
+          "language": null,
+          "content_type": null,
+          "difficulty": null
+        }
+      },
+      {
+        "sample_id": "3026972b-8a26-48c3-bc00-c181138702f2",
+        "extraction_success": true,
+        "extraction_time": 0.0651240348815918,
+        "metrics": {
+          "code_edit": {
+            "score": 0.0,
+            "success": false,
+            "details": {
+              "predicted_code_length": 0,
+              "groundtruth_code_length": 0,
+              "content_type": "code"
+            },
+            "error": "Both predicted and groundtruth are empty"
+          },
+          "formula_edit": {
+            "score": 0.0,
+            "success": true,
+            "details": {
+              "distance": 11580,
+              "predicted_length": 11580,
+              "groundtruth_length": 0,
+              "normalized": true,
+              "predicted_formula_length": 11580,
+              "groundtruth_formula_length": 0,
+              "content_type": "formula"
+            }
+          },
+          "text_edit": {
+            "score": 0.8295211788877852,
+            "success": true,
+            "details": {
+              "distance": 12529,
+              "predicted_length": 62121,
+              "groundtruth_length": 73493,
+              "normalized": true,
+              "predicted_text_length": 62121,
+              "groundtruth_text_length": 73493,
+              "content_type": "text"
+            }
+          },
+          "table_edit": {
+            "score": 0.0,
+            "success": false,
+            "details": {
+              "predicted_table_length": 0,
+              "groundtruth_table_length": 0,
+              "content_type": "table"
+            },
+            "error": "Both predicted and groundtruth are empty"
+          },
+          "table_TEDS": {
+            "score": 0.0,
+            "success": false,
+            "details": {
+              "content_type": "table",
+              "algorithm": "TEDS"
+            },
+            "error": "Skipped due to table_edit failure: unknown reason"
+          },
+          "overall": {
+            "score": 0.4147605894438926,
+            "success": true,
+            "details": {
+              "source": "average_of_all_metrics",
+              "description": "Overall score as average of all successful metrics",
+              "successful_metrics": 2,
+              "failed_metrics": 3,
+              "individual_scores": {
+                "formula_edit": 0.0,
+                "text_edit": 0.8295211788877852
+              }
+            }
+          }
+        },
+        "sample_metadata": {
+          "url": "https://www.triumphhq.com/terms-of-use/",
+          "domain": null,
+          "language": "en",
+          "content_type": null,
+          "difficulty": null
+        }
+      },
+      {
+        "sample_id": "ee0a113d-bdd5-48cf-ac9c-a7cadfbfb74b",
+        "extraction_success": true,
+        "extraction_time": 0.07040786743164062,
+        "metrics": {
+          "code_edit": {
+            "score": 0.0,
+            "success": false,
+            "details": {
+              "predicted_code_length": 0,
+              "groundtruth_code_length": 0,
+              "content_type": "code"
+            },
+            "error": "Both predicted and groundtruth are empty"
+          },
+          "formula_edit": {
+            "score": 0.0,
+            "success": false,
+            "details": {
+              "predicted_formula_length": 0,
+              "groundtruth_formula_length": 0,
+              "content_type": "formula"
+            },
+            "error": "Both predicted and groundtruth are empty"
+          },
+          "text_edit": {
+            "score": 0.5317137517863032,
+            "success": true,
+            "details": {
+              "distance": 4260,
+              "predicted_length": 9097,
+              "groundtruth_length": 5646,
+              "normalized": true,
+              "predicted_text_length": 9097,
+              "groundtruth_text_length": 5646,
+              "content_type": "text"
+            }
+          },
+          "table_edit": {
+            "score": 0.0,
+            "success": true,
+            "details": {
+              "distance": 179,
+              "predicted_length": 0,
+              "groundtruth_length": 179,
+              "normalized": true,
+              "predicted_table_length": 0,
+              "groundtruth_table_length": 179,
+              "content_type": "table"
+            }
+          },
+          "table_TEDS": {
+            "score": 0.0,
+            "success": true,
+            "details": {
+              "edit_distance": 26.0,
+              "predicted_nodes": 3,
+              "groundtruth_nodes": 19,
+              "max_nodes": 19,
+              "structure_only": false,
+              "algorithm": "TEDS",
+              "content_type": "table"
+            }
+          },
+          "overall": {
+            "score": 0.17723791726210106,
+            "success": true,
+            "details": {
+              "source": "average_of_all_metrics",
+              "description": "Overall score as average of all successful metrics",
+              "successful_metrics": 3,
+              "failed_metrics": 2,
+              "individual_scores": {
+                "text_edit": 0.5317137517863032,
+                "table_edit": 0.0,
+                "table_TEDS": 0.0
+              }
+            }
+          }
+        },
+        "sample_metadata": {
+          "url": "http://campbellhonda-newry.usedcars.honda.co.uk/en/used-cars/approved-cars/honda/civic-10-vtec-turbo-sr-5-door/details-r1bsa77",
+          "domain": null,
+          "language": "en",
+          "content_type": null,
+          "difficulty": null
+        }
+      },
+      {
+        "sample_id": "33e291cd-5b26-48b1-977f-3c63b45e6d13",
+        "extraction_success": true,
+        "extraction_time": 0.02169013023376465,
+        "metrics": {
+          "code_edit": {
+            "score": 0.0,
+            "success": false,
+            "details": {
+              "predicted_code_length": 0,
+              "groundtruth_code_length": 0,
+              "content_type": "code"
+            },
+            "error": "Both predicted and groundtruth are empty"
+          },
+          "formula_edit": {
+            "score": 0.0,
+            "success": false,
+            "details": {
+              "predicted_formula_length": 0,
+              "groundtruth_formula_length": 0,
+              "content_type": "formula"
+            },
+            "error": "Both predicted and groundtruth are empty"
+          },
+          "text_edit": {
+            "score": 0.7715877437325905,
+            "success": true,
+            "details": {
+              "distance": 82,
+              "predicted_length": 359,
+              "groundtruth_length": 288,
+              "normalized": true,
+              "predicted_text_length": 359,
+              "groundtruth_text_length": 288,
+              "content_type": "text"
+            }
+          },
+          "table_edit": {
+            "score": 0.0,
+            "success": false,
+            "details": {
+              "predicted_table_length": 0,
+              "groundtruth_table_length": 0,
+              "content_type": "table"
+            },
+            "error": "Both predicted and groundtruth are empty"
+          },
+          "table_TEDS": {
+            "score": 0.0,
+            "success": false,
+            "details": {
+              "content_type": "table",
+              "algorithm": "TEDS"
+            },
+            "error": "Skipped due to table_edit failure: unknown reason"
+          },
+          "overall": {
+            "score": 0.7715877437325905,
+            "success": true,
+            "details": {
+              "source": "average_of_all_metrics",
+              "description": "Overall score as average of all successful metrics",
+              "successful_metrics": 1,
+              "failed_metrics": 4,
+              "individual_scores": {
+                "text_edit": 0.7715877437325905
+              }
+            }
+          }
+        },
+        "sample_metadata": {
+          "url": "https://www.creativia.ch/en/product-page/logo-palm-institute",
+          "domain": null,
+          "language": "en",
+          "content_type": null,
+          "difficulty": null
+        }
+      }
+    ],
+    "category_metrics": {
+      "unknown": {
+        "text_edit": 0.6624295334379949,
+        "code_edit": 0.10070257611241218,
+        "table_edit": 0.0,
+        "table_TEDS": 0.0,
+        "formula_edit": 0.0,
+        "overall": 0.1526264219100814
+      }
+    },
+    "error_analysis": {
+      "total_samples": 4,
+      "failed_count": 0,
+      "success_rate": 1.0,
+      "common_errors": {},
+      "sample_errors": []
+    },
+    "extractor_config": {},
+    "metric_config": {}
+  },
+  {
+    "metadata": {
+      "dataset_name": "sample_dataset",
+      "extractor_name": "trafilatura",
+      "timestamp": "2025-08-28T15:19:27.656473",
+      "total_samples": 4
+    },
+    "overall_metrics": {
+      "text_edit": 0.47464924569001193,
+      "code_edit": 0.10070257611241218,
+      "table_edit": 0.0,
+      "table_TEDS": 0.0,
+      "formula_edit": 0.0,
+      "overall": 0.11507036436048482
+    },
+    "sample_results": [
+      {
+        "sample_id": "7cdb7231-9337-4104-a562-9b8f285add7d",
+        "extraction_success": true,
+        "extraction_time": 0.03204226493835449,
+        "metrics": {
+          "code_edit": {
+            "score": 0.10070257611241218,
+            "success": true,
+            "details": {
+              "distance": 768,
+              "predicted_length": 86,
+              "groundtruth_length": 854,
+              "normalized": true,
+              "predicted_code_length": 86,
+              "groundtruth_code_length": 854,
+              "content_type": "code"
+            }
+          },
+          "formula_edit": {
+            "score": 0.0,
+            "success": false,
+            "details": {
+              "predicted_formula_length": 0,
+              "groundtruth_formula_length": 0,
+              "content_type": "formula"
+            },
+            "error": "Both predicted and groundtruth are empty"
+          },
+          "text_edit": {
+            "score": 0.40776038121170866,
+            "success": true,
+            "details": {
+              "distance": 870,
+              "predicted_length": 1469,
+              "groundtruth_length": 990,
+              "normalized": true,
+              "predicted_text_length": 1469,
+              "groundtruth_text_length": 990,
+              "content_type": "text"
+            }
+          },
+          "table_edit": {
+            "score": 0.0,
+            "success": false,
+            "details": {
+              "predicted_table_length": 0,
+              "groundtruth_table_length": 0,
+              "content_type": "table"
+            },
+            "error": "Both predicted and groundtruth are empty"
+          },
+          "table_TEDS": {
+            "score": 0.0,
+            "success": false,
+            "details": {
+              "content_type": "table",
+              "algorithm": "TEDS"
+            },
+            "error": "Skipped due to table_edit failure: unknown reason"
+          },
+          "overall": {
+            "score": 0.2542314786620604,
+            "success": true,
+            "details": {
+              "source": "average_of_all_metrics",
+              "description": "Overall score as average of all successful metrics",
+              "successful_metrics": 2,
+              "failed_metrics": 3,
+              "individual_scores": {
+                "code_edit": 0.10070257611241218,
+                "text_edit": 0.40776038121170866
+              }
+            }
+          }
+        },
+        "sample_metadata": {
+          "url": "https://www.w3school.com.cn/python/numpy_creating_arrays.asp",
+          "domain": null,
+          "language": null,
+          "content_type": null,
+          "difficulty": null
+        }
+      },
+      {
+        "sample_id": "3026972b-8a26-48c3-bc00-c181138702f2",
+        "extraction_success": true,
+        "extraction_time": 0.018018007278442383,
+        "metrics": {
+          "code_edit": {
+            "score": 0.0,
+            "success": false,
+            "details": {
+              "predicted_code_length": 0,
+              "groundtruth_code_length": 0,
+              "content_type": "code"
+            },
+            "error": "Both predicted and groundtruth are empty"
+          },
+          "formula_edit": {
+            "score": 0.0,
+            "success": false,
+            "details": {
+              "predicted_formula_length": 0,
+              "groundtruth_formula_length": 0,
+              "content_type": "formula"
+            },
+            "error": "Both predicted and groundtruth are empty"
+          },
+          "text_edit": {
+            "score": 0.33418148667220005,
+            "success": true,
+            "details": {
+              "distance": 48933,
+              "predicted_length": 24867,
+              "groundtruth_length": 73493,
+              "normalized": true,
+              "predicted_text_length": 24867,
+              "groundtruth_text_length": 73493,
+              "content_type": "text"
+            }
+          },
+          "table_edit": {
+            "score": 0.0,
+            "success": false,
+            "details": {
+              "predicted_table_length": 0,
+              "groundtruth_table_length": 0,
+              "content_type": "table"
+            },
+            "error": "Both predicted and groundtruth are empty"
+          },
+          "table_TEDS": {
+            "score": 0.0,
+            "success": false,
+            "details": {
+              "content_type": "table",
+              "algorithm": "TEDS"
+            },
+            "error": "Skipped due to table_edit failure: unknown reason"
+          },
+          "overall": {
+            "score": 0.33418148667220005,
+            "success": true,
+            "details": {
+              "source": "average_of_all_metrics",
+              "description": "Overall score as average of all successful metrics",
+              "successful_metrics": 1,
+              "failed_metrics": 4,
+              "individual_scores": {
+                "text_edit": 0.33418148667220005
+              }
+            }
+          }
+        },
+        "sample_metadata": {
+          "url": "https://www.triumphhq.com/terms-of-use/",
+          "domain": null,
+          "language": "en",
+          "content_type": null,
+          "difficulty": null
+        }
+      },
+      {
+        "sample_id": "ee0a113d-bdd5-48cf-ac9c-a7cadfbfb74b",
+        "extraction_success": true,
+        "extraction_time": 0.09231686592102051,
+        "metrics": {
+          "code_edit": {
+            "score": 0.0,
+            "success": false,
+            "details": {
+              "predicted_code_length": 0,
+              "groundtruth_code_length": 0,
+              "content_type": "code"
+            },
+            "error": "Both predicted and groundtruth are empty"
+          },
+          "formula_edit": {
+            "score": 0.0,
+            "success": false,
+            "details": {
+              "predicted_formula_length": 0,
+              "groundtruth_formula_length": 0,
+              "content_type": "formula"
+            },
+            "error": "Both predicted and groundtruth are empty"
+          },
+          "text_edit": {
+            "score": 0.36734693877551017,
+            "success": true,
+            "details": {
+              "distance": 6603,
+              "predicted_length": 10437,
+              "groundtruth_length": 5646,
+              "normalized": true,
+              "predicted_text_length": 10437,
+              "groundtruth_text_length": 5646,
+              "content_type": "text"
+            }
+          },
+          "table_edit": {
+            "score": 0.0,
+            "success": true,
+            "details": {
+              "distance": 179,
+              "predicted_length": 0,
+              "groundtruth_length": 179,
+              "normalized": true,
+              "predicted_table_length": 0,
+              "groundtruth_table_length": 179,
+              "content_type": "table"
+            }
+          },
+          "table_TEDS": {
+            "score": 0.0,
+            "success": true,
+            "details": {
+              "edit_distance": 26.0,
+              "predicted_nodes": 3,
+              "groundtruth_nodes": 19,
+              "max_nodes": 19,
+              "structure_only": false,
+              "algorithm": "TEDS",
+              "content_type": "table"
+            }
+          },
+          "overall": {
+            "score": 0.12244897959183672,
+            "success": true,
+            "details": {
+              "source": "average_of_all_metrics",
+              "description": "Overall score as average of all successful metrics",
+              "successful_metrics": 3,
+              "failed_metrics": 2,
+              "individual_scores": {
+                "text_edit": 0.36734693877551017,
+                "table_edit": 0.0,
+                "table_TEDS": 0.0
+              }
+            }
+          }
+        },
+        "sample_metadata": {
+          "url": "http://campbellhonda-newry.usedcars.honda.co.uk/en/used-cars/approved-cars/honda/civic-10-vtec-turbo-sr-5-door/details-r1bsa77",
+          "domain": null,
+          "language": "en",
+          "content_type": null,
+          "difficulty": null
+        }
+      },
+      {
+        "sample_id": "33e291cd-5b26-48b1-977f-3c63b45e6d13",
+        "extraction_success": true,
+        "extraction_time": 0.020546913146972656,
+        "metrics": {
+          "code_edit": {
+            "score": 0.0,
+            "success": false,
+            "details": {
+              "predicted_code_length": 0,
+              "groundtruth_code_length": 0,
+              "content_type": "code"
+            },
+            "error": "Both predicted and groundtruth are empty"
+          },
+          "formula_edit": {
+            "score": 0.0,
+            "success": false,
+            "details": {
+              "predicted_formula_length": 0,
+              "groundtruth_formula_length": 0,
+              "content_type": "formula"
+            },
+            "error": "Both predicted and groundtruth are empty"
+          },
+          "text_edit": {
+            "score": 0.7893081761006289,
+            "success": true,
+            "details": {
+              "distance": 67,
+              "predicted_length": 318,
+              "groundtruth_length": 288,
+              "normalized": true,
+              "predicted_text_length": 318,
+              "groundtruth_text_length": 288,
+              "content_type": "text"
+            }
+          },
+          "table_edit": {
+            "score": 0.0,
+            "success": false,
+            "details": {
+              "predicted_table_length": 0,
+              "groundtruth_table_length": 0,
+              "content_type": "table"
+            },
+            "error": "Both predicted and groundtruth are empty"
+          },
+          "table_TEDS": {
+            "score": 0.0,
+            "success": false,
+            "details": {
+              "content_type": "table",
+              "algorithm": "TEDS"
+            },
+            "error": "Skipped due to table_edit failure: unknown reason"
+          },
+          "overall": {
+            "score": 0.7893081761006289,
+            "success": true,
+            "details": {
+              "source": "average_of_all_metrics",
+              "description": "Overall score as average of all successful metrics",
+              "successful_metrics": 1,
+              "failed_metrics": 4,
+              "individual_scores": {
+                "text_edit": 0.7893081761006289
+              }
+            }
+          }
+        },
+        "sample_metadata": {
+          "url": "https://www.creativia.ch/en/product-page/logo-palm-institute",
+          "domain": null,
+          "language": "en",
+          "content_type": null,
+          "difficulty": null
+        }
+      }
+    ],
+    "category_metrics": {
+      "unknown": {
+        "text_edit": 0.47464924569001193,
+        "code_edit": 0.10070257611241218,
+        "table_edit": 0.0,
+        "table_TEDS": 0.0,
+        "formula_edit": 0.0,
+        "overall": 0.11507036436048482
+      }
+    },
+    "error_analysis": {
+      "total_samples": 4,
+      "failed_count": 0,
+      "success_rate": 1.0,
+      "common_errors": {},
+      "sample_errors": []
+    },
+    "extractor_config": {},
+    "metric_config": {}
+  },
+  {
+    "metadata": {
+      "dataset_name": "sample_dataset",
+      "extractor_name": "resiliparse",
+      "timestamp": "2025-08-28T15:19:27.811624",
+      "total_samples": 4
+    },
+    "overall_metrics": {
+      "text_edit": 0.6896622610982304,
+      "code_edit": 0.0,
+      "table_edit": 0.0,
+      "table_TEDS": 0.0,
+      "formula_edit": 0.0,
+      "overall": 0.13793245221964606
+    },
+    "sample_results": [
+      {
+        "sample_id": "7cdb7231-9337-4104-a562-9b8f285add7d",
+        "extraction_success": true,
+        "extraction_time": 0.004415988922119141,
+        "metrics": {
+          "code_edit": {
+            "score": 0.0,
+            "success": true,
+            "details": {
+              "distance": 854,
+              "predicted_length": 0,
+              "groundtruth_length": 854,
+              "normalized": true,
+              "predicted_code_length": 0,
+              "groundtruth_code_length": 854,
+              "content_type": "code"
+            }
+          },
+          "formula_edit": {
+            "score": 0.0,
+            "success": false,
+            "details": {
+              "predicted_formula_length": 0,
+              "groundtruth_formula_length": 0,
+              "content_type": "formula"
+            },
+            "error": "Both predicted and groundtruth are empty"
+          },
+          "text_edit": {
+            "score": 0.4901423877327492,
+            "success": true,
+            "details": {
+              "distance": 931,
+              "predicted_length": 1826,
+              "groundtruth_length": 990,
+              "normalized": true,
+              "predicted_text_length": 1826,
+              "groundtruth_text_length": 990,
+              "content_type": "text"
+            }
+          },
+          "table_edit": {
+            "score": 0.0,
+            "success": false,
+            "details": {
+              "predicted_table_length": 0,
+              "groundtruth_table_length": 0,
+              "content_type": "table"
+            },
+            "error": "Both predicted and groundtruth are empty"
+          },
+          "table_TEDS": {
+            "score": 0.0,
+            "success": false,
+            "details": {
+              "content_type": "table",
+              "algorithm": "TEDS"
+            },
+            "error": "Skipped due to table_edit failure: unknown reason"
+          },
+          "overall": {
+            "score": 0.2450711938663746,
+            "success": true,
+            "details": {
+              "source": "average_of_all_metrics",
+              "description": "Overall score as average of all successful metrics",
+              "successful_metrics": 2,
+              "failed_metrics": 3,
+              "individual_scores": {
+                "code_edit": 0.0,
+                "text_edit": 0.4901423877327492
+              }
+            }
+          }
+        },
+        "sample_metadata": {
+          "url": "https://www.w3school.com.cn/python/numpy_creating_arrays.asp",
+          "domain": null,
+          "language": null,
+          "content_type": null,
+          "difficulty": null
+        }
+      },
+      {
+        "sample_id": "3026972b-8a26-48c3-bc00-c181138702f2",
+        "extraction_success": true,
+        "extraction_time": 0.00335693359375,
+        "metrics": {
+          "code_edit": {
+            "score": 0.0,
+            "success": false,
+            "details": {
+              "predicted_code_length": 0,
+              "groundtruth_code_length": 0,
+              "content_type": "code"
+            },
+            "error": "Both predicted and groundtruth are empty"
+          },
+          "formula_edit": {
+            "score": 0.0,
+            "success": true,
+            "details": {
+              "distance": 11475,
+              "predicted_length": 11475,
+              "groundtruth_length": 0,
+              "normalized": true,
+              "predicted_formula_length": 11475,
+              "groundtruth_formula_length": 0,
+              "content_type": "formula"
+            }
+          },
+          "text_edit": {
+            "score": 0.8363517613922414,
+            "success": true,
+            "details": {
+              "distance": 12027,
+              "predicted_length": 61769,
+              "groundtruth_length": 73493,
+              "normalized": true,
+              "predicted_text_length": 61769,
+              "groundtruth_text_length": 73493,
+              "content_type": "text"
+            }
+          },
+          "table_edit": {
+            "score": 0.0,
+            "success": false,
+            "details": {
+              "predicted_table_length": 0,
+              "groundtruth_table_length": 0,
+              "content_type": "table"
+            },
+            "error": "Both predicted and groundtruth are empty"
+          },
+          "table_TEDS": {
+            "score": 0.0,
+            "success": false,
+            "details": {
+              "content_type": "table",
+              "algorithm": "TEDS"
+            },
+            "error": "Skipped due to table_edit failure: unknown reason"
+          },
+          "overall": {
+            "score": 0.4181758806961207,
+            "success": true,
+            "details": {
+              "source": "average_of_all_metrics",
+              "description": "Overall score as average of all successful metrics",
+              "successful_metrics": 2,
+              "failed_metrics": 3,
+              "individual_scores": {
+                "formula_edit": 0.0,
+                "text_edit": 0.8363517613922414
+              }
+            }
+          }
+        },
+        "sample_metadata": {
+          "url": "https://www.triumphhq.com/terms-of-use/",
+          "domain": null,
+          "language": "en",
+          "content_type": null,
+          "difficulty": null
+        }
+      },
+      {
+        "sample_id": "ee0a113d-bdd5-48cf-ac9c-a7cadfbfb74b",
+        "extraction_success": true,
+        "extraction_time": 0.002231121063232422,
+        "metrics": {
+          "code_edit": {
+            "score": 0.0,
+            "success": false,
+            "details": {
+              "predicted_code_length": 0,
+              "groundtruth_code_length": 0,
+              "content_type": "code"
+            },
+            "error": "Both predicted and groundtruth are empty"
+          },
+          "formula_edit": {
+            "score": 0.0,
+            "success": false,
+            "details": {
+              "predicted_formula_length": 0,
+              "groundtruth_formula_length": 0,
+              "content_type": "formula"
+            },
+            "error": "Both predicted and groundtruth are empty"
+          },
+          "text_edit": {
+            "score": 0.7376379239885574,
+            "success": true,
+            "details": {
+              "distance": 1926,
+              "predicted_length": 7341,
+              "groundtruth_length": 5646,
+              "normalized": true,
+              "predicted_text_length": 7341,
+              "groundtruth_text_length": 5646,
+              "content_type": "text"
+            }
+          },
+          "table_edit": {
+            "score": 0.0,
+            "success": true,
+            "details": {
+              "distance": 179,
+              "predicted_length": 0,
+              "groundtruth_length": 179,
+              "normalized": true,
+              "predicted_table_length": 0,
+              "groundtruth_table_length": 179,
+              "content_type": "table"
+            }
+          },
+          "table_TEDS": {
+            "score": 0.0,
+            "success": true,
+            "details": {
+              "edit_distance": 26.0,
+              "predicted_nodes": 3,
+              "groundtruth_nodes": 19,
+              "max_nodes": 19,
+              "structure_only": false,
+              "algorithm": "TEDS",
+              "content_type": "table"
+            }
+          },
+          "overall": {
+            "score": 0.24587930799618582,
+            "success": true,
+            "details": {
+              "source": "average_of_all_metrics",
+              "description": "Overall score as average of all successful metrics",
+              "successful_metrics": 3,
+              "failed_metrics": 2,
+              "individual_scores": {
+                "text_edit": 0.7376379239885574,
+                "table_edit": 0.0,
+                "table_TEDS": 0.0
+              }
+            }
+          }
+        },
+        "sample_metadata": {
+          "url": "http://campbellhonda-newry.usedcars.honda.co.uk/en/used-cars/approved-cars/honda/civic-10-vtec-turbo-sr-5-door/details-r1bsa77",
+          "domain": null,
+          "language": "en",
+          "content_type": null,
+          "difficulty": null
+        }
+      },
+      {
+        "sample_id": "33e291cd-5b26-48b1-977f-3c63b45e6d13",
+        "extraction_success": true,
+        "extraction_time": 0.0014410018920898438,
+        "metrics": {
+          "code_edit": {
+            "score": 0.0,
+            "success": false,
+            "details": {
+              "predicted_code_length": 0,
+              "groundtruth_code_length": 0,
+              "content_type": "code"
+            },
+            "error": "Both predicted and groundtruth are empty"
+          },
+          "formula_edit": {
+            "score": 0.0,
+            "success": false,
+            "details": {
+              "predicted_formula_length": 0,
+              "groundtruth_formula_length": 0,
+              "content_type": "formula"
+            },
+            "error": "Both predicted and groundtruth are empty"
+          },
+          "text_edit": {
+            "score": 0.6945169712793733,
+            "success": true,
+            "details": {
+              "distance": 117,
+              "predicted_length": 383,
+              "groundtruth_length": 288,
+              "normalized": true,
+              "predicted_text_length": 383,
+              "groundtruth_text_length": 288,
+              "content_type": "text"
+            }
+          },
+          "table_edit": {
+            "score": 0.0,
+            "success": false,
+            "details": {
+              "predicted_table_length": 0,
+              "groundtruth_table_length": 0,
+              "content_type": "table"
+            },
+            "error": "Both predicted and groundtruth are empty"
+          },
+          "table_TEDS": {
+            "score": 0.0,
+            "success": false,
+            "details": {
+              "content_type": "table",
+              "algorithm": "TEDS"
+            },
+            "error": "Skipped due to table_edit failure: unknown reason"
+          },
+          "overall": {
+            "score": 0.6945169712793733,
+            "success": true,
+            "details": {
+              "source": "average_of_all_metrics",
+              "description": "Overall score as average of all successful metrics",
+              "successful_metrics": 1,
+              "failed_metrics": 4,
+              "individual_scores": {
+                "text_edit": 0.6945169712793733
+              }
+            }
+          }
+        },
+        "sample_metadata": {
+          "url": "https://www.creativia.ch/en/product-page/logo-palm-institute",
+          "domain": null,
+          "language": "en",
+          "content_type": null,
+          "difficulty": null
+        }
+      }
+    ],
+    "category_metrics": {
+      "unknown": {
+        "text_edit": 0.6896622610982304,
+        "code_edit": 0.0,
+        "table_edit": 0.0,
+        "table_TEDS": 0.0,
+        "formula_edit": 0.0,
+        "overall": 0.13793245221964606
+      }
+    },
+    "error_analysis": {
+      "total_samples": 4,
+      "failed_count": 0,
+      "success_rate": 1.0,
+      "common_errors": {},
+      "sample_errors": []
+    },
+    "extractor_config": {},
+    "metric_config": {}
+  }
+]

@@ -1,7 +1,8 @@
 from webmainbench import DataLoader, Evaluator, ExtractorFactory
+from pathlib import Path
 
 # 1. 加载评测数据集
-dataset = DataLoader.load_jsonl("../data/sample_dataset.jsonl")
+dataset = DataLoader.load_jsonl(Path("data/sample_dataset.jsonl"))
 
 # 2. 创建抽取器
 extractor = ExtractorFactory.create("llm-webkit")

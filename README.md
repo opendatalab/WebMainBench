@@ -103,7 +103,7 @@ print(f"Overall Score: {result.overall_metrics['overall']:.4f}")
 
 ## 高级功能
 
-### 多抽取器对比
+### 多抽取器对比评估
 
 ```python
 # 对比多个抽取器
@@ -112,6 +112,43 @@ results = evaluator.compare_extractors(dataset, extractors)
 
 for name, result in results.items():
     print(f"{name}: {result.overall_metrics['overall']:.4f}")
+```
+
+#### 具体示例
+
+```python
+python examples/multi_extractor_compare.py
+```
+
+这个例子演示了如何：
+
+1. **加载测试数据集**：使用包含代码、公式、表格、文本等多种内容类型的样本数据
+2. **创建多个抽取器**：
+   - `llm-webkit`：支持预处理HTML的智能抽取器
+   - `magic-html`：基于 magic-html 库的抽取器
+   - `trafilatura`：基于 trafilatura 库的抽取器  
+   - `resiliparse`：基于 resiliparse 库的抽取器
+3. **批量评估对比**：使用 `evaluator.compare_extractors()` 同时评估所有抽取器
+4. **生成对比报告**：自动保存多种格式的评估结果
+
+#### 输出文件说明
+
+评估完成后会在 `results/` 目录下生成三个重要文件：
+
+| 文件名 | 格式 | 内容描述 |
+|--------|------|----------|
+| `leaderboard.csv` | CSV | **排行榜文件**：包含各抽取器的整体排名和分项指标对比，便于快速查看性能差异 |
+| `evaluation_results.json` | JSON | **详细评估结果**：包含每个抽取器的完整评估数据、指标详情和元数据信息 |
+| `dataset_with_results.jsonl` | JSONL | **增强数据集**：原始测试数据加上所有抽取器的提取结果，便于人工检查和分析 |
+
+
+`leaderboard.csv` 内容示例：
+```csv
+extractor,dataset,total_samples,success_rate,overall,code_edit,formula_edit,table_TEDS,table_edit,text_edit
+llm-webkit,sample_dataset,4,1.0,0.2196,0.5,0.0,0.0,0.0,0.5982
+magic-html,sample_dataset,4,1.0,0.1526,0.1007,0.0,0.0,0.0,0.6624
+resiliparse,sample_dataset,4,1.0,0.1379,0.0,0.0,0.0,0.0,0.6897
+trafilatura,sample_dataset,4,1.0,0.1151,0.1007,0.0,0.0,0.0,0.4746
 ```
 
 ### 自定义指标

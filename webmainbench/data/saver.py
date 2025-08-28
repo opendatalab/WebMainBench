@@ -197,7 +197,7 @@ class DataSaver:
     
 
     @staticmethod
-    def save_dataset_with_extraction(results: Union["EvaluationResult", Dict[str, Any]], 
+    def save_dataset_with_extraction(results: Union["EvaluationResult", Dict[str, Any], List[Dict[str, Any]]], 
                                    dataset: "BenchmarkDataset",
                                    file_path: Union[str, Path],
                                    extractor_name: str = None) -> None:
@@ -205,7 +205,7 @@ class DataSaver:
         Save original dataset with extracted content added for manual review.
         
         Args:
-            results: EvaluationResult instance or its dictionary representation
+            results: EvaluationResult instance, its dictionary representation, or list of evaluation results
             dataset: Original dataset
             file_path: Output JSONL file path
             extractor_name: Name of the extractor (used for field naming)
@@ -213,60 +213,95 @@ class DataSaver:
         file_path = Path(file_path)
         file_path.parent.mkdir(parents=True, exist_ok=True)
         
-        # Convert EvaluationResult to dict if needed
-        if hasattr(results, 'to_dict'):
-            results_dict = results.to_dict()
+        # Handle different input formats
+        if isinstance(results, list):
+            # Handle list of evaluation results (multi-extractor scenario)
+            all_extraction_maps = {}
+            extractor_names = []
+            
+            for result_item in results:
+                # Convert EvaluationResult to dict if needed
+                if hasattr(result_item, 'to_dict'):
+                    results_dict = result_item.to_dict()
+                else:
+                    results_dict = result_item
+                
+                # Get extractor name for this result
+                current_extractor_name = results_dict.get('metadata', {}).get('extractor_name', 'extracted')
+                extractor_names.append(current_extractor_name)
+                
+                # Create mapping from sample_id to extraction result for this extractor
+                sample_results = results_dict.get('sample_results', [])
+                extraction_map = {}
+                for sample_result in sample_results:
+                    sample_id = sample_result.get('sample_id')
+                    if sample_id:
+                        extraction_map[sample_id] = sample_result
+                
+                all_extraction_maps[current_extractor_name] = extraction_map
         else:
-            results_dict = results
-        
-        # Get extractor name
-        if not extractor_name:
-            extractor_name = results_dict.get('metadata', {}).get('extractor_name', 'extracted')
-        
-        # Create mapping from sample_id to extraction result
-        sample_results = results_dict.get('sample_results', [])
-        extraction_map = {}
-        for sample_result in sample_results:
-            sample_id = sample_result.get('sample_id')
-            if sample_id:
-                extraction_map[sample_id] = sample_result
+            # Handle single evaluation result
+            # Convert EvaluationResult to dict if needed
+            if hasattr(results, 'to_dict'):
+                results_dict = results.to_dict()
+            else:
+                results_dict = results
+            
+            # Get extractor name
+            if not extractor_name:
+                extractor_name = results_dict.get('metadata', {}).get('extractor_name', 'extracted')
+            
+            # Create mapping from sample_id to extraction result
+            sample_results = results_dict.get('sample_results', [])
+            extraction_map = {}
+            for sample_result in sample_results:
+                sample_id = sample_result.get('sample_id')
+                if sample_id:
+                    extraction_map[sample_id] = sample_result
+            
+            all_extraction_maps = {extractor_name: extraction_map}
+            extractor_names = [extractor_name]
         
         # Process each sample and add extracted content
         enriched_samples = []
+        from webmainbench.metrics.base import BaseMetric
+        
         for sample in dataset.samples:
             # Convert sample to dict
             sample_dict = sample.to_dict()
             
-            # Add extraction results if available
-            extraction_result = extraction_map.get(sample.id)
-            from webmainbench.metrics.base import BaseMetric
-            if extraction_result:
-                # Add extracted content with extractor name prefix
-                sample_dict[f'{extractor_name}_content'] = extraction_result.get('extracted_content', '')
-                sample_dict[f'{extractor_name}_content_list'] = extraction_result.get('extracted_content_list', [])
-                sample_dict[f'{extractor_name}_success'] = extraction_result.get('extraction_success', False)
-                sample_dict[f'{extractor_name}_time'] = extraction_result.get('extraction_time', 0)
+            # Add extraction results for each extractor
+            for current_extractor_name in extractor_names:
+                extraction_map = all_extraction_maps.get(current_extractor_name, {})
+                extraction_result = extraction_map.get(sample.id)
                 
-                # Add metric scores for quick review
-                metrics = extraction_result.get('metrics', {})
-                for metric_name, metric_data in metrics.items():
-                    if isinstance(metric_data, dict) and metric_data.get('success', False):
-                        sample_dict[f'{extractor_name}_{metric_name}_score'] = metric_data.get('score', 0)
+                if extraction_result:
+                    # Add extracted content with extractor name prefix
+                    sample_dict[f'{current_extractor_name}_content'] = extraction_result.get('extracted_content', '')
+                    sample_dict[f'{current_extractor_name}_content_list'] = extraction_result.get('extracted_content_list', [])
+                    sample_dict[f'{current_extractor_name}_success'] = extraction_result.get('extraction_success', False)
+                    sample_dict[f'{current_extractor_name}_time'] = extraction_result.get('extraction_time', 0)
+                    
+                    # Add metric scores for quick review
+                    metrics = extraction_result.get('metrics', {})
+                    for metric_name, metric_data in metrics.items():
+                        if isinstance(metric_data, dict) and metric_data.get('success', False):
+                            sample_dict[f'{current_extractor_name}_{metric_name}_score'] = metric_data.get('score', 0)
 
-                # 解析预测值（predicted）
-                predicted_content = extraction_result.get('extracted_content', '')
-                predicted_parts = BaseMetric._extract_from_markdown(predicted_content)  # 关键：解析预测内容
-                for part_type in ['code', 'formula', 'table', 'text']:
-                    sample_dict[f'{extractor_name}_predicted_{part_type}'] = predicted_parts.get(part_type, '')
+                    # 解析预测值（predicted）
+                    predicted_content = extraction_result.get('extracted_content', '')
+                    predicted_parts = BaseMetric._extract_from_markdown(predicted_content)  # 关键：解析预测内容
+                    for part_type in ['code', 'formula', 'table', 'text']:
+                        sample_dict[f'{current_extractor_name}_predicted_{part_type}'] = predicted_parts.get(part_type, '')
 
-                # 解析真实值（groundtruth）
+            # 解析真实值（groundtruth）- 只需要解析一次
+            if extractor_names:  # 只有当存在extractor时才解析
                 groundtruth_content = sample_dict.get('groundtruth_content', '')
                 groundtruth_parts = BaseMetric._extract_from_markdown(groundtruth_content)  # 关键：解析真实内容
                 for part_type in ['code', 'formula', 'table', 'text']:
-                    sample_dict[f'{extractor_name}_groundtruth_{part_type}'] = groundtruth_parts.get(part_type,
-                                                                                                     '')
-
-
+                    # 使用第一个extractor的名字作为前缀，或者使用通用前缀
+                    prefix = extractor_names[0] if len(extractor_names) == 1 else 'groundtruth'
+                    sample_dict[f'{prefix}_groundtruth_{part_type}'] = groundtruth_parts.get(part_type, '')
 
             enriched_samples.append(sample_dict)
         
