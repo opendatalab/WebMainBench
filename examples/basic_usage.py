@@ -804,7 +804,7 @@ def demo_multi_extraction():
     # 配置文件路径
     data_dir = Path("../data")
     # dataset_path = data_dir / "sample_dataset.jsonl"
-    dataset_path = "/home/lulindong/Pycharm_projects/cc/WebMainBench_1827_v1_WebMainBench_dataset_merge_with_llm_webkit_html_to_md.jsonl"
+    dataset_path = "/home/lulindong/Pycharm_projects/cc/WebMainBench_1904_v1_WebMainBench_dataset_merge_with_llm_webkit.jsonl"
 
     print(f"📂 数据集文件: {dataset_path}")
 
@@ -957,7 +957,7 @@ def demo_llm_webkit_with_preprocessed_html_evaluation():
     print("1. 从真实数据集加载预处理HTML数据...")
     
     # 使用DataLoader加载真实的样本数据
-    dataset_path = Path("/home/lulindong/Pycharm_projects/cc/WebMainBench_1827_v1_WebMainBench_dataset_merge_with_llm_webkit.jsonl")
+    dataset_path = Path("data/WebMainBench_dataset_merge_with_llm_webkit.jsonl")
     print(f"📂 数据集文件: {dataset_path}")
     
     if not dataset_path.exists():
@@ -1090,16 +1090,17 @@ def demo_llm_webkit_with_preprocessed_html_evaluation():
     
     print(f"✅ 详细结果已保存到: {results_path}")
     print(f"✅ CSV报告已保存到: {report_path}")
+    
 
 
 if __name__ == "__main__":
     try:
         # demo_basic_mock_evaluation()
         # demo_llm_webkit_evaluation()  # 使用LLM-WebKit评测示例
-        # demo_llm_webkit_with_preprocessed_html_evaluation()
+        demo_llm_webkit_with_preprocessed_html_evaluation()
         # demo_extractor_comparison()
         # demo_dataset_with_extraction()  # 演示保存带有抽取内容的数据集
-        demo_multi_extraction() # 演示多个抽取器同时评测
+        # demo_multi_extraction() # 演示多个抽取器同时评测
         print("\n✅ 示例运行完成！")
         
     except Exception as e:

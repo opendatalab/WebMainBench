@@ -208,6 +208,19 @@ class TestTEDSBasic(unittest.TestCase):
         self.assertTrue(result.success)
         self.assertEqual(result.score, 1.0)
 
+    def test_teds_structure_same_content_different(self):
+        """测试结构相同但内容不同的表格 - 验证修复后的TEDS不会返回0分"""
+        pred = "<table><tr><td>我不喜欢你</td></tr></table>"
+        gt = "<table><tr><td>我喜欢你</td></tr></table>"
+
+        result = self.teds_metric.calculate(
+            predicted=pred,
+            groundtruth=gt,
+            table_edit_result=self.valid_table_edit_result
+        )
+        assert result.score == 0.7999999999999999
+
+
 
 class TestTEDSAdvanced(unittest.TestCase):
     """Advanced TEDS functionality tests - 高级功能测试"""
@@ -300,6 +313,18 @@ class TestTEDSAdvanced(unittest.TestCase):
         self.assertTrue(result.success)
         self.assertGreater(result.score, 0.0)
         self.assertLess(result.score, 1.0)
+
+    def test_teds_content_similarity(self):
+        """Test TEDS with similar content but different text - 测试内容相似度"""
+        table1 = "<table><tr><td>苹果很好吃</td><td>香蕉也不错</td></tr></table>"
+        table2 = "<table><tr><td>苹果很美味</td><td>香蕉也很好</td></tr></table>"
+
+        result = self.teds.calculate(
+            table1,
+            table2,
+            table_edit_result=self.valid_table_edit_result
+        )
+        assert result.score == 0.3999999999999999
 
 
 class TestStructureTEDS(unittest.TestCase):
@@ -457,7 +482,7 @@ def run_all_teds_tests():
     # Add all test classes
     test_classes = [
         # 注意：确保TestTEDSBasic已定义或从其他文件导入
-        # TestTEDSBasic,
+        TestTEDSBasic,
         TestTEDSAdvanced,
         TestStructureTEDS,
         TestTEDSEdgeCases
