@@ -24,6 +24,9 @@ class MainHTMLEvaluator(Evaluator):
         """
         self.metric_calculator = MainHTMLMetricCalculator(metric_config)
         self.metric_config = metric_config or {}
+        self.html2text = html2text.HTML2Text(bodywidth=0)
+        self.html2text.ignore_links = True
+        self.html2text.ignore_images = True
     
     
     def evaluate(self, 
@@ -149,7 +152,8 @@ class MainHTMLEvaluator(Evaluator):
             return sample_result
         
         main_html = extract_main_html(sample.html)
-        convert_gt_main_content = html2text.html2text(main_html, sample.url, bodywidth=0)
+        self.html2text.baseurl = sample.url
+        convert_gt_main_content = self.html2text.handle(main_html)
         sample_result['groundtruth_content'] = sample.groundtruth_content
         sample_result['gt_main_html'] = main_html
         sample_result['convert_gt_main_content'] = convert_gt_main_content

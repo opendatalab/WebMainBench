@@ -28,12 +28,15 @@ class DripperExtractor(BaseExtractor):
     def __init__(self, name: str, config: Optional[Dict[str, Any]] = None):
         # 先初始化inference_config，再调用父类初始化（因为父类会调用_setup()）
         self.dripper = Dripper(config)
+        self.html2text = html2text.HTML2Text(bodywidth=0)
+        self.html2text.ignore_links = True
+        self.html2text.ignore_images = True
 
         # 现在可以安全地调用父类初始化（会调用_setup()）
         super().__init__(name, config)
     
     def _setup(self) -> None:
-        #self.dripper.get_llm()
+        self.dripper.get_llm()
         self.dripper.get_tokenizer()
 
     def _extract_content(self, html: str, url: str = None) -> ExtractionResult:
@@ -54,7 +57,8 @@ class DripperExtractor(BaseExtractor):
             dripper_output : DripperOutput = self.dripper.process([dripper_input])[0]
             
             main_html = dripper_output.main_html
-            main_content = html2text.html2text(dripper_output.main_html, url, bodywidth=0)
+            self.html2text.baseurl = url
+            main_content = self.html2text.handle(main_html)
 
             
             extraction_time = time.time() - start_time
