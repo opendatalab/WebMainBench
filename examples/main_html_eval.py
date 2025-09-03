@@ -42,7 +42,7 @@ def save_results(result_file: Path, results: list[dict]):
     
     
 
-def demo_llm_webkit_with_preprocessed_html_evaluation():
+def demo_llm_webkit_with_preprocessed_html_evaluation(model_path: str):
     """演示LLM-WebKit预处理HTML功能的评测"""
     
     print("\n=== LLM-WebKit 预处理HTML功能演示 ===\n")
@@ -63,7 +63,6 @@ def demo_llm_webkit_with_preprocessed_html_evaluation():
     # 2. 创建预处理HTML模式的LLM-WebKit抽取器
     print("2. 创建预处理HTML模式的LLM-WebKit抽取器...")
     
-    model_path = "/home/qiujiuantao/project/html-alg-project/dripper/0.6B_ckpt"
     extractor = load_extractor(model_path)
     print(f"✅ 抽取器创建成功")
     print(f"📋 配置信息:")
@@ -129,8 +128,12 @@ def demo_llm_webkit_with_preprocessed_html_evaluation():
 
 
 if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser(description="WebMainBench 基本使用示例")
+    parser.add_argument("--model_path", required=True, help="LLM model路径")
+    args = parser.parse_args()
     try:
-        demo_llm_webkit_with_preprocessed_html_evaluation()
+        demo_llm_webkit_with_preprocessed_html_evaluation(args.model_path)
         print("\n✅ 示例运行完成！")
         
     except Exception as e:

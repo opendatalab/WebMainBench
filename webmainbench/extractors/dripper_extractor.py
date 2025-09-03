@@ -1,19 +1,13 @@
 """
 LLM-WebKit extractor implementation with advanced LLM inference.
 """
-
-import json
-import re
 import time
-from typing import Dict, Any, Optional, List
+from typing import Dict, Any, Optional
 
-from dripper.api import Dripper
-from dripper.base import DripperInput, DripperOutput
 from .base import BaseExtractor, ExtractionResult
 from .factory import extractor
 
 from ..utils import HTML2TextWrapper
-
 
 
 @extractor("dripper")
@@ -25,6 +19,14 @@ class DripperExtractor(BaseExtractor):
 
 
     def __init__(self, name: str, config: Optional[Dict[str, Any]] = None):
+        
+        try:
+            
+            from dripper.api import Dripper
+            from dripper.base import DripperInput, DripperOutput
+        except ImportError:
+            raise ImportError("Please install dripper package")
+        
         # 先初始化inference_config，再调用父类初始化（因为父类会调用_setup()）
         self.dripper = Dripper(config)
         self.html2text = HTML2TextWrapper()
