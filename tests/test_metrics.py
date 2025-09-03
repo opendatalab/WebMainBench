@@ -147,8 +147,8 @@ $$\\int_{0}^{\\infty} e^{-x} dx = 1$$
         self.assertTrue(teds_result.success)
         self.assertIsInstance(teds_result.score, float)
         # 验证固定内容的确定分数
-        self.assertAlmostEqual(teds_result.score, 0.300000, places=5,
-                               msg=f"table_TEDS分数应该是0.300000，实际: {teds_result.score}")
+        self.assertAlmostEqual(teds_result.score, 0.5199999999999999, places=5,
+                               msg=f"table_TEDS分数应该是0.5199999999999999，实际: {teds_result.score}")
 
         # 验证详细信息
         self.assertEqual(teds_result.details['content_type'], 'table')

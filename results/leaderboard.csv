@@ -1,3 +1,5 @@
 extractor,dataset,total_samples,success_rate,overall,code_edit,formula_edit,table_TEDS,table_edit,text_edit
-extractor_a,sample_dataset,2,1.0,0.5012,0.5,1.0,0.5,0.5,0.0062
-extractor_b,sample_dataset,2,1.0,0.5012,0.5,1.0,0.5,0.5,0.0062
+llm-webkit,sample_dataset,4,1.0,0.2196,0.5,0.0,0.0,0.0,0.5982
+magic-html,sample_dataset,4,1.0,0.1526,0.1007,0.0,0.0,0.0,0.6624
+resiliparse,sample_dataset,4,1.0,0.1379,0.0,0.0,0.0,0.0,0.6897
+trafilatura,sample_dataset,4,1.0,0.1151,0.1007,0.0,0.0,0.0,0.4746

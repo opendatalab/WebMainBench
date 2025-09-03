@@ -392,72 +392,6 @@ def demo_basic_mock_evaluation():
     print(f"报告已保存到: {report_path}")
 
 
-def demo_extractor_comparison():
-    """演示多抽取器对比"""
-    
-    print("\n=== 多抽取器对比演示 ===\n")
-    
-    # 创建数据集
-    dataset = create_sample_dataset()
-    
-    # 创建多个模拟抽取器
-    from webmainbench.extractors import BaseExtractor, ExtractionResult
-    
-    class ExtractorA(BaseExtractor):
-        def _setup(self):
-            pass
-        def _extract_content(self, html, url=None):
-            return ExtractionResult(
-                content="抽取器A的结果",
-                # content_list=[{"type": "paragraph", "content": "抽取器A的结果"}],
-                success=True,
-                confidence_score=0.9
-            )
-    
-    class ExtractorB(BaseExtractor):
-        def _setup(self):
-            pass
-        def _extract_content(self, html, url=None):
-            return ExtractionResult(
-                content="抽取器B的结果",
-                # content_list=[{"type": "paragraph", "content": "抽取器B的结果"}],
-                success=True,
-                confidence_score=0.8
-            )
-    
-    # 注册抽取器
-    ExtractorFactory.register("extractor_a", ExtractorA)
-    ExtractorFactory.register("extractor_b", ExtractorB)
-    
-    # 运行对比
-    evaluator = Evaluator()
-    extractors = ["extractor_a", "extractor_b"]
-    
-    results = evaluator.compare_extractors(
-        dataset=dataset,
-        extractors=extractors,
-        max_samples=2
-    )
-    
-    # 显示对比结果
-    print("对比结果:")
-    print("-" * 40)
-    for extractor_name, result in results.items():
-        overall_score = result.overall_metrics.get('overall', 0)
-        print(f"{extractor_name}: {overall_score:.4f}")
-    
-    # 保存多抽取器对比榜单
-    all_results = []
-    for extractor_name, result in results.items():
-        all_results.append(result.to_dict())
-    
-    results_dir = Path("results")
-    results_dir.mkdir(exist_ok=True)
-    leaderboard_path = results_dir / "leaderboard.csv"
-    DataSaver.save_summary_report(all_results, leaderboard_path)
-    print(f"\n📊 榜单已保存到: {leaderboard_path}")
-
-
 def demo_llm_webkit_evaluation():
     """演示LLM-WebKit抽取器的6项指标评测"""
     
@@ -955,15 +889,8 @@ def demo_llm_webkit_with_preprocessed_html_evaluation():
     
     # 1. 从真实数据集加载包含预处理HTML的数据
     print("1. 从真实数据集加载预处理HTML数据...")
-    
-    # 使用DataLoader加载真实的样本数据
-    dataset_path = Path("data/WebMainBench_dataset_merge_with_llm_webkit.jsonl")
+    dataset_path = Path("data/WebMainBench_1827_v1_WebMainBench_dataset_merge_with_llm_webkit.jsonl")
     print(f"📂 数据集文件: {dataset_path}")
-    
-    if not dataset_path.exists():
-        print(f"❌ 数据文件不存在: {dataset_path}")
-        print("请确保已运行数据提取命令创建样本数据集")
-        return
     
     # 加载数据集
     dataset = DataLoader.load_jsonl(dataset_path, include_results=False)
@@ -977,26 +904,6 @@ def demo_llm_webkit_with_preprocessed_html_evaluation():
     print("  - groundtruth_content: 人工标注的标准答案")
     print("  - llm_webkit_md: LLM提取的markdown内容")
     
-    # 显示第一个样本的预览
-    if len(dataset.samples) > 0:
-        first_sample = dataset.samples[0]
-        sample_dict = first_sample.to_dict()
-        
-        print(f"\n🔍 第一个样本预览:")
-        print(f"  - ID: {sample_dict.get('track_id', 'N/A')}")
-        print(f"  - URL: {sample_dict.get('url', 'N/A')[:60]}...")
-        
-        # 检查是否有llm_webkit_html字段
-        if hasattr(first_sample, 'llm_webkit_html') or 'llm_webkit_html' in sample_dict:
-            llm_html = getattr(first_sample, 'llm_webkit_html', sample_dict.get('llm_webkit_html', ''))
-            if llm_html:
-                print(f"  - 预处理HTML长度: {len(llm_html)} 字符")
-                print(f"  - 包含_item_id数量: {llm_html.count('_item_id')}")
-            else:
-                print(f"  - ⚠️  预处理HTML字段为空")
-        else:
-            print(f"  - ❌ 未找到llm_webkit_html字段")
-    print()
     
     # 2. 创建预处理HTML模式的LLM-WebKit抽取器
     print("2. 创建预处理HTML模式的LLM-WebKit抽取器...")
@@ -1007,12 +914,6 @@ def demo_llm_webkit_with_preprocessed_html_evaluation():
     }
     
     extractor = ExtractorFactory.create("llm-webkit", config=config)
-    print(f"✅ 抽取器创建成功")
-    print(f"📋 配置信息:")
-    print(f"  - use_preprocessed_html: {extractor.inference_config.use_preprocessed_html}")
-    print(f"  - preprocessed_html_field: {extractor.inference_config.preprocessed_html_field}")
-    print(f"  - 跳过LLM推理: 是（直接处理预处理HTML）")
-    print()
     
     # 4. 运行评测
     print("4. 开始评测...")
@@ -1054,20 +955,6 @@ def demo_llm_webkit_with_preprocessed_html_evaluation():
     success_count = len([s for s in sample_results if s.get('extraction_success', False)])
     print(f"  成功样本数: {success_count}/{len(dataset)}")
     
-    # 6. 展示样本提取结果
-    print(f"\n6. 📄 样本提取结果预览:")
-    print("-" * 50)
-    
-    for i, sample_result in enumerate(sample_results[:2]):  # 只显示前2个样本
-        print(f"\n样本 {i+1}: {sample_result.get('sample_id', 'Unknown')}")
-        if sample_result.get('extraction_success'):
-            content = sample_result.get('extracted_content', '')
-            preview = content[:100].replace('\n', ' ') if content else '无内容'
-            print(f"  ✅ 提取成功")
-            print(f"  📝 内容预览: {preview}...")
-            print(f"  ⏱️  提取时间: {sample_result.get('extraction_time', 0):.3f}秒")
-        else:
-            print(f"  ❌ 提取失败")
     # 7. 保存结果
     print(f"\n7. 💾 保存评测结果...")
     
