@@ -1,9 +1,23 @@
 
 from lxml import html
-import html2text
+
 
 
 SELECT_ATTR = 'cc-select'
+
+
+class HTML2TextWrapper:
+    def __init__(self):
+        import html2text
+        self.converter = html2text.HTML2Text(bodywidth=0)
+        self.converter.ignore_links = True
+        self.converter.ignore_images = True
+    
+    def __call__(self, html_str: str, url: str = '') -> str:
+        self.converter.baseurl = url
+        text = self.converter.handle(html_str)
+        self.converter.baseurl = ''
+        return text
 
 
 def html_to_element(html_str: str) -> html.HtmlElement:

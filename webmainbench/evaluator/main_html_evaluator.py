@@ -4,13 +4,12 @@ Main evaluator for WebMainBench.
 
 from typing import Dict, Any, List, Optional, Union
 from datetime import datetime
-import html2text
 
 from ..data import BenchmarkDataset, DataSample
 from ..extractors import BaseExtractor, ExtractorFactory
 from ..metrics import  MainHTMLMetricCalculator
 from .evaluator import EvaluationResult, Evaluator
-from ..utils import extract_main_html
+from ..utils import extract_main_html, HTML2TextWrapper
 
 class MainHTMLEvaluator(Evaluator):
     """Main html evaluator for web content extraction benchmarks."""
@@ -24,9 +23,7 @@ class MainHTMLEvaluator(Evaluator):
         """
         self.metric_calculator = MainHTMLMetricCalculator(metric_config)
         self.metric_config = metric_config or {}
-        self.html2text = html2text.HTML2Text(bodywidth=0)
-        self.html2text.ignore_links = True
-        self.html2text.ignore_images = True
+        self.html2text = HTML2TextWrapper()
     
     
     def evaluate(self, 
@@ -152,8 +149,7 @@ class MainHTMLEvaluator(Evaluator):
             return sample_result
         
         main_html = extract_main_html(sample.html)
-        self.html2text.baseurl = sample.url
-        convert_gt_main_content = self.html2text.handle(main_html)
+        convert_gt_main_content = self.html2text(main_html, sample.url)
         sample_result['groundtruth_content'] = sample.groundtruth_content
         sample_result['gt_main_html'] = main_html
         sample_result['convert_gt_main_content'] = convert_gt_main_content

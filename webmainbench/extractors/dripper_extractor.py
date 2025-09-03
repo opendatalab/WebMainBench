@@ -7,13 +7,12 @@ import re
 import time
 from typing import Dict, Any, Optional, List
 
-import html2text
 from dripper.api import Dripper
 from dripper.base import DripperInput, DripperOutput
 from .base import BaseExtractor, ExtractionResult
 from .factory import extractor
 
-from ..utils import extract_main_html
+from ..utils import HTML2TextWrapper
 
 
 
@@ -28,9 +27,7 @@ class DripperExtractor(BaseExtractor):
     def __init__(self, name: str, config: Optional[Dict[str, Any]] = None):
         # 先初始化inference_config，再调用父类初始化（因为父类会调用_setup()）
         self.dripper = Dripper(config)
-        self.html2text = html2text.HTML2Text(bodywidth=0)
-        self.html2text.ignore_links = True
-        self.html2text.ignore_images = True
+        self.html2text = HTML2TextWrapper()
 
         # 现在可以安全地调用父类初始化（会调用_setup()）
         super().__init__(name, config)
@@ -57,10 +54,8 @@ class DripperExtractor(BaseExtractor):
             dripper_output : DripperOutput = self.dripper.process([dripper_input])[0]
             
             main_html = dripper_output.main_html
-            self.html2text.baseurl = url
-            main_content = self.html2text.handle(main_html)
+            main_content = self.html2text(main_html, url)
 
-            
             extraction_time = time.time() - start_time
             
             # 创建结果对象
