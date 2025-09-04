@@ -3,22 +3,22 @@
     "metadata": {
       "dataset_name": "sample_dataset",
       "extractor_name": "llm-webkit",
-      "timestamp": "2025-08-28T15:19:27.076411",
+      "timestamp": "2025-09-04T15:01:19.530463",
       "total_samples": 4
     },
     "overall_metrics": {
-      "text_edit": 0.5981631971971921,
+      "text_edit": 0.8100425555973525,
       "code_edit": 0.5,
       "table_edit": 0.0,
       "table_TEDS": 0.0,
       "formula_edit": 0.0,
-      "overall": 0.21963263943943842
+      "overall": 0.2620085111194705
     },
     "sample_results": [
       {
         "sample_id": "7cdb7231-9337-4104-a562-9b8f285add7d",
         "extraction_success": true,
-        "extraction_time": 0.812293291091919,
+        "extraction_time": 0.7293002605438232,
         "metrics": {
           "code_edit": {
             "score": 1.0,
@@ -44,15 +44,15 @@
             "error": "Both predicted and groundtruth are empty"
           },
           "text_edit": {
-            "score": 1.0,
+            "score": 0.9994941831057157,
             "success": true,
             "details": {
-              "distance": 0,
-              "predicted_length": 990,
-              "groundtruth_length": 990,
+              "distance": 1,
+              "predicted_length": 1976,
+              "groundtruth_length": 1977,
               "normalized": true,
-              "predicted_text_length": 990,
-              "groundtruth_text_length": 990,
+              "predicted_text_length": 1976,
+              "groundtruth_text_length": 1977,
               "content_type": "text"
             }
           },
@@ -76,7 +76,7 @@
             "error": "Skipped due to table_edit failure: unknown reason"
           },
           "overall": {
-            "score": 1.0,
+            "score": 0.9997470915528579,
             "success": true,
             "details": {
               "source": "average_of_all_metrics",
@@ -85,7 +85,7 @@
               "failed_metrics": 3,
               "individual_scores": {
                 "code_edit": 1.0,
-                "text_edit": 1.0
+                "text_edit": 0.9994941831057157
               }
             }
           }
@@ -101,7 +101,7 @@
       {
         "sample_id": "3026972b-8a26-48c3-bc00-c181138702f2",
         "extraction_success": true,
-        "extraction_time": 0.06880021095275879,
+        "extraction_time": 0.06506109237670898,
         "metrics": {
           "code_edit": {
             "score": 0.0,
@@ -124,15 +124,15 @@
             "error": "Both predicted and groundtruth are empty"
           },
           "text_edit": {
-            "score": 0.9939450015647748,
+            "score": 0.9938773844186236,
             "success": true,
             "details": {
-              "distance": 445,
+              "distance": 450,
               "predicted_length": 73281,
-              "groundtruth_length": 73493,
+              "groundtruth_length": 73498,
               "normalized": true,
               "predicted_text_length": 73281,
-              "groundtruth_text_length": 73493,
+              "groundtruth_text_length": 73498,
               "content_type": "text"
             }
           },
@@ -156,7 +156,7 @@
             "error": "Skipped due to table_edit failure: unknown reason"
           },
           "overall": {
-            "score": 0.9939450015647748,
+            "score": 0.9938773844186236,
             "success": true,
             "details": {
               "source": "average_of_all_metrics",
@@ -164,7 +164,7 @@
               "successful_metrics": 1,
               "failed_metrics": 4,
               "individual_scores": {
-                "text_edit": 0.9939450015647748
+                "text_edit": 0.9938773844186236
               }
             }
           }
@@ -180,7 +180,7 @@
       {
         "sample_id": "ee0a113d-bdd5-48cf-ac9c-a7cadfbfb74b",
         "extraction_success": true,
-        "extraction_time": 0.0381929874420166,
+        "extraction_time": 0.0364222526550293,
         "metrics": {
           "code_edit": {
             "score": 0.0,
@@ -203,15 +203,15 @@
             "error": "Both predicted and groundtruth are empty"
           },
           "text_edit": {
-            "score": 0.3119022316684378,
+            "score": 0.30216197666437883,
             "success": true,
             "details": {
-              "distance": 3885,
+              "distance": 4067,
               "predicted_length": 1945,
-              "groundtruth_length": 5646,
+              "groundtruth_length": 5828,
               "normalized": true,
               "predicted_text_length": 1945,
-              "groundtruth_text_length": 5646,
+              "groundtruth_text_length": 5828,
               "content_type": "text"
             }
           },
@@ -242,7 +242,7 @@
             }
           },
           "overall": {
-            "score": 0.10396741055614593,
+            "score": 0.10072065888812627,
             "success": true,
             "details": {
               "source": "average_of_all_metrics",
@@ -250,7 +250,7 @@
               "successful_metrics": 3,
               "failed_metrics": 2,
               "individual_scores": {
-                "text_edit": 0.3119022316684378,
+                "text_edit": 0.30216197666437883,
                 "table_edit": 0.0,
                 "table_TEDS": 0.0
               }
@@ -268,7 +268,7 @@
       {
         "sample_id": "33e291cd-5b26-48b1-977f-3c63b45e6d13",
         "extraction_success": true,
-        "extraction_time": 0.005263805389404297,
+        "extraction_time": 0.004807949066162109,
         "metrics": {
           "code_edit": {
             "score": 0.0,
@@ -294,15 +294,15 @@
             "error": "Both predicted and groundtruth are empty"
           },
           "text_edit": {
-            "score": 0.08680555555555558,
+            "score": 0.9446366782006921,
             "success": true,
             "details": {
-              "distance": 263,
-              "predicted_length": 25,
-              "groundtruth_length": 288,
+              "distance": 16,
+              "predicted_length": 286,
+              "groundtruth_length": 289,
               "normalized": true,
-              "predicted_text_length": 25,
-              "groundtruth_text_length": 288,
+              "predicted_text_length": 286,
+              "groundtruth_text_length": 289,
               "content_type": "text"
             }
           },
@@ -326,7 +326,7 @@
             "error": "Skipped due to table_edit failure: unknown reason"
           },
           "overall": {
-            "score": 0.04340277777777779,
+            "score": 0.47231833910034604,
             "success": true,
             "details": {
               "source": "average_of_all_metrics",
@@ -335,7 +335,7 @@
               "failed_metrics": 3,
               "individual_scores": {
                 "code_edit": 0.0,
-                "text_edit": 0.08680555555555558
+                "text_edit": 0.9446366782006921
               }
             }
           }
@@ -351,12 +351,12 @@
     ],
     "category_metrics": {
       "unknown": {
-        "text_edit": 0.5981631971971921,
+        "text_edit": 0.8100425555973525,
         "code_edit": 0.5,
         "table_edit": 0.0,
         "table_TEDS": 0.0,
         "formula_edit": 0.0,
-        "overall": 0.21963263943943842
+        "overall": 0.2620085111194705
       }
     },
     "error_analysis": {
@@ -376,22 +376,22 @@
     "metadata": {
       "dataset_name": "sample_dataset",
       "extractor_name": "magic-html",
-      "timestamp": "2025-08-28T15:19:27.418715",
+      "timestamp": "2025-09-04T15:01:19.877934",
       "total_samples": 4
     },
     "overall_metrics": {
-      "text_edit": 0.6624295334379949,
+      "text_edit": 0.769258630408185,
       "code_edit": 0.10070257611241218,
       "table_edit": 0.0,
       "table_TEDS": 0.0,
       "formula_edit": 0.0,
-      "overall": 0.1526264219100814
+      "overall": 0.17399224130411944
     },
     "sample_results": [
       {
         "sample_id": "7cdb7231-9337-4104-a562-9b8f285add7d",
         "extraction_success": true,
-        "extraction_time": 0.034761905670166016,
+        "extraction_time": 0.0339200496673584,
         "metrics": {
           "code_edit": {
             "score": 0.10070257611241218,
@@ -417,15 +417,15 @@
             "error": "Both predicted and groundtruth are empty"
           },
           "text_edit": {
-            "score": 0.516895459345301,
+            "score": 0.8570119156736938,
             "success": true,
             "details": {
-              "distance": 915,
-              "predicted_length": 1894,
-              "groundtruth_length": 990,
+              "distance": 312,
+              "predicted_length": 2182,
+              "groundtruth_length": 1977,
               "normalized": true,
-              "predicted_text_length": 1894,
-              "groundtruth_text_length": 990,
+              "predicted_text_length": 2182,
+              "groundtruth_text_length": 1977,
               "content_type": "text"
             }
           },
@@ -449,7 +449,7 @@
             "error": "Skipped due to table_edit failure: unknown reason"
           },
           "overall": {
-            "score": 0.3087990177288566,
+            "score": 0.478857245893053,
             "success": true,
             "details": {
               "source": "average_of_all_metrics",
@@ -458,7 +458,7 @@
               "failed_metrics": 3,
               "individual_scores": {
                 "code_edit": 0.10070257611241218,
-                "text_edit": 0.516895459345301
+                "text_edit": 0.8570119156736938
               }
             }
           }
@@ -474,7 +474,7 @@
       {
         "sample_id": "3026972b-8a26-48c3-bc00-c181138702f2",
         "extraction_success": true,
-        "extraction_time": 0.0651240348815918,
+        "extraction_time": 0.06366896629333496,
         "metrics": {
           "code_edit": {
             "score": 0.0,
@@ -500,15 +500,15 @@
             }
           },
           "text_edit": {
-            "score": 0.8295211788877852,
+            "score": 0.9848316283613274,
             "success": true,
             "details": {
-              "distance": 12529,
-              "predicted_length": 62121,
-              "groundtruth_length": 73493,
+              "distance": 1118,
+              "predicted_length": 73706,
+              "groundtruth_length": 73498,
               "normalized": true,
-              "predicted_text_length": 62121,
-              "groundtruth_text_length": 73493,
+              "predicted_text_length": 73706,
+              "groundtruth_text_length": 73498,
               "content_type": "text"
             }
           },
@@ -532,7 +532,7 @@
             "error": "Skipped due to table_edit failure: unknown reason"
           },
           "overall": {
-            "score": 0.4147605894438926,
+            "score": 0.4924158141806637,
             "success": true,
             "details": {
               "source": "average_of_all_metrics",
@@ -541,7 +541,7 @@
               "failed_metrics": 3,
               "individual_scores": {
                 "formula_edit": 0.0,
-                "text_edit": 0.8295211788877852
+                "text_edit": 0.9848316283613274
               }
             }
           }
@@ -557,7 +557,7 @@
       {
         "sample_id": "ee0a113d-bdd5-48cf-ac9c-a7cadfbfb74b",
         "extraction_success": true,
-        "extraction_time": 0.07040786743164062,
+        "extraction_time": 0.06996703147888184,
         "metrics": {
           "code_edit": {
             "score": 0.0,
@@ -580,15 +580,15 @@
             "error": "Both predicted and groundtruth are empty"
           },
           "text_edit": {
-            "score": 0.5317137517863032,
+            "score": 0.5453646748681897,
             "success": true,
             "details": {
-              "distance": 4260,
-              "predicted_length": 9097,
-              "groundtruth_length": 5646,
+              "distance": 4139,
+              "predicted_length": 9104,
+              "groundtruth_length": 5828,
               "normalized": true,
-              "predicted_text_length": 9097,
-              "groundtruth_text_length": 5646,
+              "predicted_text_length": 9104,
+              "groundtruth_text_length": 5828,
               "content_type": "text"
             }
           },
@@ -619,7 +619,7 @@
             }
           },
           "overall": {
-            "score": 0.17723791726210106,
+            "score": 0.18178822495606325,
             "success": true,
             "details": {
               "source": "average_of_all_metrics",
@@ -627,7 +627,7 @@
               "successful_metrics": 3,
               "failed_metrics": 2,
               "individual_scores": {
-                "text_edit": 0.5317137517863032,
+                "text_edit": 0.5453646748681897,
                 "table_edit": 0.0,
                 "table_TEDS": 0.0
               }
@@ -645,7 +645,7 @@
       {
         "sample_id": "33e291cd-5b26-48b1-977f-3c63b45e6d13",
         "extraction_success": true,
-        "extraction_time": 0.02169013023376465,
+        "extraction_time": 0.020486116409301758,
         "metrics": {
           "code_edit": {
             "score": 0.0,
@@ -668,15 +668,15 @@
             "error": "Both predicted and groundtruth are empty"
           },
           "text_edit": {
-            "score": 0.7715877437325905,
+            "score": 0.6898263027295286,
             "success": true,
             "details": {
-              "distance": 82,
-              "predicted_length": 359,
-              "groundtruth_length": 288,
+              "distance": 125,
+              "predicted_length": 403,
+              "groundtruth_length": 289,
               "normalized": true,
-              "predicted_text_length": 359,
-              "groundtruth_text_length": 288,
+              "predicted_text_length": 403,
+              "groundtruth_text_length": 289,
               "content_type": "text"
             }
           },
@@ -700,7 +700,7 @@
             "error": "Skipped due to table_edit failure: unknown reason"
           },
           "overall": {
-            "score": 0.7715877437325905,
+            "score": 0.6898263027295286,
             "success": true,
             "details": {
               "source": "average_of_all_metrics",
@@ -708,7 +708,7 @@
               "successful_metrics": 1,
               "failed_metrics": 4,
               "individual_scores": {
-                "text_edit": 0.7715877437325905
+                "text_edit": 0.6898263027295286
               }
             }
           }
@@ -724,12 +724,12 @@
     ],
     "category_metrics": {
       "unknown": {
-        "text_edit": 0.6624295334379949,
+        "text_edit": 0.769258630408185,
         "code_edit": 0.10070257611241218,
         "table_edit": 0.0,
         "table_TEDS": 0.0,
         "formula_edit": 0.0,
-        "overall": 0.1526264219100814
+        "overall": 0.17399224130411944
       }
     },
     "error_analysis": {
@@ -746,22 +746,22 @@
     "metadata": {
       "dataset_name": "sample_dataset",
       "extractor_name": "trafilatura",
-      "timestamp": "2025-08-28T15:19:27.656473",
+      "timestamp": "2025-09-04T15:01:20.121846",
       "total_samples": 4
     },
     "overall_metrics": {
-      "text_edit": 0.47464924569001193,
+      "text_edit": 0.5618017579282533,
       "code_edit": 0.10070257611241218,
       "table_edit": 0.0,
       "table_TEDS": 0.0,
       "formula_edit": 0.0,
-      "overall": 0.11507036436048482
+      "overall": 0.13250086680813308
     },
     "sample_results": [
       {
         "sample_id": "7cdb7231-9337-4104-a562-9b8f285add7d",
         "extraction_success": true,
-        "extraction_time": 0.03204226493835449,
+        "extraction_time": 0.030450820922851562,
         "metrics": {
           "code_edit": {
             "score": 0.10070257611241218,
@@ -787,15 +787,15 @@
             "error": "Both predicted and groundtruth are empty"
           },
           "text_edit": {
-            "score": 0.40776038121170866,
+            "score": 0.7430450177035913,
             "success": true,
             "details": {
-              "distance": 870,
-              "predicted_length": 1469,
-              "groundtruth_length": 990,
+              "distance": 508,
+              "predicted_length": 1576,
+              "groundtruth_length": 1977,
               "normalized": true,
-              "predicted_text_length": 1469,
-              "groundtruth_text_length": 990,
+              "predicted_text_length": 1576,
+              "groundtruth_text_length": 1977,
               "content_type": "text"
             }
           },
@@ -819,7 +819,7 @@
             "error": "Skipped due to table_edit failure: unknown reason"
           },
           "overall": {
-            "score": 0.2542314786620604,
+            "score": 0.42187379690800175,
             "success": true,
             "details": {
               "source": "average_of_all_metrics",
@@ -828,7 +828,7 @@
               "failed_metrics": 3,
               "individual_scores": {
                 "code_edit": 0.10070257611241218,
-                "text_edit": 0.40776038121170866
+                "text_edit": 0.7430450177035913
               }
             }
           }
@@ -844,7 +844,7 @@
       {
         "sample_id": "3026972b-8a26-48c3-bc00-c181138702f2",
         "extraction_success": true,
-        "extraction_time": 0.018018007278442383,
+        "extraction_time": 0.017701148986816406,
         "metrics": {
           "code_edit": {
             "score": 0.0,
@@ -867,15 +867,15 @@
             "error": "Both predicted and groundtruth are empty"
           },
           "text_edit": {
-            "score": 0.33418148667220005,
+            "score": 0.33417235843152193,
             "success": true,
             "details": {
-              "distance": 48933,
-              "predicted_length": 24867,
-              "groundtruth_length": 73493,
+              "distance": 48937,
+              "predicted_length": 24868,
+              "groundtruth_length": 73498,
               "normalized": true,
-              "predicted_text_length": 24867,
-              "groundtruth_text_length": 73493,
+              "predicted_text_length": 24868,
+              "groundtruth_text_length": 73498,
               "content_type": "text"
             }
           },
@@ -899,7 +899,7 @@
             "error": "Skipped due to table_edit failure: unknown reason"
           },
           "overall": {
-            "score": 0.33418148667220005,
+            "score": 0.33417235843152193,
             "success": true,
             "details": {
               "source": "average_of_all_metrics",
@@ -907,7 +907,7 @@
               "successful_metrics": 1,
               "failed_metrics": 4,
               "individual_scores": {
-                "text_edit": 0.33418148667220005
+                "text_edit": 0.33417235843152193
               }
             }
           }
@@ -923,7 +923,7 @@
       {
         "sample_id": "ee0a113d-bdd5-48cf-ac9c-a7cadfbfb74b",
         "extraction_success": true,
-        "extraction_time": 0.09231686592102051,
+        "extraction_time": 0.09441804885864258,
         "metrics": {
           "code_edit": {
             "score": 0.0,
@@ -946,15 +946,15 @@
             "error": "Both predicted and groundtruth are empty"
           },
           "text_edit": {
-            "score": 0.36734693877551017,
+            "score": 0.37871239701092163,
             "success": true,
             "details": {
-              "distance": 6603,
-              "predicted_length": 10437,
-              "groundtruth_length": 5646,
+              "distance": 6485,
+              "predicted_length": 10438,
+              "groundtruth_length": 5828,
               "normalized": true,
-              "predicted_text_length": 10437,
-              "groundtruth_text_length": 5646,
+              "predicted_text_length": 10438,
+              "groundtruth_text_length": 5828,
               "content_type": "text"
             }
           },
@@ -985,7 +985,7 @@
             }
           },
           "overall": {
-            "score": 0.12244897959183672,
+            "score": 0.12623746567030722,
             "success": true,
             "details": {
               "source": "average_of_all_metrics",
@@ -993,7 +993,7 @@
               "successful_metrics": 3,
               "failed_metrics": 2,
               "individual_scores": {
-                "text_edit": 0.36734693877551017,
+                "text_edit": 0.37871239701092163,
                 "table_edit": 0.0,
                 "table_TEDS": 0.0
               }
@@ -1011,7 +1011,7 @@
       {
         "sample_id": "33e291cd-5b26-48b1-977f-3c63b45e6d13",
         "extraction_success": true,
-        "extraction_time": 0.020546913146972656,
+        "extraction_time": 0.019816160202026367,
         "metrics": {
           "code_edit": {
             "score": 0.0,
@@ -1034,15 +1034,15 @@
             "error": "Both predicted and groundtruth are empty"
           },
           "text_edit": {
-            "score": 0.7893081761006289,
+            "score": 0.7912772585669782,
             "success": true,
             "details": {
               "distance": 67,
-              "predicted_length": 318,
-              "groundtruth_length": 288,
+              "predicted_length": 321,
+              "groundtruth_length": 289,
               "normalized": true,
-              "predicted_text_length": 318,
-              "groundtruth_text_length": 288,
+              "predicted_text_length": 321,
+              "groundtruth_text_length": 289,
               "content_type": "text"
             }
           },
@@ -1066,7 +1066,7 @@
             "error": "Skipped due to table_edit failure: unknown reason"
           },
           "overall": {
-            "score": 0.7893081761006289,
+            "score": 0.7912772585669782,
             "success": true,
             "details": {
               "source": "average_of_all_metrics",
@@ -1074,7 +1074,7 @@
               "successful_metrics": 1,
               "failed_metrics": 4,
               "individual_scores": {
-                "text_edit": 0.7893081761006289
+                "text_edit": 0.7912772585669782
               }
             }
           }
@@ -1090,12 +1090,12 @@
     ],
     "category_metrics": {
       "unknown": {
-        "text_edit": 0.47464924569001193,
+        "text_edit": 0.5618017579282533,
         "code_edit": 0.10070257611241218,
         "table_edit": 0.0,
         "table_TEDS": 0.0,
         "formula_edit": 0.0,
-        "overall": 0.11507036436048482
+        "overall": 0.13250086680813308
       }
     },
     "error_analysis": {
@@ -1112,22 +1112,22 @@
     "metadata": {
       "dataset_name": "sample_dataset",
       "extractor_name": "resiliparse",
-      "timestamp": "2025-08-28T15:19:27.811624",
+      "timestamp": "2025-09-04T15:01:20.300011",
       "total_samples": 4
     },
     "overall_metrics": {
-      "text_edit": 0.6896622610982304,
+      "text_edit": 0.8332818481797467,
       "code_edit": 0.0,
       "table_edit": 0.0,
       "table_TEDS": 0.0,
       "formula_edit": 0.0,
-      "overall": 0.13793245221964606
+      "overall": 0.16665636963594935
     },
     "sample_results": [
       {
         "sample_id": "7cdb7231-9337-4104-a562-9b8f285add7d",
         "extraction_success": true,
-        "extraction_time": 0.004415988922119141,
+        "extraction_time": 0.0033152103424072266,
         "metrics": {
           "code_edit": {
             "score": 0.0,
@@ -1153,15 +1153,15 @@
             "error": "Both predicted and groundtruth are empty"
           },
           "text_edit": {
-            "score": 0.4901423877327492,
+            "score": 0.8902377339403136,
             "success": true,
             "details": {
-              "distance": 931,
+              "distance": 217,
               "predicted_length": 1826,
-              "groundtruth_length": 990,
+              "groundtruth_length": 1977,
               "normalized": true,
               "predicted_text_length": 1826,
-              "groundtruth_text_length": 990,
+              "groundtruth_text_length": 1977,
               "content_type": "text"
             }
           },
@@ -1185,7 +1185,7 @@
             "error": "Skipped due to table_edit failure: unknown reason"
           },
           "overall": {
-            "score": 0.2450711938663746,
+            "score": 0.4451188669701568,
             "success": true,
             "details": {
               "source": "average_of_all_metrics",
@@ -1194,7 +1194,7 @@
               "failed_metrics": 3,
               "individual_scores": {
                 "code_edit": 0.0,
-                "text_edit": 0.4901423877327492
+                "text_edit": 0.8902377339403136
               }
             }
           }
@@ -1210,7 +1210,7 @@
       {
         "sample_id": "3026972b-8a26-48c3-bc00-c181138702f2",
         "extraction_success": true,
-        "extraction_time": 0.00335693359375,
+        "extraction_time": 0.0029952526092529297,
         "metrics": {
           "code_edit": {
             "score": 0.0,
@@ -1236,15 +1236,15 @@
             }
           },
           "text_edit": {
-            "score": 0.8363517613922414,
+            "score": 0.9922038694930474,
             "success": true,
             "details": {
-              "distance": 12027,
-              "predicted_length": 61769,
-              "groundtruth_length": 73493,
+              "distance": 573,
+              "predicted_length": 73247,
+              "groundtruth_length": 73498,
               "normalized": true,
-              "predicted_text_length": 61769,
-              "groundtruth_text_length": 73493,
+              "predicted_text_length": 73247,
+              "groundtruth_text_length": 73498,
               "content_type": "text"
             }
           },
@@ -1268,7 +1268,7 @@
             "error": "Skipped due to table_edit failure: unknown reason"
           },
           "overall": {
-            "score": 0.4181758806961207,
+            "score": 0.4961019347465237,
             "success": true,
             "details": {
               "source": "average_of_all_metrics",
@@ -1277,7 +1277,7 @@
               "failed_metrics": 3,
               "individual_scores": {
                 "formula_edit": 0.0,
-                "text_edit": 0.8363517613922414
+                "text_edit": 0.9922038694930474
               }
             }
           }
@@ -1293,7 +1293,7 @@
       {
         "sample_id": "ee0a113d-bdd5-48cf-ac9c-a7cadfbfb74b",
         "extraction_success": true,
-        "extraction_time": 0.002231121063232422,
+        "extraction_time": 0.002476930618286133,
         "metrics": {
           "code_edit": {
             "score": 0.0,
@@ -1316,15 +1316,15 @@
             "error": "Both predicted and groundtruth are empty"
           },
           "text_edit": {
-            "score": 0.7376379239885574,
+            "score": 0.7493870879869245,
             "success": true,
             "details": {
-              "distance": 1926,
-              "predicted_length": 7341,
-              "groundtruth_length": 5646,
+              "distance": 1840,
+              "predicted_length": 7342,
+              "groundtruth_length": 5828,
               "normalized": true,
-              "predicted_text_length": 7341,
-              "groundtruth_text_length": 5646,
+              "predicted_text_length": 7342,
+              "groundtruth_text_length": 5828,
               "content_type": "text"
             }
           },
@@ -1355,7 +1355,7 @@
             }
           },
           "overall": {
-            "score": 0.24587930799618582,
+            "score": 0.24979569599564153,
             "success": true,
             "details": {
               "source": "average_of_all_metrics",
@@ -1363,7 +1363,7 @@
               "successful_metrics": 3,
               "failed_metrics": 2,
               "individual_scores": {
-                "text_edit": 0.7376379239885574,
+                "text_edit": 0.7493870879869245,
                 "table_edit": 0.0,
                 "table_TEDS": 0.0
               }
@@ -1381,7 +1381,7 @@
       {
         "sample_id": "33e291cd-5b26-48b1-977f-3c63b45e6d13",
         "extraction_success": true,
-        "extraction_time": 0.0014410018920898438,
+        "extraction_time": 0.0013070106506347656,
         "metrics": {
           "code_edit": {
             "score": 0.0,
@@ -1404,15 +1404,15 @@
             "error": "Both predicted and groundtruth are empty"
           },
           "text_edit": {
-            "score": 0.6945169712793733,
+            "score": 0.7012987012987013,
             "success": true,
             "details": {
-              "distance": 117,
-              "predicted_length": 383,
-              "groundtruth_length": 288,
+              "distance": 115,
+              "predicted_length": 385,
+              "groundtruth_length": 289,
               "normalized": true,
-              "predicted_text_length": 383,
-              "groundtruth_text_length": 288,
+              "predicted_text_length": 385,
+              "groundtruth_text_length": 289,
               "content_type": "text"
             }
           },
@@ -1436,7 +1436,7 @@
             "error": "Skipped due to table_edit failure: unknown reason"
           },
           "overall": {
-            "score": 0.6945169712793733,
+            "score": 0.7012987012987013,
             "success": true,
             "details": {
               "source": "average_of_all_metrics",
@@ -1444,7 +1444,7 @@
               "successful_metrics": 1,
               "failed_metrics": 4,
               "individual_scores": {
-                "text_edit": 0.6945169712793733
+                "text_edit": 0.7012987012987013
               }
             }
           }
@@ -1460,12 +1460,12 @@
     ],
     "category_metrics": {
       "unknown": {
-        "text_edit": 0.6896622610982304,
+        "text_edit": 0.8332818481797467,
         "code_edit": 0.0,
         "table_edit": 0.0,
         "table_TEDS": 0.0,
         "formula_edit": 0.0,
-        "overall": 0.13793245221964606
+        "overall": 0.16665636963594935
       }
     },
     "error_analysis": {
