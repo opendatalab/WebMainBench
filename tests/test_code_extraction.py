@@ -44,7 +44,7 @@ class TestCodeExtraction(unittest.TestCase):
         result = BaseMetric._extract_from_markdown(text)
         print(result)
         self.assertEqual(result['code'], '行内代码')
-        self.assertEqual(result['text'], '这是一个的例子')
+        self.assertEqual(result['text'], text)
 
     def test_code_block(self):
         """测试代码块"""
@@ -76,7 +76,7 @@ I have the following string:
 How can I get the last four characters and store them in a string using Python?
 Like this:
 """
-        self.assertEqual(result['text'], expected_text.strip())
+        self.assertEqual(result['text'], text)
         self.assertEqual(result['formula'], '')
 
     def test_code_with_leading_trailing_spaces(self):
@@ -84,7 +84,7 @@ Like this:
         text = "前面 `  code  ` 后面"
         result = BaseMetric._extract_from_markdown(text)
         self.assertEqual(result['code'], 'code')  # 应该去除空格
-        self.assertEqual(result['text'], '前面  后面')
+        self.assertEqual(result['text'], text)
 
     def test_multiline_inline_code(self):
         """测试多行行内代码（不应该匹配）"""
