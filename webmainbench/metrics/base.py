@@ -203,7 +203,7 @@ class BaseMetric(ABC):
         extracted_segments = []
         code_parts = []
         # 同时匹配行内代码 `...` 和代码块 ```...```
-        pattern = r'(```[\s\S]*?```|`[^`\n]+`)'
+        pattern = r'(```[\s\S]*?```)'
         for match in re.finditer(pattern, text):
             code_segment = match.group(0)
             extracted_segments.append(code_segment)
