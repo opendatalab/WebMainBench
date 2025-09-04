@@ -889,7 +889,7 @@ def demo_llm_webkit_with_preprocessed_html_evaluation():
     
     # 1. 从真实数据集加载包含预处理HTML的数据
     print("1. 从真实数据集加载预处理HTML数据...")
-    dataset_path = Path("data/WebMainBench_1827_v1_WebMainBench_dataset_merge_with_llm_webkit.jsonl")
+    dataset_path = Path("data/track_id_diff_result_56.jsonl")
     print(f"📂 数据集文件: {dataset_path}")
     
     # 加载数据集

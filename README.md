@@ -74,23 +74,30 @@ print(f"Overall Score: {result.overall_metrics['overall']:.4f}")
 {
   "track_id": "0b7f2636-d35f-40bf-9b7f-94be4bcbb396",
   "html": "<html><body><h1 cc-select=\"true\">这是标题</h1></body></html>",   # 人工标注带cc-select="true" 属性
-  "groundtruth_content": "# 标题\n\n正文内容",
-  "groundtruth_content_list": [
-      {"type": "heading", "content": "标题", "level": 1},
-      {"type": "paragraph", "content": "正文内容"}
-   ],
   "url": "https://orderyourbooks.com/product-category/college-books-p-u/?products-per-page=all",
-  "layout_id": "orderyourbooks.com_4",
-  "max_layer_n": 10,
-  "url_host_name": "orderyourbooks.com",
-  "raw_warc_path": "s3://cc-raw-huawei/crawl-data/CC-MAIN-2025-13/segments/1742004433093.21/warc/CC-MAIN-20250319080618-20250319110618-00909.warc.gz?bytes=461610805,172252",
-  "language": "en",
-  "__dom_depth": 19,
-  "__dom_width": 10231,
-  "__type": "__max_depth",
-  "__tag": "DOM_WIDTH",
-  "marked_type": "unwanted",  # normal：正常标注的网页；unable：正文内容无法抉择；unwanted：无需标注的网页；
-  "unwanted_reason": "list"
+  "main_html": "<h1 cc-select=\"true\">这是标题</h1>",  # 从html中剪枝得到的正文html
+  "convert_main_content": "# 这是标题",  # 从main_html+html2text转化来
+  "groundtruth_content": "# 这是标题",  # 人工校准的markdown（部分提供）
+  "meta": {
+    "language": "en",  # 网页的语言
+    "style": "artical",  # 网页的文体
+    "DOM_WIDTH": 176,
+    "DOM_DEPTH": 27,
+    "text_linktext_ratio": 0.12252270850536746,
+    "table_text_ratio": 0,
+    "table_dom_depth": -1,
+    "text_distribution_dispersion": 0.2663,
+    "table": [],  # [], ["layout"], ["data"], ["layout", "data"]
+    "equation": [],  # [], ["inline"], ["interline"], ["inline", "interline"]
+    "code": [],  # [], ["inline"], ["interline"], ["inline", "interline"]
+    "table_complexity_score": 0,
+    "dom_complexity_score": 0.8442,
+    "text_dispersion_score": 0.2663,
+    "content_diversity_score": 0,
+    "link_complexity_score": 0.1225,
+    "overall_complexity_score": 0.3083,
+    "level": "mid"  # simple, mid, hard
+  }
 }
 ```
 
@@ -196,6 +203,95 @@ class MyExtractor(BaseExtractor):
 # 注册自定义抽取器
 ExtractorFactory.register("my-extractor", MyExtractor)
 ```
+
+### 数据集统计分析工具
+
+WebMainBench 提供了强大的数据集统计分析工具 `scripts/statics.py`，用于分析数据集的各种特征并自动生成复杂度评分和难易程度分类。
+
+#### 功能特性
+
+- **DOM结构分析**：计算网页DOM树的深度和宽度
+- **文本链接比例分析**：统计文本与链接的比例关系
+- **表格复杂度分析**：评估表格内容的复杂程度
+- **内容类型检测**：自动识别公式、代码、表格等特殊内容
+- **复杂度评分**：基于多维度指标计算综合复杂度得分
+- **动态难易程度分类**：基于数据分布自动分类为 simple/mid/hard
+
+#### 使用方法
+
+```bash
+# 基本用法
+python scripts/statics.py data/input.jsonl --output data/output_with_stats.jsonl
+
+# 使用默认数据集
+python scripts/statics.py
+```
+
+#### 参数说明
+
+```bash
+# 查看所有可用参数
+python scripts/statics.py --help
+
+```
+
+#### 输出结果
+
+工具会在每条数据的 `meta` 字段中添加以下统计信息：
+
+```json
+{
+  "meta": {
+    "DOM_DEPTH": 25,                    // DOM树深度
+    "DOM_WIDTH": 1200,                  // DOM树宽度
+    "text_linktext_ratio": 0.85,        // 文本链接比例
+    "table_complexity_score": 0.3,      // 表格复杂度得分
+    "dom_complexity_score": 0.6,        // DOM复杂度得分
+    "text_dispersion_score": 0.4,       // 文本分布得分
+    "content_diversity_score": 0.7,     // 内容多样性得分
+    "link_complexity_score": 0.5,       // 链接复杂度得分
+    "overall_complexity_score": 0.52,   // 综合复杂度得分
+    "level": "mid"                      // 难易程度 (simple/mid/hard)
+  }
+}
+```
+
+#### 复杂度评分算法
+
+综合复杂度得分由以下维度加权计算：
+
+- **DOM结构复杂度 (25%)**：基于DOM深度和宽度，使用动态归一化
+- **文本分布复杂度 (25%)**：基于文本在DOM中的分布离散程度
+- **内容多样性 (25%)**：基于公式、代码、表格等特殊内容的种类
+- **链接复杂度 (25%)**：基于文本与链接的比例关系
+
+#### 运行示例
+
+```bash
+# 分析数据集并生成统计报告
+python scripts/statics.py data/sample_dataset.jsonl --output data/analyzed_dataset.jsonl
+
+# 输出示例：
+🔄 第一阶段: 计算基础统计和复杂度得分...
+  📊 已处理 100 条数据...
+  📊 已处理 200 条数据...
+
+🔄 第二阶段: 计算动态阈值和难易程度分类...
+📊 复杂度分布阈值计算:
+   总样本数: 1,827
+   30%分位数 (simple/mid分界): 0.3245
+   70%分位数 (mid/hard分界): 0.6789
+   复杂度得分范围: 0.0944 - 1.0000
+
+📊 难易程度分类结果:
+   Simple: 548 (30.0%)
+   Mid:    731 (40.0%)  
+   Hard:   548 (30.0%)
+
+📝 正在写入数据到: data/analyzed_dataset.jsonl
+✅ 成功写入 1,827 条数据
+```
+
 
 ## 项目架构
 
