@@ -16,6 +16,7 @@ class ExtractionResult:
     # Core extraction results
     content: str = ""  # Extracted markdown content
     content_list: Optional[List[Dict[str, Any]]] = None  # Structured content list
+    main_html: str = ""  # Extracted main HTML content
     version: str = None  # Version of the extractor
     
     # Metadata
@@ -41,6 +42,7 @@ class ExtractionResult:
         """Convert to dictionary format."""
         return {
             "content": self.content,
+            "main_html": self.main_html,
             "content_list": self.content_list,
             "success": self.success,
             "extraction_time": self.extraction_time,

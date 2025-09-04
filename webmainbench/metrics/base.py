@@ -336,7 +336,7 @@ class BaseMetric(ABC):
             'code': '\n'.join(code_parts),
             'formula': '\n'.join(formula_parts),
             'table': '\n'.join(table_parts),
-            'text': clean_text
+            'text': text  # 原始全部文本
         }
     
     def aggregate_results(self, results: List[MetricResult]) -> MetricResult:

@@ -738,7 +738,7 @@ def demo_multi_extraction():
     # 配置文件路径
     data_dir = Path("../data")
     # dataset_path = data_dir / "sample_dataset.jsonl"
-    dataset_path = "/home/lulindong/Pycharm_projects/cc/1827_split_jsonl/1-200.jsonl"
+    dataset_path = "/home/lulindong/Pycharm_projects/cc/WebMainBench_1904_v1_WebMainBench_dataset_merge_with_llm_webkit.jsonl"
 
     print(f"📂 数据集文件: {dataset_path}")
 
@@ -889,7 +889,7 @@ def demo_llm_webkit_with_preprocessed_html_evaluation():
     
     # 1. 从真实数据集加载包含预处理HTML的数据
     print("1. 从真实数据集加载预处理HTML数据...")
-    dataset_path = Path("/home/lulindong/Pycharm_projects/cc/1827_split_jsonl/1-200.jsonl")
+    dataset_path = Path("data/track_id_diff_result_56.jsonl")
     print(f"📂 数据集文件: {dataset_path}")
     
     # 加载数据集
@@ -939,7 +939,6 @@ def demo_llm_webkit_with_preprocessed_html_evaluation():
     
     print(f"\n📝 内容提取质量:")
     print(f"  text_edit: {metrics.get('text_edit', 0):.4f}")
-    print(f"  formula_edit: {metrics.get('formula_edit', 0):.4f}")
     print(f"  code_edit: {metrics.get('code_edit', 0):.4f}")
     print(f"  table_edit: {metrics.get('table_edit', 0):.4f}")
     print(f"  table_TEDS: {metrics.get('table_TEDS', 0):.4f}")
@@ -985,10 +984,10 @@ if __name__ == "__main__":
     try:
         # demo_basic_mock_evaluation()
         # demo_llm_webkit_evaluation()  # 使用LLM-WebKit评测示例
-        # demo_llm_webkit_with_preprocessed_html_evaluation()
+        demo_llm_webkit_with_preprocessed_html_evaluation()
         # demo_extractor_comparison()
         # demo_dataset_with_extraction()  # 演示保存带有抽取内容的数据集
-        demo_multi_extraction() # 演示多个抽取器同时评测
+        # demo_multi_extraction() # 演示多个抽取器同时评测
         print("\n✅ 示例运行完成！")
         
     except Exception as e:

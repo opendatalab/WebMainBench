@@ -11,7 +11,7 @@ __author__ = "WebMainBench Team"
 from .data import DataLoader, DataSaver, BenchmarkDataset, DataSample
 from .extractors import BaseExtractor, ExtractorFactory, ExtractionResult
 from .metrics import BaseMetric, MetricCalculator, MetricResult
-from .evaluator import Evaluator, EvaluationResult
+from .evaluator import Evaluator, EvaluationResult, MainHTMLEvaluator
 from .utils import setup_logging, format_results
 
 __all__ = [
@@ -29,4 +29,5 @@ __all__ = [
     "EvaluationResult",
     "setup_logging",
     "format_results",
+    "MainHTMLEvaluator"
 ] 

@@ -10,6 +10,7 @@ from .table_metrics import TableEditMetric, TableTEDSMetric
 from .formula_metrics import FormulaEditMetric
 from .teds_metrics import TEDSMetric, StructureTEDSMetric
 from .calculator import MetricCalculator
+from .mainhtml_calculator import MainHTMLMetricCalculator
 
 __all__ = [
     "BaseMetric",
@@ -25,4 +26,5 @@ __all__ = [
     "TableTEDSMetric",
     "TextEditMetric",
     "MetricCalculator",
+    "MainHTMLMetricCalculator",
 ] 

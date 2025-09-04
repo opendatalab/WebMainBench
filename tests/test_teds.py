@@ -4,8 +4,10 @@ Comprehensive tests for TEDS (Tree-Edit Distance based Similarity) metrics.
 TEDS (树编辑距离相似性) 指标的综合测试
 """
 
+import re
 import unittest
 import sys
+import time
 from pathlib import Path
 
 # Add project root to path

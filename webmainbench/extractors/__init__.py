@@ -12,7 +12,7 @@ from .test_model_extractor import TestModelExtractor
 from .trafilatura_extractor import TrafilaturaExtractor
 from .resiliparse_extractor import ResiliparseExtractor
 from .magic_html_extractor import MagicHtmlExtractor
-
+from .dripper_extractor import DripperExtractor
 
 
 __all__ = [
@@ -25,4 +25,5 @@ __all__ = [
     "TrafilaturaExtractor",
     "ResiliparseExtractor",
     "MagicHtmlExtractor",
-] 
+    "DripperExtractor"
+]

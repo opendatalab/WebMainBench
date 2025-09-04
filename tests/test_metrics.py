@@ -164,8 +164,8 @@ $$\\int_{0}^{\\infty} e^{-x} dx = 1$$
         self.assertTrue(text_result.success)
         self.assertIsInstance(text_result.score, float)
         # 验证固定内容的确定分数
-        self.assertAlmostEqual(text_result.score, 0.7692307692307692, places=5,
-                               msg=f"text_edit分数应该是0.7692307692307692，实际: {text_result.score}")
+        self.assertAlmostEqual(text_result.score, 0.8904109589041096, places=5,
+                               msg=f"text_edit分数应该是0.8904109589041096，实际: {text_result.score}")
 
         # 验证详细信息
         self.assertEqual(text_result.details['content_type'], 'text')
@@ -299,8 +299,8 @@ def hello_world():
         # 验证文本编辑距离（固定内容应该有确定分数）
         self.assertIn("text_edit", results)
         self.assertTrue(results["text_edit"].success)
-        self.assertAlmostEqual(results["text_edit"].score, 1.0, places=5,
-                               msg=f"text_edit分数应该是1.0，实际: {results['text_edit'].score}")
+        self.assertAlmostEqual(results["text_edit"].score, 0.9552238805970149, places=5,
+                               msg=f"text_edit分数应该是0.9552238805970149，实际: {results['text_edit'].score}")
 
         # 验证代码编辑距离（缺少python标识符导致轻微差异）
         self.assertIn("code_edit", results)
@@ -948,8 +948,8 @@ $$\\int_{-\\infty}^{\\infty} e^{-x^2} dx = \\sqrt{\\pi}$$"""
         # 验证文本编辑距离（去除公式后的纯文本，也受符号转义影响）
         self.assertIn("text_edit", results)
         self.assertTrue(results["text_edit"].success)
-        self.assertAlmostEqual(results["text_edit"].score, 0.31999999999999995, places=5,
-                               msg=f"text_edit分数应该是0.31999999999999995，实际: {results['text_edit'].score}")
+        self.assertAlmostEqual(results["text_edit"].score, 0.95, places=5,
+                               msg=f"text_edit分数应该是0.95，实际: {results['text_edit'].score}")
 
     def test_overall_score_calculation(self):
         """测试综合分数计算"""
