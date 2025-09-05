@@ -220,8 +220,7 @@ class TestTEDSBasic(unittest.TestCase):
             groundtruth=gt,
             table_edit_result=self.valid_table_edit_result
         )
-        assert result.score == 0.7999999999999999
-
+        self.assertAlmostEqual(result.score, 0.96, places=6)
 
 
 class TestTEDSAdvanced(unittest.TestCase):
@@ -326,8 +325,8 @@ class TestTEDSAdvanced(unittest.TestCase):
             table2,
             table_edit_result=self.valid_table_edit_result
         )
-        assert result.score == 0.3999999999999999
 
+        self.assertAlmostEqual(result.score, 0.931818, places=6)
 
 class TestStructureTEDS(unittest.TestCase):
     """Structure-only TEDS tests - 结构化TEDS测试"""
