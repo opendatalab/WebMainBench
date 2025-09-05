@@ -9,6 +9,7 @@ from .factory import extractor
 from magic_html import GeneralExtractor
 import re
 import html2text
+from ..utils import HTML2TextWrapper
 
 
 @extractor("magic-html")
@@ -32,7 +33,10 @@ class MagicHtmlExtractor(BaseExtractor):
 
             # 从输出中提取所需信息
             extracted_html = data.get('html', '')
-            markdown = html2text.html2text(extracted_html)
+            # 使用内部HTML2Text方法生成markdown
+            h = HTML2TextWrapper()
+            markdown = h(extracted_html)
+            # markdown = html2text.html2text(extracted_html)
             title = data.get('title', '')
             # 简单地将提取的 HTML 作为内容
             content = markdown

@@ -114,6 +114,51 @@ class TestTableExtraction(unittest.TestCase):
         # 验证文本中表格被移除
         # self.assertNotIn('| 姓名 | 年龄 | 职业 | 薪资 |', result['text'])
 
+    def test_corner_case_markdown_table(self):
+        """测试复杂Markdown表格"""
+        text = """| |
+|---|---|
+| Scientific classification | |
+| Domain: | Eukaryota |
+| Kingdom: | Animalia |
+| Phylum: | Arthropoda |
+| Class: | Insecta |
+| Order: | Lepidoptera |
+| Family: | Autostichidae |
+| Genus: | Pantacordis
+|
+| Species: | P. scotinella |
+| Binomial name | |
+Pantacordis scotinella | |
+| Synonyms | |
+*Borkhausenia scotinella*Rebel, 1916*Pantacordis scotinellum*
+|"""
+
+        result = self.metric._extract_from_markdown(text)
+        expected_table = """| |
+|---|---|
+| Scientific classification | |
+| Domain: | Eukaryota |
+| Kingdom: | Animalia |
+| Phylum: | Arthropoda |
+| Class: | Insecta |
+| Order: | Lepidoptera |
+| Family: | Autostichidae |
+| Genus: | Pantacordis
+|
+| Species: | P. scotinella |
+| Binomial name | |
+Pantacordis scotinella | |
+| Synonyms | |
+*Borkhausenia scotinella*Rebel, 1916*Pantacordis scotinellum*
+|"""
+
+        # 验证提取结果与预期一致
+        self.assertEqual(result['table'], expected_table)
+
+        # 验证文本中表格被移除
+        # self.assertNotIn('| 姓名 | 年龄 | 职业 | 薪资 |', result['text'])
+
 
 
     def test_table_with_alignment(self):
