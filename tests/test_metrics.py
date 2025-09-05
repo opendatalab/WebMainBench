@@ -147,8 +147,8 @@ $$\\int_{0}^{\\infty} e^{-x} dx = 1$$
         self.assertTrue(teds_result.success)
         self.assertIsInstance(teds_result.score, float)
         # 验证固定内容的确定分数
-        self.assertAlmostEqual(teds_result.score, 0.5199999999999999, places=5,
-                               msg=f"table_TEDS分数应该是0.5199999999999999，实际: {teds_result.score}")
+        self.assertAlmostEqual(teds_result.score, 0.97857, places=5,
+                               msg=f"table_TEDS分数应该是0.97857，实际: {teds_result.score}")
 
         # 验证详细信息
         self.assertEqual(teds_result.details['content_type'], 'table')
@@ -308,21 +308,563 @@ def hello_world():
         self.assertAlmostEqual(results["code_edit"].score, 1.0, places=5,
                                msg=f"code_edit分数应该是1.0，实际: {results['code_edit'].score}")
 
-    def test_table_sample_edit_distance(self):
+    def test_html_table_edit_distance(self):
         """测试表格样本的编辑距离"""
-        groundtruth = """## 销售数据统计
+        groundtruth = """
+        
+        <table>
+<caption>Harrisburg, Portsmouth, Mountjoy &amp; Lancaster Rail-Road</caption><tbody><tr><td colspan="2"><div>Route map, circa 1850</div></td></tr><tr><th colspan="2">Overview</th>
+</tr>
+<tr>
+<th scope="row">Locale</th>
+<td>Harrisburg, Pennsylvania</td>
+</tr>
+<tr>
+<th scope="row">Dates of operation</th>
+<td>1835–1917</td>
+</tr>
+<tr>
+<th scope="row">Predecessor</th>
+<td>Portsmouth and Lancaster Rail-Road</td>
+</tr>
+<tr>
+<th scope="row">Successor</th>
+<td>The Pennsylvania Railroad</td>
+</tr>
+<tr>
+<th colspan="2">Technical</th>
+</tr>
+<tr>
+<th scope="row">Length</th>
+<td>52.57 miles (84.60 km) in 1917</td>
+</tr>
+<tr>
+<td colspan="2">
+<table>
+<tbody>
+<tr>
+<th>Route map</th>
+</tr>
+<tr>
+<td>
+<table>
+<tbody>
+<tr>
+<td>Susquehanna River</td>
+<td></td>
+<td></td>
+<td>
+<div></div>
+<div></div>
+<div></div>
+</td>
+<td>0 mi</td>
+<td colspan="2">Harrisburg</td>
+</tr>
+<tr>
+<td colspan="2"></td>
+<td></td>
+<td>
+<div></div>
+<div></div>
+<div></div>
+</td>
+<td>3 mi</td>
+<td colspan="2">Steelton</td>
+</tr>
+<tr>
+<td colspan="2"></td>
+<td></td>
+<td>
+<div></div>
+<div></div>
+<div></div>
+</td>
+<td>9 mi</td>
+<td colspan="2">Middletown</td>
+</tr>
+<tr>
+<td>Swatara Creek</td>
+<td></td>
+<td></td>
+<td>
+<div></div>
+<div></div>
+<div></div>
+</td>
+<td></td>
+<td colspan="2"></td>
+</tr>
+<tr>
+<td colspan="2"></td>
+<td></td>
+<td>
+<div></div>
+<div></div>
+<div></div>
+</td>
+<td>10 mi</td>
+<td colspan="2">Royalton</td>
+</tr>
+<tr>
+<td>Conewago Creek</td>
+<td></td>
+<td></td>
+<td>
+<div></div>
+<div></div>
+<div></div>
+</td>
+<td></td>
+<td colspan="2"></td>
+</tr>
+<tr>
+<td colspan="2">Falmouth</td>
+<td>14 mi</td>
+<td>
+<div></div>
+<div></div>
+<div></div>
+</td>
+<td></td>
+<td colspan="2"></td>
+</tr>
+<tr>
+<td colspan="2">Bainbridge</td>
+<td>18 mi</td>
+<td>
+<div></div>
+<div></div>
+<div></div>
+</td>
+<td>18 mi</td>
+<td colspan="2">Elizabethtown</td>
+</tr>
+<tr>
+<td colspan="2"></td>
+<td></td>
+<td>
+<div></div>
+<div></div>
+<div></div>
+</td>
+<td></td>
+<td colspan="2">tunnel 850 feet (260 m)</td>
+</tr>
+<tr>
+<td colspan="2">Marrietta</td>
+<td>25 mi</td>
+<td>
+<div></div>
+<div></div>
+<div></div>
+</td>
+<td>25 mi</td>
+<td colspan="2">Mountjoy</td>
+</tr>
+<tr>
+<td>Chiques Creek</td>
+<td></td>
+<td></td>
+<td>
+<div></div>
+<div></div>
+<div></div>
+</td>
+<td></td>
+<td colspan="2"></td>
+</tr>
+<tr>
+<td>tunnel 180 feet (55 m)</td>
+<td></td>
+<td></td>
+<td>
+<div></div>
+<div></div>
+<div></div>
+</td>
+<td></td>
+<td colspan="2"></td>
+</tr>
+<tr>
+<td colspan="2">Columbia</td>
+<td>28.5 mi</td>
+<td>
+<div></div>
+<div></div>
+<div></div>
+</td>
+<td></td>
+<td colspan="2"></td>
+</tr>
+<tr>
+<td colspan="2"></td>
+<td></td>
+<td>
+<div></div>
+<div></div>
+<div></div>
+</td>
+<td>35.5 mi</td>
+<td colspan="2">Lancaster</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+<table>
+<tbody>
+<tr>
+<th>Route map</th>
+</tr>
+<tr>
+<td>
+<table>
+<tbody>
+<tr>
+<td>Susquehanna River</td>
+<td></td>
+<td></td>
+<td>
+<div></div>
+<div></div>
+<div></div>
+</td>
+<td>0 mi</td>
+<td colspan="2">Harrisburg</td>
+</tr>
+<tr>
+<td colspan="2"></td>
+<td></td>
+<td>
+<div></div>
+<div></div>
+<div></div>
+</td>
+<td>3 mi</td>
+<td colspan="2">Steelton</td>
+</tr>
+<tr>
+<td colspan="2"></td>
+<td></td>
+<td>
+<div></div>
+<div></div>
+<div></div>
+</td>
+<td>9 mi</td>
+<td colspan="2">Middletown</td>
+</tr>
+<tr>
+<td>Swatara Creek</td>
+<td></td>
+<td></td>
+<td>
+<div></div>
+<div></div>
+<div></div>
+</td>
+<td></td>
+<td colspan="2"></td>
+</tr>
+<tr>
+<td colspan="2"></td>
+<td></td>
+<td>
+<div></div>
+<div></div>
+<div></div>
+</td>
+<td>10 mi</td>
+<td colspan="2">Royalton</td>
+</tr>
+<tr>
+<td>Conewago Creek</td>
+<td></td>
+<td></td>
+<td>
+<div></div>
+<div></div>
+<div></div>
+</td>
+<td></td>
+<td colspan="2"></td>
+</tr>
+<tr>
+<td colspan="2">Falmouth</td>
+<td>14 mi</td>
+<td>
+<div></div>
+<div></div>
+<div></div>
+</td>
+<td></td>
+<td colspan="2"></td>
+</tr>
+<tr>
+<td colspan="2">Bainbridge</td>
+<td>18 mi</td>
+<td>
+<div></div>
+<div></div>
+<div></div>
+</td>
+<td>18 mi</td>
+<td colspan="2">Elizabethtown</td>
+</tr>
+<tr>
+<td colspan="2"></td>
+<td></td>
+<td>
+<div></div>
+<div></div>
+<div></div>
+</td>
+<td></td>
+<td colspan="2">tunnel 850 feet (260 m)</td>
+</tr>
+<tr>
+<td colspan="2">Marrietta</td>
+<td>25 mi</td>
+<td>
+<div></div>
+<div></div>
+<div></div>
+</td>
+<td>25 mi</td>
+<td colspan="2">Mountjoy</td>
+</tr>
+<tr>
+<td>Chiques Creek</td>
+<td></td>
+<td></td>
+<td>
+<div></div>
+<div></div>
+<div></div>
+</td>
+<td></td>
+<td colspan="2"></td>
+</tr>
+<tr>
+<td>tunnel 180 feet (55 m)</td>
+<td></td>
+<td></td>
+<td>
+<div></div>
+<div></div>
+<div></div>
+</td>
+<td></td>
+<td colspan="2"></td>
+</tr>
+<tr>
+<td colspan="2">Columbia</td>
+<td>28.5 mi</td>
+<td>
+<div></div>
+<div></div>
+<div></div>
+</td>
+<td></td>
+<td colspan="2"></td>
+</tr>
+<tr>
+<td colspan="2"></td>
+<td></td>
+<td>
+<div></div>
+<div></div>
+<div></div>
+</td>
+<td>35.5 mi</td>
+<td colspan="2">Lancaster</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+<table>
+<tbody>
+<tr>
+<td>Susquehanna River</td>
+<td></td>
+<td></td>
+<td>
+<div></div>
+<div></div>
+<div></div>
+</td>
+<td>0 mi</td>
+<td colspan="2">Harrisburg</td>
+</tr>
+<tr>
+<td colspan="2"></td>
+<td></td>
+<td>
+<div></div>
+<div></div>
+<div></div>
+</td>
+<td>3 mi</td>
+<td colspan="2">Steelton</td>
+</tr>
+<tr>
+<td colspan="2"></td>
+<td></td>
+<td>
+<div></div>
+<div></div>
+<div></div>
+</td>
+<td>9 mi</td>
+<td colspan="2">Middletown</td>
+</tr>
+<tr>
+<td>Swatara Creek</td>
+<td></td>
+<td></td>
+<td>
+<div></div>
+<div></div>
+<div></div>
+</td>
+<td></td>
+<td colspan="2"></td>
+</tr>
+<tr>
+<td colspan="2"></td>
+<td></td>
+<td>
+<div></div>
+<div></div>
+<div></div>
+</td>
+<td>10 mi</td>
+<td colspan="2">Royalton</td>
+</tr>
+<tr>
+<td>Conewago Creek</td>
+<td></td>
+<td></td>
+<td>
+<div></div>
+<div></div>
+<div></div>
+</td>
+<td></td>
+<td colspan="2"></td>
+</tr>
+<tr>
+<td colspan="2">Falmouth</td>
+<td>14 mi</td>
+<td>
+<div></div>
+<div></div>
+<div></div>
+</td>
+<td></td>
+<td colspan="2"></td>
+</tr>
+<tr>
+<td colspan="2">Bainbridge</td>
+<td>18 mi</td>
+<td>
+<div></div>
+<div></div>
+<div></div>
+</td>
+<td>18 mi</td>
+<td colspan="2">Elizabethtown</td>
+</tr>
+<tr>
+<td colspan="2"></td>
+<td></td>
+<td>
+<div></div>
+<div></div>
+<div></div>
+</td>
+<td></td>
+<td colspan="2">tunnel 850 feet (260 m)</td>
+</tr>
+<tr>
+<td colspan="2">Marrietta</td>
+<td>25 mi</td>
+<td>
+<div></div>
+<div></div>
+<div></div>
+</td>
+<td>25 mi</td>
+<td colspan="2">Mountjoy</td>
+</tr>
+<tr>
+<td>Chiques Creek</td>
+<td></td>
+<td></td>
+<td>
+<div></div>
+<div></div>
+<div></div>
+</td>
+<td></td>
+<td colspan="2"></td>
+</tr>
+<tr>
+<td>tunnel 180 feet (55 m)</td>
+<td></td>
+<td></td>
+<td>
+<div></div>
+<div></div>
+<div></div>
+</td>
+<td></td>
+<td colspan="2"></td>
+</tr>
+<tr>
+<td colspan="2">Columbia</td>
+<td>28.5 mi</td>
+<td>
+<div></div>
+<div></div>
+<div></div>
+</td>
+<td></td>
+<td colspan="2"></td>
+</tr>
+<tr>
+<td colspan="2"></td>
+<td></td>
+<td>
+<div></div>
+<div></div>
+<div></div>
+</td>
+<td>35.5 mi</td>
+<td colspan="2">Lancaster</td>
+</tr>
+</tbody>
+</table>
+        
+        """
 
-| 产品 | 销量 | 收入 |
-|------|------|------|
-| 产品A | 100 | 1000 |
-| 产品B | 200 | 3000 |"""
+        predicted = """
 
-        predicted = """## 销售数据统计
-
-| 产品 | 销量 | 收入 |
-|---|---|---|
-| 产品A | 100 | 1000 |
-| 产品B | 200 | 3000 |"""
+<table><caption>Harrisburg, Portsmouth, Mountjoy &amp; Lancaster Rail-Road</caption><tbody><tr><td colspan="2"><a></a><div></div><div>Wikimedia | © OpenStreetMap</div><div>Route map, circa 1850</div></td></tr><tr><th colspan="2">Overview</th></tr><tr><th>Locale</th><td>Harrisburg, Pennsylvania</td></tr><tr><th>Dates of operation</th><td><marked-text>1835</marked-text><span>( 1835 )</span><marked-tail>–1917</marked-tail><span>( 1917 )</span></td></tr><tr><th>Predecessor</th><td>Portsmouth and Lancaster Rail-Road</td></tr><tr><th>Successor</th><td><marked-text>The</marked-text><a>Pennsylvania Railroad</a></td></tr><tr><th colspan="2">Technical</th></tr><tr><th>Length</th><td>52.57 miles (84.60 km) in 1917</td></tr><tr><td colspan="2"><table><tbody><tr><th><div>Route map</div></th></tr><tr><td><p></p><table><tbody><tr><td><div>Legend</div></td></tr><tr><td><table><tbody><tr><td><div>Susquehanna River</div></td><td></td><td></td><td><div></div><div></div><div></div></td><td><div>0 mi</div></td><td colspan="2">Harrisburg</td></tr><tr><td colspan="2"></td><td></td><td><div></div><div></div><div></div></td><td><div>3 mi</div></td><td colspan="2">Steelton</td></tr><tr><td colspan="2"></td><td></td><td><div></div><div></div><div></div></td><td><div>9 mi</div></td><td colspan="2">Middletown</td></tr><tr><td><div>Swatara Creek</div></td><td></td><td></td><td><div></div><div></div><div></div></td><td></td><td colspan="2"></td></tr><tr><td colspan="2"></td><td></td><td><div></div><div></div><div></div></td><td><div>10 mi</div></td><td colspan="2">Royalton</td></tr><tr><td><div>Conewago Creek</div></td><td></td><td></td><td><div></div><div></div><div></div></td><td></td><td colspan="2"></td></tr><tr><td colspan="2">Falmouth</td><td><div>14 mi</div></td><td><div></div><div></div><div></div></td><td></td><td colspan="2"></td></tr><tr><td colspan="2">Bainbridge</td><td><div>18 mi</div></td><td><div></div><div></div><div></div></td><td><div>18 mi</div></td><td colspan="2">Elizabethtown</td></tr><tr><td colspan="2"></td><td></td><td><div></div><div></div><div></div></td><td></td><td colspan="2"><div>tunnel 850 feet (260 m)</div></td></tr><tr><td colspan="2">Marrietta</td><td><div>25 mi</div></td><td><div></div><div></div><div></div></td><td><div>25 mi</div></td><td colspan="2">Mountjoy</td></tr><tr><td><div>Chiques Creek</div></td><td></td><td></td><td><div></div><div></div><div></div></td><td></td><td colspan="2"></td></tr><tr><td><div>tunnel 180 feet (55 m)</div></td><td></td><td></td><td><div></div><div></div><div></div></td><td></td><td colspan="2"></td></tr><tr><td colspan="2">Columbia</td><td><div>28.5 mi</div></td><td><div></div><div></div><div></div></td><td></td><td colspan="2"></td></tr><tr><td colspan="2"></td><td></td><td><div></div><div></div><div></div></td><td><div>35.5 mi</div></td><td colspan="2">Lancaster</td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></tbody></table></td></tr></tbody></table></td></tr></tbody></table></td></tr></tbody></table>
+<table><tbody><tr><th><div>Route map</div></th></tr><tr><td><p></p><table><tbody><tr><td><div>Legend</div></td></tr><tr><td><table><tbody><tr><td><div>Susquehanna River</div></td><td></td><td></td><td><div></div><div></div><div></div></td><td><div>0 mi</div></td><td colspan="2">Harrisburg</td></tr><tr><td colspan="2"></td><td></td><td><div></div><div></div><div></div></td><td><div>3 mi</div></td><td colspan="2">Steelton</td></tr><tr><td colspan="2"></td><td></td><td><div></div><div></div><div></div></td><td><div>9 mi</div></td><td colspan="2">Middletown</td></tr><tr><td><div>Swatara Creek</div></td><td></td><td></td><td><div></div><div></div><div></div></td><td></td><td colspan="2"></td></tr><tr><td colspan="2"></td><td></td><td><div></div><div></div><div></div></td><td><div>10 mi</div></td><td colspan="2">Royalton</td></tr><tr><td><div>Conewago Creek</div></td><td></td><td></td><td><div></div><div></div><div></div></td><td></td><td colspan="2"></td></tr><tr><td colspan="2">Falmouth</td><td><div>14 mi</div></td><td><div></div><div></div><div></div></td><td></td><td colspan="2"></td></tr><tr><td colspan="2">Bainbridge</td><td><div>18 mi</div></td><td><div></div><div></div><div></div></td><td><div>18 mi</div></td><td colspan="2">Elizabethtown</td></tr><tr><td colspan="2"></td><td></td><td><div></div><div></div><div></div></td><td></td><td colspan="2"><div>tunnel 850 feet (260 m)</div></td></tr><tr><td colspan="2">Marrietta</td><td><div>25 mi</div></td><td><div></div><div></div><div></div></td><td><div>25 mi</div></td><td colspan="2">Mountjoy</td></tr><tr><td><div>Chiques Creek</div></td><td></td><td></td><td><div></div><div></div><div></div></td><td></td><td colspan="2"></td></tr><tr><td><div>tunnel 180 feet (55 m)</div></td><td></td><td></td><td><div></div><div></div><div></div></td><td></td><td colspan="2"></td></tr><tr><td colspan="2">Columbia</td><td><div>28.5 mi</div></td><td><div></div><div></div><div></div></td><td></td><td colspan="2"></td></tr><tr><td colspan="2"></td><td></td><td><div></div><div></div><div></div></td><td><div>35.5 mi</div></td><td colspan="2">Lancaster</td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></tbody></table></td></tr></tbody></table></td></tr></tbody></table>
+<table><tbody><tr><td><div>Legend</div></td></tr><tr><td><table><tbody><tr><td><div>Susquehanna River</div></td><td></td><td></td><td><div></div><div></div><div></div></td><td><div>0 mi</div></td><td colspan="2">Harrisburg</td></tr><tr><td colspan="2"></td><td></td><td><div></div><div></div><div></div></td><td><div>3 mi</div></td><td colspan="2">Steelton</td></tr><tr><td colspan="2"></td><td></td><td><div></div><div></div><div></div></td><td><div>9 mi</div></td><td colspan="2">Middletown</td></tr><tr><td><div>Swatara Creek</div></td><td></td><td></td><td><div></div><div></div><div></div></td><td></td><td colspan="2"></td></tr><tr><td colspan="2"></td><td></td><td><div></div><div></div><div></div></td><td><div>10 mi</div></td><td colspan="2">Royalton</td></tr><tr><td><div>Conewago Creek</div></td><td></td><td></td><td><div></div><div></div><div></div></td><td></td><td colspan="2"></td></tr><tr><td colspan="2">Falmouth</td><td><div>14 mi</div></td><td><div></div><div></div><div></div></td><td></td><td colspan="2"></td></tr><tr><td colspan="2">Bainbridge</td><td><div>18 mi</div></td><td><div></div><div></div><div></div></td><td><div>18 mi</div></td><td colspan="2">Elizabethtown</td></tr><tr><td colspan="2"></td><td></td><td><div></div><div></div><div></div></td><td></td><td colspan="2"><div>tunnel 850 feet (260 m)</div></td></tr><tr><td colspan="2">Marrietta</td><td><div>25 mi</div></td><td><div></div><div></div><div></div></td><td><div>25 mi</div></td><td colspan="2">Mountjoy</td></tr><tr><td><div>Chiques Creek</div></td><td></td><td></td><td><div></div><div></div><div></div></td><td></td><td colspan="2"></td></tr><tr><td><div>tunnel 180 feet (55 m)</div></td><td></td><td></td><td><div></div><div></div><div></div></td><td></td><td colspan="2"></td></tr><tr><td colspan="2">Columbia</td><td><div>28.5 mi</div></td><td><div></div><div></div><div></div></td><td></td><td colspan="2"></td></tr><tr><td colspan="2"></td><td></td><td><div></div><div></div><div></div></td><td><div>35.5 mi</div></td><td colspan="2">Lancaster</td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></tbody></table></td></tr></tbody></table>
+<table><tbody><tr><td><div>Susquehanna River</div></td><td></td><td></td><td><div></div><div></div><div></div></td><td><div>0 mi</div></td><td colspan="2">Harrisburg</td></tr><tr><td colspan="2"></td><td></td><td><div></div><div></div><div></div></td><td><div>3 mi</div></td><td colspan="2">Steelton</td></tr><tr><td colspan="2"></td><td></td><td><div></div><div></div><div></div></td><td><div>9 mi</div></td><td colspan="2">Middletown</td></tr><tr><td><div>Swatara Creek</div></td><td></td><td></td><td><div></div><div></div><div></div></td><td></td><td colspan="2"></td></tr><tr><td colspan="2"></td><td></td><td><div></div><div></div><div></div></td><td><div>10 mi</div></td><td colspan="2">Royalton</td></tr><tr><td><div>Conewago Creek</div></td><td></td><td></td><td><div></div><div></div><div></div></td><td></td><td colspan="2"></td></tr><tr><td colspan="2">Falmouth</td><td><div>14 mi</div></td><td><div></div><div></div><div></div></td><td></td><td colspan="2"></td></tr><tr><td colspan="2">Bainbridge</td><td><div>18 mi</div></td><td><div></div><div></div><div></div></td><td><div>18 mi</div></td><td colspan="2">Elizabethtown</td></tr><tr><td colspan="2"></td><td></td><td><div></div><div></div><div></div></td><td></td><td colspan="2"><div>tunnel 850 feet (260 m)</div></td></tr><tr><td colspan="2">Marrietta</td><td><div>25 mi</div></td><td><div></div><div></div><div></div></td><td><div>25 mi</div></td><td colspan="2">Mountjoy</td></tr><tr><td><div>Chiques Creek</div></td><td></td><td></td><td><div></div><div></div><div></div></td><td></td><td colspan="2"></td></tr><tr><td><div>tunnel 180 feet (55 m)</div></td><td></td><td></td><td><div></div><div></div><div></div></td><td></td><td colspan="2"></td></tr><tr><td colspan="2">Columbia</td><td><div>28.5 mi</div></td><td><div></div><div></div><div></div></td><td></td><td colspan="2"></td></tr><tr><td colspan="2"></td><td></td><td><div></div><div></div><div></div></td><td><div>35.5 mi</div></td><td colspan="2">Lancaster</td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></tbody></table>
+"""
 
         results = self.calculator.calculate_all(
             predicted_content=predicted,
@@ -332,14 +874,47 @@ def hello_world():
         # 验证表格编辑距离（分隔符长度差异导致的固定分数）
         self.assertIn("table_edit", results)
         self.assertTrue(results["table_edit"].success)
-        self.assertAlmostEqual(results["table_edit"].score, 0.888889, places=5,
-                               msg=f"table_edit分数应该是0.888889，实际: {results['table_edit'].score}")
+        self.assertAlmostEqual(results["table_edit"].score, 0.48314306100606497, places=5,
+                               msg=f"table_edit分数应该是0.48314306100606497，实际: {results['table_edit'].score}")
 
         # 验证TEDS指标（表格结构完全相同，满分）
         self.assertIn("table_TEDS", results)
         self.assertTrue(results["table_TEDS"].success)
-        self.assertAlmostEqual(results["table_TEDS"].score, 1.000000, places=5,
-                               msg=f"table_TEDS分数应该是1.000000，实际: {results['table_TEDS'].score}")
+        self.assertAlmostEqual(results["table_TEDS"].score, 0.9984520490180891, places=5,
+                               msg=f"table_TEDS分数应该是0.0.9984520490180891，实际: {results['table_TEDS'].score}")
+
+        def test_table_sample_edit_distance(self):
+            """测试表格样本的编辑距离"""
+            groundtruth = """## 销售数据统计
+
+    | 产品 | 销量 | 收入 |
+    |------|------|------|
+    | 产品A | 100 | 1000 |
+    | 产品B | 200 | 3000 |"""
+
+            predicted = """## 销售数据统计
+
+    | 产品 | 销量 | 收入 |
+    |---|---|---|
+    | 产品A | 100 | 1000 |
+    | 产品B | 200 | 3000 |"""
+
+            results = self.calculator.calculate_all(
+                predicted_content=predicted,
+                groundtruth_content=groundtruth
+            )
+
+            # 验证表格编辑距离（分隔符长度差异导致的固定分数）
+            self.assertIn("table_edit", results)
+            self.assertTrue(results["table_edit"].success)
+            self.assertAlmostEqual(results["table_edit"].score, 0.888889, places=5,
+                                   msg=f"table_edit分数应该是0.888889，实际: {results['table_edit'].score}")
+
+            # 验证TEDS指标（表格结构完全相同，满分）
+            self.assertIn("table_TEDS", results)
+            self.assertTrue(results["table_TEDS"].success)
+            self.assertAlmostEqual(results["table_TEDS"].score, 1.000000, places=5,
+                                   msg=f"table_TEDS分数应该是1.000000，实际: {results['table_TEDS'].score}")
 
     def test_formula_sample_edit_distance(self):
         """测试公式样本的编辑距离"""

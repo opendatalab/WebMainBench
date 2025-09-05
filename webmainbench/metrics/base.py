@@ -203,7 +203,7 @@ class BaseMetric(ABC):
         extracted_segments = []
         code_parts = []
         # 同时匹配行内代码 `...` 和代码块 ```...```
-        pattern = r'(```[\s\S]*?```|`[^`\n]+`)'
+        pattern = r'(```[\s\S]*?```)'
         for match in re.finditer(pattern, text):
             code_segment = match.group(0)
             extracted_segments.append(code_segment)
@@ -284,7 +284,7 @@ class BaseMetric(ABC):
 
         def is_md_table_line(line):
             """判断是否可能是 Markdown 表格行"""
-            if line.count("|") < 3:  # 至少三个竖线
+            if line.count("|") < 1:  # 至少三个竖线
                 return False
             return True
 
@@ -300,7 +300,7 @@ class BaseMetric(ABC):
         def save_table():
             """保存当前表格并清空缓存"""
             nonlocal table_lines
-            # 只有当表格行数大于等于2，且第二行是分隔行时才保存
+            #     只有当表格行数大于等于2，且第二行是分隔行时才保存
             if len(table_lines) >= 2 and is_md_separator_line(table_lines[1]):
                 md_table = '\n'.join(table_lines)
                 extracted_segments.append(md_table)

@@ -12,3 +12,4 @@ https://github.com/opendatalab/magic-html/releases/download/magic_html-0.1.5-rel
 streamlit
 markdown
 jieba
+apted

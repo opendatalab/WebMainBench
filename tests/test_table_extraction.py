@@ -115,7 +115,6 @@ class TestTableExtraction(unittest.TestCase):
         # self.assertNotIn('| 姓名 | 年龄 | 职业 | 薪资 |', result['text'])
 
 
-
     def test_table_with_alignment(self):
         """测试带对齐的表格"""
         text = """对齐表格：
