@@ -294,16 +294,12 @@ class BaseMetric(ABC):
             # 检查是否所有部分都是分隔符格式
             for p in parts:
                 if p and not re.match(r"^:?\-{3,}:?$", p):
-
-                # if p and not re.match(r"^:?\-+(:?)$", p):  # 调整正则为允许1个及以上短横线
                     return False
             return True
 
         def save_table():
             """保存当前表格并清空缓存"""
             nonlocal table_lines
-            # # 原逻辑要求至少2行且第2行是分隔行，改为只要有2行及以上且包含至少1个分隔行即可
-            # if len(table_lines) >= 2 and any(is_md_separator_line(line) for line in table_lines):
             #     只有当表格行数大于等于2，且第二行是分隔行时才保存
             if len(table_lines) >= 2 and is_md_separator_line(table_lines[1]):
                 md_table = '\n'.join(table_lines)
