@@ -202,41 +202,95 @@ class BaseMetric(ABC):
         # 收集所有需要移除的内容片段
         extracted_segments = []
         code_parts = []
-        # 同时匹配行内代码 `...` 和代码块 ```...```
-        pattern = r'(```[\s\S]*?```)'
-        for match in re.finditer(pattern, text):
+        # # 同匹配行间代码块 ```...```
+        # pattern = r'(```[\s\S]*?```)'
+        # for match in re.finditer(pattern, text):
+        #     code_segment = match.group(0)
+        #     extracted_segments.append(code_segment)
+        #
+        #     if code_segment.startswith('```'):
+        #         # 处理代码块（保留内部缩进）
+        #         lines = code_segment.split('\n')
+        #         # 移除首尾的```标记
+        #         content_lines = lines[1:-1]
+        #         # 保留原始缩进，只拼接内容
+        #         code_content = '\n'.join(content_lines)
+        #     else:
+        #         # 处理行内代码（只去除外层`和前后空格）
+        #         code_content = code_segment[1:-1].strip()
+        #
+        #     if code_content:  # 只添加非空内容
+        #         code_parts.append(code_content)
+
+        # 1. 首先处理三个反引号包裹的代码块（优先级最高）
+        backtick_pattern = r'(```[\s\S]*?```)'
+        for match in re.finditer(backtick_pattern, text):
             code_segment = match.group(0)
-            extracted_segments.append(code_segment)
 
             if code_segment.startswith('```'):
-                # 处理代码块（保留内部缩进）
+                # 处理代码块
                 lines = code_segment.split('\n')
                 # 移除首尾的```标记
                 content_lines = lines[1:-1]
-                # 保留原始缩进，只拼接内容
                 code_content = '\n'.join(content_lines)
             else:
-                # 处理行内代码（只去除外层`和前后空格）
+                # 处理行内代码
                 code_content = code_segment[1:-1].strip()
 
-            if code_content:  # 只添加非空内容
+            if code_content:
                 code_parts.append(code_content)
-        
-        # # 提取代码
-        # code_parts = []
-        # # 代码块 ```code```
-        # for match in re.finditer(r'```[\s\S]*?```', text):
-        #     code_block = match.group(0)
-        #     extracted_segments.append(code_block)
-        #     code_parts.append(code_block.strip('`').strip())
-        #
-        # # 行内代码 `code`
-        # for match in re.finditer(r'`([^`]+)`', text):
-        #     inline_code_full = match.group(0)  # 包含反引号的完整匹配
-        #     inline_code_content = match.group(1)  # 只是内容
-        #     extracted_segments.append(inline_code_full)
-        #     code_parts.append(inline_code_content)
-        
+
+        # 2. 处理缩进代码块 - 使用更精确的匹配
+        # 匹配模式：前面有空行 + 连续的多行缩进内容 + 后面有空行
+        # 关键：要求所有匹配的行都是缩进的
+        indent_pattern = r'(?:\n\s*\n)((?:(?: {4,}|\t+)[^\n]*(?:\n|$)){2,})(?=\n\s*\n|$)'
+
+        for match in re.finditer(indent_pattern, text, re.MULTILINE):
+            code_segment = match.group(1)
+
+            # 验证：确保所有行都是缩进的（避免混合缩进和非缩进行）
+            lines = code_segment.split('\n')
+            all_indented = all(
+                line.startswith('    ') or line.startswith('\t') or not line.strip()
+                for line in lines
+                if line.strip()  # 空行不算
+            )
+
+            if not all_indented:
+                continue  # 跳过包含非缩进行的块
+
+            # 进一步验证代码特征
+            non_empty_lines = [line.strip() for line in lines if line.strip()]
+            if len(non_empty_lines) < 2:  # 至少2行非空内容
+                continue
+
+            # 检查是否有明显的非代码特征
+            has_list_features = any(
+                re.match(r'^[-•*]\s', line) or
+                re.match(r'^\d+\.\s', line) or
+                re.search(r'\$[\d,]', line) or
+                re.search(r'\b(million|billion|thousand)\b', line, re.IGNORECASE)
+                for line in non_empty_lines
+            )
+
+            if has_list_features:
+                continue  # 跳过列表内容
+
+            # 清理代码段
+            cleaned_lines = []
+            for line in code_segment.split('\n'):
+                if line.strip():
+                    if line.startswith('    '):
+                        cleaned_lines.append(line[4:])
+                    elif line.startswith('\t'):
+                        cleaned_lines.append(line[1:])
+                    else:
+                        cleaned_lines.append(line)
+
+            code_content = '\n'.join(cleaned_lines)
+            if code_content.strip():
+                code_parts.append(code_content)
+
         # 提取公式
         formula_parts = []
         # 统一的公式提取模式

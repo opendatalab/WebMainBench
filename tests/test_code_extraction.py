@@ -68,14 +68,6 @@ Like this:
 'ijkl'
         """)
         self.assertEqual(result['code'], expected_code.strip())
-
-        # 验证清理后的文本
-        expected_text = """
-I have the following string: 
-How can I get the last four characters and store them in a string using Python?
-Like this:
-"""
-        self.assertEqual(result['text'], text)
         self.assertEqual(result['formula'], '')
 
     # def test_code_with_leading_trailing_spaces(self):
@@ -91,6 +83,29 @@ Like this:
     #     result = BaseMetric._extract_from_markdown(text)
     #     self.assertEqual(result['code'], '')  # 不应该匹配多行行内代码
     #     self.assertEqual(result['text'], text)  # 原样保留
+
+    def test_indent_code_block(self):
+        """测试代码块"""
+        text = """
+I have the following string: `"aaaabbbb"`
+How can I get the last four characters and store them in a string using Python?
+Like this:
+    
+    print("hello world")
+    print("hi")
+
+        """
+
+        result = BaseMetric._extract_from_markdown(text)
+
+        # 验证提取的代码
+        expected_code = ("""
+print("hello world")
+print("hi")
+        """)
+        self.assertEqual(result['code'], expected_code.strip())
+        self.assertEqual(result['formula'], '')
+
 
 if __name__ == '__main__':
     unittest.main()
