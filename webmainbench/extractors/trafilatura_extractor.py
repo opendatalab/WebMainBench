@@ -6,22 +6,22 @@ from typing import Dict, Any, Optional, List
 from dataclasses import dataclass
 from .base import BaseExtractor, ExtractionResult
 from .factory import extractor
-from trafilatura import extract
+from trafilatura import extract,html2txt
 import re
 
 
 @dataclass
 class TrafilaturaInferenceConfig:
     """Configuration for Trafilatura extractor."""
-    favor_precision: bool = True
-    favor_recall: bool = True
-    include_comments: bool = False
-    include_tables: bool = True
-    # 可根据需要添加更多trafilatura支持的参数
-    include_images: bool = False
-    include_links: bool = False
-    # 新增：支持的输出格式（txt/markdown/json/xml等）
-    output_format: str = "markdown"  # 默认保持纯文本
+    favor_precision: bool = True  # 优先精度：只提取最核心的内容，过滤更多冗余（如侧边栏、广告）,默认开启
+    favor_recall: bool = True  # 优先召回：尽可能提取所有潜在有效内容，减少遗漏,默认开启
+    include_comments: bool = False  # 是否保留评论,默认关闭
+    include_tables: bool = True  # 是否保留提取html表格,默认开启
+    include_images: bool = False  # 是否保留提取图片信息,默认开启
+    include_links: bool = False  # 是否保留链接,默认关闭
+    with_metadata: bool = False  # 是否保留元信息,默认关闭
+    skip_elements: bool = False  # 是否保留CSS隐藏元素,默认关闭
+    output_format: str = "markdown"  # 支持多种格式输出:"csv", "json", "html", "markdown", "txt", "xml"等
 
 
 @extractor("trafilatura")
@@ -68,7 +68,9 @@ class TrafilaturaExtractor(BaseExtractor):
                 include_tables=self.inference_config.include_tables,
                 include_images=self.inference_config.include_images,
                 include_links=self.inference_config.include_links,
+                with_metadata=self.inference_config.with_metadata,
                 output_format=self.inference_config.output_format  # 传入输出格式
+
             )
 
             # 创建 content_list（简单分割段落）

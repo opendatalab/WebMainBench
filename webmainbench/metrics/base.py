@@ -326,9 +326,12 @@ class BaseMetric(ABC):
         # 用 BeautifulSoup 替代正则，防止嵌套或匹配不全
         soup = BeautifulSoup(text, "html.parser")
         for table in soup.find_all("table"):
-            html_table = str(table)
-            extracted_segments.append(html_table)
-            table_parts.append(html_table)
+            # 判断当前表格的父级是否是表格内的标签（<td>、<tr>、<tbody>等）
+            parent_is_table_related = table.find_parent(["td", "tr", "tbody", "table"]) is not None
+            if not parent_is_table_related:  # 父级不是表格相关标签 → 是外层表格
+                html_table = str(table)
+                extracted_segments.append(html_table)
+                table_parts.append(html_table)
 
         # ===== 2. 提取 Markdown 表格 =====
         lines = text.split('\n')
