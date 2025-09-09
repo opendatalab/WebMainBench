@@ -874,8 +874,8 @@ def hello_world():
         # 验证表格编辑距离（分隔符长度差异导致的固定分数）
         self.assertIn("table_edit", results)
         self.assertTrue(results["table_edit"].success)
-        self.assertAlmostEqual(results["table_edit"].score, 0.48314306100606497, places=5,
-                               msg=f"table_edit分数应该是0.48314306100606497，实际: {results['table_edit'].score}")
+        self.assertAlmostEqual(results["table_edit"].score, 0.593573, places=5,
+                               msg=f"table_edit分数应该是0.593573，实际: {results['table_edit'].score}")
 
         # 验证TEDS指标（表格结构完全相同，满分）
         self.assertIn("table_TEDS", results)

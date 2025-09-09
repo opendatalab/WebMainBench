@@ -11,14 +11,19 @@ import re
 @dataclass
 class ResiliparseInferenceConfig:
     """Configuration for Resiliparse extractor."""
-    main_content: bool = True
-    alt_texts: bool = True
-    links: bool = False
-    form_fields: bool = False
-    noscript: bool = False
-    list_bullets: bool = True
-    preserve_formatting: bool = True
-    comments: bool = True
+    main_content: bool = True # 是否提取主要内容,默认开启.(丢弃<nav>（导航列表）、<footer>（版权信息) 、<aside>（侧边栏）、<footer>（页脚）等)
+    alt_texts: bool = True  # 是否提取 <img> 的 alt 属性文本,默认开启
+    links: bool = False  # 是否提取超链接,默认关闭
+    form_fields: bool = False  # 是否提取表单控件,默认关闭
+    noscript: bool = False  # 是否提取 <noscript> 标签的内容,默认关闭
+    list_bullets: bool = True # 是否用 • 标记列表项,默认开启
+    preserve_formatting: bool = True  ## 控制格式保留：True（默认）：保留列表、换行等基础格式,False：完全压缩（无换行、无列表，所有文本连在一起）
+    comments: bool = True # 是否保留用户评论,默认开启
+    post_meta: bool = True  # 是否保留文章元信息,默认开启
+    hidden_elements: bool = False  # 是否保留CSS隐藏元素,默认关闭
+    
+
+
     # 可根据需要添加更多resiliparse支持的参数
 
 
