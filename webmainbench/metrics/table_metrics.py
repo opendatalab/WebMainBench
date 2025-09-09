@@ -20,26 +20,28 @@ class TableEditMetric(EditDistanceMetric):
                         groundtruth_content_list: List[Dict[str, Any]] = None,
                         **kwargs) -> MetricResult:
         """计算表格内容的编辑距离"""
-        
-        # 从content_list中提取表格内容
-        pred_table = self._extract_table_content(predicted, predicted_content_list)
-        gt_table = self._extract_table_content(groundtruth, groundtruth_content_list)
 
-        # 统一转换为HTML格式（复用TEDSMetric的归一化逻辑）
-        pred_html = self._normalize_to_html(pred_table)
-        gt_html = self._normalize_to_html(gt_table)
+        # 1. 提取原始表格内容
+        pred_raw = self._extract_table_content(predicted, predicted_content_list)
+        gt_raw = self._extract_table_content(groundtruth, groundtruth_content_list)
 
-        # 从HTML中提取纯文本内容（忽略标签，仅保留表格数据）
+        # 2. 复用TEDSMetric的归一化方法，统一转换为HTML格式
+        teds = TEDSMetric("temp_teds")  # 实例化TEDSMetric以调用其方法
+        pred_html = teds._normalize_to_html(pred_raw)  # 调用TEDS的归一化方法
+        gt_html = teds._normalize_to_html(gt_raw)
+
+        # 3. 从归一化后的HTML中提取纯文本内容（保留表格结构）
         pred_text = self._extract_text_from_html(pred_html)
         gt_text = self._extract_text_from_html(gt_html)
-        
-        # 计算编辑距离
+
+        # 4. 基于归一化后的文本计算编辑距离
         result = super()._calculate_score(pred_text, gt_text, **kwargs)
         result.metric_name = self.name
         result.details.update({
             "predicted_table_length": len(pred_text),
             "groundtruth_table_length": len(gt_text),
-            "content_type": "table"
+            "content_type": "table",
+            "normalization": "teds_based"  # 标记使用TEDS的归一化方法
         })
         
         return result
@@ -49,38 +51,6 @@ class TableEditMetric(EditDistanceMetric):
         # 使用统一的内容分割方法
         content_parts = self.split_content(text, content_list)
         return content_parts.get('table', '')
-
-    def _normalize_to_html(self, table_data: str) -> str:
-        """复用TEDSMetric的表格格式归一化逻辑，统一转换为HTML"""
-        # 若输入为空，直接返回空字符串
-        if not table_data.strip():
-            return ""
-        # 若已为HTML表格，直接返回
-        if '<table' in table_data.lower():
-            return table_data
-        # 若为Markdown表格，转换为HTML
-        if '|' in table_data:
-            return self._markdown_to_html(table_data)
-        # 其他格式视为纯文本表格，简单包裹为HTML
-        return f"<table><tr><td>{table_data}</td></tr></table>"
-
-    def _markdown_to_html(self, markdown: str) -> str:
-        """将Markdown表格转换为HTML（复用TEDSMetric逻辑）"""
-        lines = [line.strip() for line in markdown.split('\n') if line.strip()]
-        table_lines = [line for line in lines if '|' in line]
-        if not table_lines:
-            return ""
-        html_parts = ["<table>"]
-        # 过滤分隔线（如 |---|）
-        data_lines = [line for line in table_lines if not re.match(r'^[\s\|\-:]+$', line)]
-        for i, line in enumerate(data_lines):
-            cells = [cell.strip() for cell in line.split('|') if cell.strip()]
-            if cells:
-                # 首行视为表头（th），其余为单元格（td）
-                tag = "th" if i == 0 else "td"
-                html_parts.append(f"<tr>{''.join(f'<{tag}>{cell}</{tag}>' for cell in cells)}</tr>")
-        html_parts.append("</table>")
-        return ''.join(html_parts)
 
     def _extract_text_from_html(self, html: str) -> str:
         """从HTML表格中提取纯文本内容（忽略标签，保留数据结构）"""
