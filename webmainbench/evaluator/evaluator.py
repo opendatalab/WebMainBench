@@ -23,6 +23,7 @@ class EvaluationResult:
     extractor_name: str
     timestamp: str
     total_samples: int
+    version: str  # 抽取器版本
     
     # Overall metrics
     overall_metrics: Dict[str, float]
@@ -48,6 +49,7 @@ class EvaluationResult:
                 "extractor_name": self.extractor_name,
                 "timestamp": self.timestamp,
                 "total_samples": self.total_samples,
+                "version": self.version
             },
             "overall_metrics": self.overall_metrics,
             "sample_results": self.sample_results,
@@ -72,6 +74,7 @@ class EvaluationResult:
             error_analysis=data.get("error_analysis"),
             extractor_config=data.get("extractor_config"),
             metric_config=data.get("metric_config"),
+            version=metadata.get("version", "unknown"),
         )
 
 
@@ -182,6 +185,8 @@ class Evaluator:
             error_analysis=error_analysis,
             extractor_config=extractor.get_config(),
             metric_config=self.metric_config,
+            # 新增：传入抽取器版本（从extractor对象获取）
+            version=getattr(extractor, 'version', 'unknown'),
         )
         
         return evaluation_result
