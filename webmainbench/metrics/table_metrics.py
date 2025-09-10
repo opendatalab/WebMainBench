@@ -7,7 +7,7 @@ import re
 from .base import BaseMetric, MetricResult
 from .teds_metrics import TEDSMetric, StructureTEDSMetric
 from .text_metrics import EditDistanceMetric
-
+from bs4 import BeautifulSoup
 
 class TableEditMetric(EditDistanceMetric):
     """表格编辑距离指标"""
@@ -20,18 +20,24 @@ class TableEditMetric(EditDistanceMetric):
                         groundtruth_content_list: List[Dict[str, Any]] = None,
                         **kwargs) -> MetricResult:
         """计算表格内容的编辑距离"""
-        
-        # 从content_list中提取表格内容
-        pred_table = self._extract_table_content(predicted, predicted_content_list)
-        gt_table = self._extract_table_content(groundtruth, groundtruth_content_list)
-        
-        # 计算编辑距离
-        result = super()._calculate_score(pred_table, gt_table, **kwargs)
+
+        # 1. 提取原始表格内容
+        pred_raw = self._extract_table_content(predicted, predicted_content_list)
+        gt_raw = self._extract_table_content(groundtruth, groundtruth_content_list)
+
+        # 2. 复用TEDSMetric的归一化方法，统一转换为HTML格式
+        teds = TEDSMetric("temp_teds")  # 实例化TEDSMetric以调用其方法
+        pred_html = teds._normalize_to_html(pred_raw)  # 调用TEDS的归一化方法
+        gt_html = teds._normalize_to_html(gt_raw)
+
+        # 3. 基于归一化后的文本计算编辑距离
+        result = super()._calculate_score(pred_html, gt_html, **kwargs)
         result.metric_name = self.name
         result.details.update({
-            "predicted_table_length": len(pred_table),
-            "groundtruth_table_length": len(gt_table),
-            "content_type": "table"
+            "predicted_table_length": len(pred_html),
+            "groundtruth_table_length": len(gt_html),
+            "content_type": "table",
+            "normalization": "teds_based"  # 标记使用TEDS的归一化方法
         })
         
         return result
@@ -41,7 +47,7 @@ class TableEditMetric(EditDistanceMetric):
         # 使用统一的内容分割方法
         content_parts = self.split_content(text, content_list)
         return content_parts.get('table', '')
-    
+
     def _extract_tables_from_content_list(self, content_list: List[Dict[str, Any]]) -> List[str]:
         """递归从content_list中提取表格内容"""
         tables = []
