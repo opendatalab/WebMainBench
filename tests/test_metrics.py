@@ -129,8 +129,8 @@ $$\\int_{0}^{\\infty} e^{-x} dx = 1$$
         self.assertTrue(table_result.success)
         self.assertIsInstance(table_result.score, float)
         # 验证固定内容的确定分数
-        self.assertAlmostEqual(table_result.score, 0.7241379310344828, places=5,
-                               msg=f"table_edit分数应该是0.7241379310344828，实际: {table_result.score}")
+        self.assertAlmostEqual(table_result.score, 0.9333333333333333, places=5,
+                               msg=f"table_edit分数应该是0.9333333333333333，实际: {table_result.score}")
 
         # 验证详细信息
         self.assertEqual(table_result.details['content_type'], 'table')
@@ -874,8 +874,8 @@ def hello_world():
         # 验证表格编辑距离（分隔符长度差异导致的固定分数）
         self.assertIn("table_edit", results)
         self.assertTrue(results["table_edit"].success)
-        self.assertAlmostEqual(results["table_edit"].score, 0.6237714987714988, places=5,
-                               msg=f"table_edit分数应该是0.6237714987714988，实际: {results['table_edit'].score}")
+        self.assertAlmostEqual(results["table_edit"].score, 0.5935733724094621, places=5,
+                               msg=f"table_edit分数应该是0.5935733724094621，实际: {results['table_edit'].score}")
 
         # 验证TEDS指标（表格结构完全相同，满分）
         self.assertIn("table_TEDS", results)
@@ -885,34 +885,15 @@ def hello_world():
 
     def test_table_sample_edit_distance(self):
         """测试渲染一致,表格样式不一致的编辑距离"""
-        groundtruth = """## 销售数据统计
-
+        groundtruth = """
 | 产品 | 销量 | 收入 |
 |------|------|------|
 | 产品A | 100 | 1000 |
-| 产品B | 200 | 3000 |"""
+| 产品B | 200 | 3000 |
+"""
 
-        predicted = """## <table>
-  <thead>
-    <tr>
-      <th>产品</th>
-      <th>销量</th>
-      <th>收入</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>产品A</td>
-      <td>100</td>
-      <td>1000</td>
-    </tr>
-    <tr>
-      <td>产品B</td>
-      <td>200</td>
-      <td>3000</td>
-    </tr>
-  </tbody>
-</table>"""
+        predicted = """ 
+<table><tr><th>产品</th><th>销量</th><th>收入</th></tr><tr><td>产品A</td><td>100</td><td>1000</td></tr><tr><td>产品B</td><td>200</td><td>3000</td></tr></table>"""
 
         results = self.calculator.calculate_all(
             predicted_content=predicted,
@@ -928,8 +909,8 @@ def hello_world():
         # 验证TEDS指标（表格结构完全相同，满分）
         self.assertIn("table_TEDS", results)
         self.assertTrue(results["table_TEDS"].success)
-        self.assertAlmostEqual(results["table_TEDS"].score, 0.9806224310041104, places=5,
-                               msg=f"table_TEDS分数应该是0.9806224310041104，实际: {results['table_TEDS'].score}")
+        self.assertAlmostEqual(results["table_TEDS"].score, 1.0, places=5,
+                               msg=f"table_TEDS分数应该是1.0，实际: {results['table_TEDS'].score}")
 
     def test_formula_sample_edit_distance(self):
         """测试公式样本的编辑距离"""

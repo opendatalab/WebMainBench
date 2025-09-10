@@ -30,16 +30,12 @@ class TableEditMetric(EditDistanceMetric):
         pred_html = teds._normalize_to_html(pred_raw)  # 调用TEDS的归一化方法
         gt_html = teds._normalize_to_html(gt_raw)
 
-        # 3. 从归一化后的HTML中提取纯文本内容（保留表格结构）
-        pred_text = self._extract_text_from_html(pred_html)
-        gt_text = self._extract_text_from_html(gt_html)
-
-        # 4. 基于归一化后的文本计算编辑距离
-        result = super()._calculate_score(pred_text, gt_text, **kwargs)
+        # 3. 基于归一化后的文本计算编辑距离
+        result = super()._calculate_score(pred_html, gt_html, **kwargs)
         result.metric_name = self.name
         result.details.update({
-            "predicted_table_length": len(pred_text),
-            "groundtruth_table_length": len(gt_text),
+            "predicted_table_length": len(pred_html),
+            "groundtruth_table_length": len(gt_html),
             "content_type": "table",
             "normalization": "teds_based"  # 标记使用TEDS的归一化方法
         })
@@ -51,23 +47,6 @@ class TableEditMetric(EditDistanceMetric):
         # 使用统一的内容分割方法
         content_parts = self.split_content(text, content_list)
         return content_parts.get('table', '')
-
-    def _extract_text_from_html(self, html: str) -> str:
-        """从HTML表格中提取纯文本内容（忽略标签，保留数据结构）"""
-        if not html.strip():
-            return ""
-        soup = BeautifulSoup(html, 'html.parser')
-        table = soup.find('table')
-        if not table:
-            return ""
-        # 按行提取文本，用换行分隔行，用空格分隔单元格
-        text_parts = []
-        for row in table.find_all('tr'):
-            cells = row.find_all(['th', 'td'])
-            row_text = ' '.join([cell.get_text(strip=True) for cell in cells])
-            if row_text:
-                text_parts.append(row_text)
-        return '\n'.join(text_parts)
 
     def _extract_tables_from_content_list(self, content_list: List[Dict[str, Any]]) -> List[str]:
         """递归从content_list中提取表格内容"""
