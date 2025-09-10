@@ -126,32 +126,45 @@ class DataSaver:
             file_path: Output CSV file path
         """
         import csv
-        
+        from importlib import metadata as importlib_metadata
+
         file_path = Path(file_path)
         file_path.parent.mkdir(parents=True, exist_ok=True)
-        
-        # Convert EvaluationResult objects to dicts and ensure we have a list
+
+        # 转换结果为字典列表
         def to_dict_if_needed(item):
             return item.to_dict() if hasattr(item, 'to_dict') else item
-        
+
         if isinstance(results, list):
             results_list = [to_dict_if_needed(item) for item in results]
         else:
             results_list = [to_dict_if_needed(results)]
-        
-        # Prepare CSV data
+
         csv_data = []
-        
         for result in results_list:
-            # Extract basic info
             metadata = result.get('metadata', {})
             error_analysis = result.get('error_analysis', {})
+
+            # 获取抽取器版本
+            extractor_name = metadata.get('extractor_name', 'unknown')
+            try:
+                # 映射抽取器名称到包名
+                package_mapping = {
+                    'llm-webkit': 'llm_web_kit',
+                    'magic-html': 'magic_html',
+                    'trafilatura': 'trafilatura',
+                    'resiliparse': 'resiliparse'
+                }
+                package_name = package_mapping.get(extractor_name, extractor_name)
+                extractor_version = importlib_metadata.version(package_name)
+            except importlib_metadata.PackageNotFoundError:
+                extractor_version = 'unknown'
             row = {
                 'extractor': metadata.get('extractor_name', 'unknown'),
                 'dataset': metadata.get('dataset_name', 'unknown'),
                 'total_samples': metadata.get('total_samples', 0),
                 'success_rate': error_analysis.get('success_rate', 0.0),
-                'extractor_version': metadata.get('version', 'unknown')
+                 'extractor_version': extractor_version,
             }
             
             # Add all available metrics from overall_metrics
@@ -170,7 +183,7 @@ class DataSaver:
         # Write CSV file
         if csv_data:
             # Define field order: basic info first, then overall, then other metrics alphabetically
-            basic_fields = ['extractor', 'dataset', 'total_samples', 'success_rate','extractor_version']
+            basic_fields = ['extractor','extractor_version', 'dataset', 'total_samples', 'success_rate']
             
             # Get all metric fields from the data
             all_fields = set()
