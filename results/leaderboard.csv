@@ -1,5 +1,2 @@
 extractor,dataset,total_samples,success_rate,overall,code_edit,formula_edit,table_TEDS,table_edit,text_edit
-llm-webkit,sample_dataset,4,1.0,0.262,0.5,0.0,0.0,0.0,0.81
-magic-html,sample_dataset,4,1.0,0.174,0.1007,0.0,0.0,0.0,0.7693
-resiliparse,sample_dataset,4,1.0,0.1667,0.0,0.0,0.0,0.0,0.8333
-trafilatura,sample_dataset,4,1.0,0.1325,0.1007,0.0,0.0,0.0,0.5618
+llm-webkit,WebMainBench_1827_sample_200_v1_WebMainBench_dataset_merge_with_llm_webkit,200,1.0,0.7732,0.8571,0.5054,0.8437,0.8042,0.8555
