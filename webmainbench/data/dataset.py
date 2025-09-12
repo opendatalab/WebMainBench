@@ -17,7 +17,8 @@ class DataSample:
     id: str
     html: str  # HTML with cc-select=true annotations
     groundtruth_content: str  # Groundtruth markdown content
-    groundtruth_content_list: List[Dict[str, Any]]  # Groundtruth content_list from llm-webkit
+    # Optional fields with defaults
+    groundtruth_content_list: Optional[List[Dict[str, Any]]] = None  # Groundtruth content_list from llm-webkit
     content_list: List[Dict[str, Any]] = None # Content_list from llm-webkit
     content: str = None  # Content from llm-webkit
     # Optional metadata
@@ -29,6 +30,7 @@ class DataSample:
     tags: Optional[List[str]] = None
     llm_webkit_md: Optional[str] = None
     llm_webkit_html: Optional[str] = None  # 预处理HTML字段
+    main_html: Optional[str] = None  # 主要HTML内容字段
     
     # Extracted results (populated during evaluation)
     extracted_results: Optional[Dict[str, Any]] = None
@@ -44,6 +46,7 @@ class DataSample:
             "content": self.content,
             "llm_webkit_md": self.llm_webkit_md,
             "llm_webkit_html": self.llm_webkit_html,
+            "main_html": self.main_html,
             "url": self.url,
             "domain": self.domain,
             "language": self.language,
@@ -64,6 +67,7 @@ class DataSample:
         field_mapping = {
             "track_id": "id",  # track_id 映射到 id
             "content": "groundtruth_content",  # content 映射到 groundtruth_content
+            "convert_main_content": "groundtruth_content",  # convert_main_content 映射到 groundtruth_content
             "content_list": "groundtruth_content_list",  # content_list 映射到 groundtruth_content_list
         }
         
