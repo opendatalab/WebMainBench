@@ -155,7 +155,7 @@ class TokenStateManager:
 class LlmWebkitExtractor(BaseExtractor):
     """Advanced LLM-WebKit extractor with intelligent content classification."""
     
-    version = "2.0.0"
+    version = "4.0.1"
     description = "Advanced LLM-WebKit extractor with intelligent content classification"
     
     # 分类提示模板
