@@ -12,7 +12,7 @@ from typing import Dict, List, Any, Optional
 from bs4 import BeautifulSoup
 import argparse
 
-from llm_web_kit.simple import extract_content_from_main_html
+from llm_web_kit.simple import extract_content_from_html_with_magic_html, extract_content_from_main_html
 from llm_web_kit.input.datajson import ContentList
 
 
@@ -72,7 +72,7 @@ class DatasetStatistics:
                 return data
             
             # 提取内容
-            result = extract_content_from_main_html(url, html_content, 'json')
+            result = extract_content_from_html_with_magic_html(url, html_content, 'json')
             
             # 解析JSON
             try:
@@ -833,6 +833,9 @@ class DatasetStatistics:
             self.detect_equations(data)
             self.detect_code(data)
             self.calculate_level_score(data)  # 只计算复杂度得分，不分类
+            # 删除content_list字段
+            if 'content_list' in data:
+                del data['content_list']
 
             # 显示进度
             if (i + 1) % 100 == 0:
@@ -1067,9 +1070,9 @@ def main():
     # data/sample_dataset.jsonl
     # data/WebMainBench_1827_v1_WebMainBench_dataset_merge_with_llm_webkit.jsonl
     parser.add_argument("input_file", nargs='?', 
-                       default="data/WebMainBench_1827_v1_WebMainBench_dataset_merge_with_llm_webkit.jsonl",
+                       default="data/WebMainBench_7887_language_output.jsonl",
                        help="输入JSONL文件路径")
-    parser.add_argument("--output", default="data/sample_dataset_with_stats.jsonl", type=str, help="输出文件路径")
+    parser.add_argument("--output", default="data/WebMainBench_7887_language_output_with_stats.jsonl", type=str, help="输出文件路径")
 
     args = parser.parse_args()
     

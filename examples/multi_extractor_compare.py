@@ -8,7 +8,7 @@ def all_extractor_comparison():
     print("\n=== 多抽取器对比演示 ===\n")
     
     # 创建数据集
-    dataset_path = Path("/home/lulindong/Pycharm_projects/cc/1827_split_jsonl/1-200.jsonl")
+    dataset_path = Path("data/sample_dataset.jsonl")
     dataset = DataLoader.load_jsonl(dataset_path)
     
     # 创建webkit抽取器
@@ -27,6 +27,8 @@ def all_extractor_comparison():
     # 运行对比
     evaluator = Evaluator()
     extractors = [webkit_extractor, magic_extractor, trafilatura_extractor, resiliparse_extractor]
+    # extractors = [webkit_extractor]
+
     
     results = evaluator.compare_extractors(
         dataset=dataset,

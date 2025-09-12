@@ -38,7 +38,7 @@ ocr_demo
 _build/
 
 
-output/
+results/
 **/temp.py
 
 # coverage file
