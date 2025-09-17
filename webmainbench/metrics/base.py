@@ -293,43 +293,55 @@ class BaseMetric(ABC):
             if code_content.strip():
                 code_parts.append(code_content)
 
-        # 提取公式 - 根据字段类型决定使用API还是正则
+        # 提取公式 - 新的两步处理逻辑
         formula_parts = []
 
-        # 如果是groundtruth_content，使用正则提取公式
-        if field_name == "llm_webkit_md":
-            print(f"[DEBUG] 检测到groundtruth内容，使用正则提取公式")
-            # 统一的公式提取模式
-            latex_patterns = [
-                r'(?<!\\)\$\$(.*?)(?<!\\)\$\$',  # 行间 $$...$$
-                r'(?<!\\)\\\[(.*?)(?<!\\)\\\]',  # 行间 \[...\]
-                r'(?<!\\)\$(.*?)(?<!\\)\$',  # 行内 $...$
-                r'(?<!\\)\\\((.*?)(?<!\\)\\\)',  # 行内 \(...\)
-            ]
+        # 第一步：先用正则提取公式
+        regex_formulas = []
+        latex_patterns = [
+            r'(?<!\\)\$\$(.*?)(?<!\\)\$\$',  # 行间 $$...$$
+            r'(?<!\\)\\\[(.*?)(?<!\\)\\\]',  # 行间 \[...\]
+            r'(?<!\\)\$(.*?)(?<!\\)\$',  # 行内 $...$
+            r'(?<!\\)\\\((.*?)(?<!\\)\\\)',  # 行内 \(...\)
+        ]
 
-            for pattern in latex_patterns:
-                for match in re.finditer(pattern, text, re.DOTALL):
-                    formula_full = match.group(0)
-                    formula_content = match.group(1)
-                    extracted_segments.append(formula_full)
-                    if formula_content.strip():
-                        formula_parts.append(formula_content.strip())
+        for pattern in latex_patterns:
+            for match in re.finditer(pattern, text, re.DOTALL):
+                formula_full = match.group(0)
+                formula_content = match.group(1)
+                extracted_segments.append(formula_full)
+                if formula_content.strip():
+                    regex_formulas.append(formula_content.strip())
+
+        # 第二步：根据字段类型决定是否需要API修正
+        if field_name == "groundtruth_content":
+            print(f"[DEBUG] 检测到groundtruth内容，仅使用正则提取公式")
+            formula_parts = regex_formulas
         else:
-            # 其他内容使用API提取公式
-            cache_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '.cache')
-            os.makedirs(cache_dir, exist_ok=True)
+            print(f"[DEBUG] 检测到llm_webkit_md内容，使用正则+API修正模式")
+            # 对于llm_webkit_md，将正则结果传递给API进行修正
+            if regex_formulas:
+                # 将正则提取的公式作为输入传递给API
+                regex_formulas_text = '\n'.join(regex_formulas)
+                print(f"[DEBUG] 正则提取到 {len(regex_formulas)} 个公式，准备API修正")
 
-            # 使用文本哈希作为缓存文件名
-            text_hash = hashlib.md5(text.encode('utf-8')).hexdigest()
-            cache_file = os.path.join(cache_dir, f'formula_cache_{text_hash}.json')
+                cache_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '.cache')
+                os.makedirs(cache_dir, exist_ok=True)
 
-            # 使用LLM API提取公式
-            try:
-                from .formula_extractor import extract_formulas_with_llm
-                formula_parts = extract_formulas_with_llm(text, cache_file)
-                print(f"[DEBUG] 公式提取成功，提取到 {len(formula_parts)} 个公式")
-            except Exception as e:
-                print(f"[DEBUG] 公式提取失败: {type(e).__name__}: {e}")
+                # 使用正则结果的哈希作为缓存文件名
+                text_hash = hashlib.md5(regex_formulas_text.encode('utf-8')).hexdigest()
+                cache_file = os.path.join(cache_dir, f'formula_correction_cache_{text_hash}.json')
+
+                try:
+                    from .formula_extractor import correct_formulas_with_llm
+                    corrected_formulas = correct_formulas_with_llm(regex_formulas, cache_file)
+                    formula_parts = corrected_formulas
+                    print(f"[DEBUG] API修正成功，最终得到 {len(formula_parts)} 个公式")
+                except Exception as e:
+                    print(f"[DEBUG] API修正失败: {type(e).__name__}: {e}，使用正则结果")
+                    formula_parts = regex_formulas
+            else:
+                print(f"[DEBUG] 正则未提取到公式，跳过API修正")
                 formula_parts = []
 
         # 提取表格

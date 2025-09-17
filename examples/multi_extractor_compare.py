@@ -8,7 +8,7 @@ def all_extractor_comparison():
     print("\n=== 多抽取器对比演示 ===\n")
     
     # 创建数据集
-    dataset_path = Path("../data/test_math.jsonl")
+    dataset_path = Path("../data/WebMainBench_llm-webkit_v1_WebMainBench_7887_within_formula.jsonl")
     dataset = DataLoader.load_jsonl(dataset_path)
     
     # 创建webkit抽取器
@@ -26,8 +26,8 @@ def all_extractor_comparison():
     
     # 运行对比
     evaluator = Evaluator()
-    extractors = [webkit_extractor, magic_extractor, trafilatura_extractor, resiliparse_extractor]
-    # extractors = [webkit_extractor]
+    # extractors = [webkit_extractor, magic_extractor, trafilatura_extractor, resiliparse_extractor]
+    extractors = [webkit_extractor]
 
     
     results = evaluator.compare_extractors(
