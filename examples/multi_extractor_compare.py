@@ -8,7 +8,7 @@ def all_extractor_comparison():
     print("\n=== 多抽取器对比演示 ===\n")
     
     # 创建数据集
-    dataset_path = Path("data/sample_dataset.jsonl")
+    dataset_path = Path("../data/WebMainBench_llm-webkit_v1_WebMainBench_7887_within_formula.jsonl")
     dataset = DataLoader.load_jsonl(dataset_path)
     
     # 创建webkit抽取器

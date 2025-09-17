@@ -303,14 +303,14 @@ class DataSaver:
 
                     # 解析预测值（predicted）
                     predicted_content = extraction_result.get('extracted_content', '')
-                    predicted_parts = BaseMetric._extract_from_markdown(predicted_content)  # 关键：解析预测内容
+                    predicted_parts = BaseMetric._extract_from_markdown(predicted_content, field_name="llm_webkit_md")  # 关键：解析预测内容
                     for part_type in ['code', 'formula', 'table', 'text']:
                         sample_dict[f'{current_extractor_name}_predicted_{part_type}'] = predicted_parts.get(part_type, '')
 
             # 解析真实值（groundtruth）- 只需要解析一次
             if extractor_names:  # 只有当存在extractor时才解析
                 groundtruth_content = sample_dict.get('groundtruth_content', '')
-                groundtruth_parts = BaseMetric._extract_from_markdown(groundtruth_content)  # 关键：解析真实内容
+                groundtruth_parts = BaseMetric._extract_from_markdown(groundtruth_content, field_name="groundtruth_content")  # 关键：解析真实内容
                 for part_type in ['code', 'formula', 'table', 'text']:
                     # 使用第一个extractor的名字作为前缀，或者使用通用前缀
                     prefix = extractor_names[0] if len(extractor_names) == 1 else 'groundtruth'

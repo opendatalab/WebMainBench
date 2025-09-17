@@ -8,6 +8,8 @@ from typing import Dict, Any, List, Optional, Union
 import traceback
 import re
 from bs4 import BeautifulSoup
+import os
+import hashlib
 
 @dataclass
 class MetricResult:
@@ -121,16 +123,16 @@ class BaseMetric(ABC):
             result = self.calculate(pred, gt, **kwargs)
             results.append(result)
         return results
-    
+
     @staticmethod
-    def split_content(text: str, content_list: List[Dict[str, Any]] = None) -> Dict[str, str]:
+    def split_content(text: str, content_list: List[Dict[str, Any]] = None, field_name: str = None) -> Dict[str, str]:
         """
         统一的内容分割方法，将文本分为代码、公式、表格和剩余文本4个部分。
-        
+
         Args:
             text: 原始markdown文本
             content_list: 结构化内容列表（来自llm-webkit等）
-            
+            field_name: 当前处理的字段名称，传递给_extract_from_markdown
         Returns:
             Dict with keys: 'code', 'formula', 'table', 'text'
         """
@@ -139,9 +141,9 @@ class BaseMetric(ABC):
             extracted_content = BaseMetric._extract_from_content_list(content_list)
             if any(extracted_content.values()):
                 return extracted_content
-        
-        # 从markdown文本中提取
-        return BaseMetric._extract_from_markdown(text or "")
+
+        # 从markdown文本中提取，传递字段名称
+        return BaseMetric._extract_from_markdown(text or "", field_name=field_name)
     
     @staticmethod
     def _extract_from_content_list(content_list: List[Dict[str, Any]]) -> Dict[str, str]:
@@ -193,12 +195,12 @@ class BaseMetric(ABC):
             'text': '\n'.join(extracted['text'])
         }
     
-    @staticmethod 
-    def _extract_from_markdown(text: str) -> Dict[str, str]:
+    @staticmethod
+    def _extract_from_markdown(text: str, field_name: str = None) -> Dict[str, str]:
         """从markdown文本中提取各种类型的内容"""
         if not text:
             return {'code': '', 'formula': '', 'table': '', 'text': ''}
-        
+
         # 收集所有需要移除的内容片段
         extracted_segments = []
         code_parts = []
@@ -291,34 +293,56 @@ class BaseMetric(ABC):
             if code_content.strip():
                 code_parts.append(code_content)
 
-        # 提取公式
+        # 提取公式 - 新的两步处理逻辑
         formula_parts = []
-        # 统一的公式提取模式
+
+        # 第一步：先用正则提取公式
+        regex_formulas = []
         latex_patterns = [
-            # r'(?<!\\)\$\$([^$]+)\$\$(?!\\)',  # Display math (not escaped)
-            # r'(?<!\\)\$([^$\n]+)\$(?![\\\$])',  # Inline math (not escaped)
-            # r'\\begin\{equation\*?\}(.*?)\\end\{equation\*?\}',  # Equation environment
-            # r'\\begin\{align\*?\}(.*?)\\end\{align\*?\}',        # Align environment
-            # r'\\begin\{gather\*?\}(.*?)\\end\{gather\*?\}',      # Gather environment
-            # r'\\begin\{eqnarray\*?\}(.*?)\\end\{eqnarray\*?\}',  # Eqnarray environment
-            # r'\\begin\{multline\*?\}(.*?)\\end\{multline\*?\}',  # Multline environment
-            # r'\\begin\{split\}(.*?)\\end\{split\}',              # Split environment
-            # r'(?<!\\)\$\$([^$]+)\$\$(?!\\)',
-            # r'(?<!\\)\$([^$\n\w][^$\n]*[^$\n\w])\$(?![\\\$])',
-            r'(?<!\\)\$\$(.*?)(?<!\\)\$\$',  # 行间 $$...$$，确保 $ 没有被转义
-            r'(?<!\\)\\\[(.*?)(?<!\\)\\\]',  # 行间 \[...\]，确保 \ 没有被转义
-            r'(?<!\\)\$(.*?)(?<!\\)\$',  # 行内 $...$，确保 $ 没有被转义
-            # r'(?<!\\)\$(.*?)(?<!\\)\$(?!\d)',  # 第二个$后面不能是数字
-            r'(?<!\\)\\\((.*?)(?<!\\)\\\)',  # 行内 \(...\)，确保 \ 没有被转义
+            r'(?<!\\)\$\$(.*?)(?<!\\)\$\$',  # 行间 $$...$$
+            r'(?<!\\)\\\[(.*?)(?<!\\)\\\]',  # 行间 \[...\]
+            r'(?<!\\)\$(.*?)(?<!\\)\$',  # 行内 $...$
+            r'(?<!\\)\\\((.*?)(?<!\\)\\\)',  # 行内 \(...\)
         ]
-        
+
         for pattern in latex_patterns:
             for match in re.finditer(pattern, text, re.DOTALL):
-                formula_full = match.group(0)  # 完整匹配（包含$符号）
-                formula_content = match.group(1)  # 只是公式内容
+                formula_full = match.group(0)
+                formula_content = match.group(1)
                 extracted_segments.append(formula_full)
                 if formula_content.strip():
-                    formula_parts.append(formula_content.strip())
+                    regex_formulas.append(formula_content.strip())
+
+        # 第二步：根据字段类型决定是否需要API修正
+        if field_name == "groundtruth_content":
+            print(f"[DEBUG] 检测到groundtruth内容，仅使用正则提取公式")
+            formula_parts = regex_formulas
+        else:
+            print(f"[DEBUG] 检测到llm_webkit_md内容，使用正则+API修正模式")
+            # 对于llm_webkit_md，将正则结果传递给API进行修正
+            if regex_formulas:
+                # 将正则提取的公式作为输入传递给API
+                regex_formulas_text = '\n'.join(regex_formulas)
+                print(f"[DEBUG] 正则提取到 {len(regex_formulas)} 个公式，准备API修正")
+
+                cache_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '.cache')
+                os.makedirs(cache_dir, exist_ok=True)
+
+                # 使用正则结果的哈希作为缓存文件名
+                text_hash = hashlib.md5(regex_formulas_text.encode('utf-8')).hexdigest()
+                cache_file = os.path.join(cache_dir, f'formula_correction_cache_{text_hash}.json')
+
+                try:
+                    from .formula_extractor import correct_formulas_with_llm
+                    corrected_formulas = correct_formulas_with_llm(regex_formulas, cache_file)
+                    formula_parts = corrected_formulas
+                    print(f"[DEBUG] API修正成功，最终得到 {len(formula_parts)} 个公式")
+                except Exception as e:
+                    print(f"[DEBUG] API修正失败: {type(e).__name__}: {e}，使用正则结果")
+                    formula_parts = regex_formulas
+            else:
+                print(f"[DEBUG] 正则未提取到公式，跳过API修正")
+                formula_parts = []
 
         # 提取表格
         table_parts = []
@@ -468,4 +492,4 @@ class BaseMetric(ABC):
         return f"{self.__class__.__name__}(name='{self.name}')"
     
     def __repr__(self) -> str:
-        return self.__str__() 
+        return self.__str__()
