@@ -1067,9 +1067,9 @@ def main():
     # data/sample_dataset.jsonl
     # data/WebMainBench_1827_v1_WebMainBench_dataset_merge_with_llm_webkit.jsonl
     parser.add_argument("input_file", nargs='?', 
-                       default="data/WebMainBench_1827_v1_WebMainBench_dataset_merge_with_llm_webkit.jsonl",
+                       default="/home/lulindong/Pycharm_projects/cc/WebMainBench_test_WebMainBench_7887_language_output_with_stats.jsonl",
                        help="输入JSONL文件路径")
-    parser.add_argument("--output", default="data/sample_dataset_with_stats.jsonl", type=str, help="输出文件路径")
+    parser.add_argument("--output", default="/home/lulindong/Pycharm_projects/cc/7887_meta.jsonl", type=str, help="输出文件路径")
 
     args = parser.parse_args()
     
