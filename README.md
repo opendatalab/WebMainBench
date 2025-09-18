@@ -292,6 +292,105 @@ python scripts/statics.py data/sample_dataset.jsonl --output data/analyzed_datas
 ✅ 成功写入 1,827 条数据
 ```
 
+### 语言分类工具
+
+WebMainBench 提供了语言分类工具 `scripts/language_classify.py`，用于为数据集中的文本内容自动添加符合 ISO 639-1 标准的语言标签。
+
+#### 主要特性
+
+- **多种检测方式**：支持基于规则的快速检测和基于LLM的高精度检测
+- **ISO 639-1 标准**：返回标准的两字母语言代码（如 en, zh, es）
+- **广泛语言支持**：支持80+种主要语言的检测
+- **批量处理**：高效处理大规模数据集
+- **智能回退**：多字段检测，自动处理缺失数据
+
+#### 使用方法
+
+```bash
+# 基于规则的快速检测（推荐用于大规模数据）
+python scripts/language_classify.py data/input.jsonl --output data/output.jsonl
+
+# 使用LLM进行高精度检测
+python scripts/language_classify.py data/input.jsonl --output data/output.jsonl \
+    --use-llm --api-key YOUR_OPENAI_API_KEY
+
+# 自定义批处理大小
+python scripts/language_classify.py data/input.jsonl --output data/output.jsonl \
+    --batch-size 50
+```
+
+#### Prompt设计建议
+
+如果你使用LLM进行语言检测，工具内置了优化的prompt模板：
+
+**核心设计原则：**
+1. **明确输出格式**：只返回ISO 639-1两字母代码
+2. **处理边界情况**：空文本、多语言文本、符号等
+3. **语言映射规则**：中文统一返回"zh"，未支持语言返回最接近的
+4. **文本截断**：只分析前2000字符，提高效率
+
+**示例Prompt结构：**
+```
+Please identify the primary language of the following text and return ONLY the ISO 639-1 two-letter language code.
+
+SUPPORTED LANGUAGES: en (English), zh (Chinese), es (Spanish), ...
+
+RULES:
+1. Return ONLY the two-letter code
+2. For mixed languages, return the DOMINANT language
+3. Empty text defaults to "en"
+4. Chinese variants all return "zh"
+
+TEXT TO ANALYZE: [your text here]
+
+LANGUAGE CODE:
+```
+
+#### 输出结果
+
+工具会在数据的 `meta.language` 字段中添加语言标签：
+
+```json
+{
+  "convert_main_content": "Hello, this is sample content.",
+  "meta": {
+    "language": "en"
+  }
+}
+```
+
+#### 运行示例
+
+```bash
+# 处理示例
+python scripts/language_classify.py data/sample.jsonl --output data/sample_with_lang.jsonl
+
+# 输出：
+🔄 开始处理语言分类...
+📄 输入文件: data/sample.jsonl
+📄 输出文件: data/sample_with_lang.jsonl  
+🧠 检测方法: 基于规则
+  📊 已处理 100 条数据...
+  📊 已处理 200 条数据...
+
+✅ 处理完成!
+📊 总计处理: 1,000 条数据
+📊 语言分布:
+   en (English): 650 (65.0%)
+   zh (Chinese): 200 (20.0%)
+   es (Spanish): 80 (8.0%)
+   fr (French): 40 (4.0%)
+   de (German): 30 (3.0%)
+```
+
+#### 支持的语言
+
+工具支持80+种主要语言，包括：
+- **欧洲语言**：英语(en)、西班牙语(es)、法语(fr)、德语(de)、意大利语(it)等
+- **亚洲语言**：中文(zh)、日语(ja)、韩语(ko)、泰语(th)、越南语(vi)等  
+- **其他语言**：阿拉伯语(ar)、俄语(ru)、葡萄牙语(pt)、印地语(hi)等
+
+完整列表请运行：`python examples/language_classify_demo.py`
 
 ## 项目架构
 

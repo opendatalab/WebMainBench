@@ -3,7 +3,7 @@
     "metadata": {
       "dataset_name": "sample_dataset",
       "extractor_name": "llm-webkit",
-      "timestamp": "2025-09-04T15:01:19.530463",
+      "timestamp": "2025-09-12T16:00:30.550898",
       "total_samples": 4
     },
     "overall_metrics": {
@@ -18,18 +18,18 @@
       {
         "sample_id": "7cdb7231-9337-4104-a562-9b8f285add7d",
         "extraction_success": true,
-        "extraction_time": 0.7293002605438232,
+        "extraction_time": 0.6670150756835938,
         "metrics": {
           "code_edit": {
             "score": 1.0,
             "success": true,
             "details": {
               "distance": 0,
-              "predicted_length": 854,
-              "groundtruth_length": 854,
+              "predicted_length": 767,
+              "groundtruth_length": 767,
               "normalized": true,
-              "predicted_code_length": 854,
-              "groundtruth_code_length": 854,
+              "predicted_code_length": 767,
+              "groundtruth_code_length": 767,
               "content_type": "code"
             }
           },
@@ -62,7 +62,8 @@
             "details": {
               "predicted_table_length": 0,
               "groundtruth_table_length": 0,
-              "content_type": "table"
+              "content_type": "table",
+              "normalization": "teds_based"
             },
             "error": "Both predicted and groundtruth are empty"
           },
@@ -101,7 +102,7 @@
       {
         "sample_id": "3026972b-8a26-48c3-bc00-c181138702f2",
         "extraction_success": true,
-        "extraction_time": 0.06506109237670898,
+        "extraction_time": 0.08066821098327637,
         "metrics": {
           "code_edit": {
             "score": 0.0,
@@ -142,7 +143,8 @@
             "details": {
               "predicted_table_length": 0,
               "groundtruth_table_length": 0,
-              "content_type": "table"
+              "content_type": "table",
+              "normalization": "teds_based"
             },
             "error": "Both predicted and groundtruth are empty"
           },
@@ -180,7 +182,7 @@
       {
         "sample_id": "ee0a113d-bdd5-48cf-ac9c-a7cadfbfb74b",
         "extraction_success": true,
-        "extraction_time": 0.0364222526550293,
+        "extraction_time": 0.04138970375061035,
         "metrics": {
           "code_edit": {
             "score": 0.0,
@@ -219,26 +221,23 @@
             "score": 0.0,
             "success": true,
             "details": {
-              "distance": 179,
+              "distance": 299,
               "predicted_length": 0,
-              "groundtruth_length": 179,
+              "groundtruth_length": 299,
               "normalized": true,
               "predicted_table_length": 0,
-              "groundtruth_table_length": 179,
-              "content_type": "table"
+              "groundtruth_table_length": 299,
+              "content_type": "table",
+              "normalization": "teds_based"
             }
           },
           "table_TEDS": {
             "score": 0.0,
             "success": true,
             "details": {
-              "edit_distance": 26.0,
-              "predicted_nodes": 3,
-              "groundtruth_nodes": 19,
-              "max_nodes": 19,
-              "structure_only": false,
-              "algorithm": "TEDS",
-              "content_type": "table"
+              "note": "One table is empty or invalid",
+              "content_type": "table",
+              "algorithm": "TEDS"
             }
           },
           "overall": {
@@ -268,7 +267,7 @@
       {
         "sample_id": "33e291cd-5b26-48b1-977f-3c63b45e6d13",
         "extraction_success": true,
-        "extraction_time": 0.004807949066162109,
+        "extraction_time": 0.005243778228759766,
         "metrics": {
           "code_edit": {
             "score": 0.0,
@@ -312,7 +311,8 @@
             "details": {
               "predicted_table_length": 0,
               "groundtruth_table_length": 0,
-              "content_type": "table"
+              "content_type": "table",
+              "normalization": "teds_based"
             },
             "error": "Both predicted and groundtruth are empty"
           },
@@ -376,33 +376,33 @@
     "metadata": {
       "dataset_name": "sample_dataset",
       "extractor_name": "magic-html",
-      "timestamp": "2025-09-04T15:01:19.877934",
+      "timestamp": "2025-09-12T16:00:30.888988",
       "total_samples": 4
     },
     "overall_metrics": {
-      "text_edit": 0.769258630408185,
-      "code_edit": 0.10070257611241218,
-      "table_edit": 0.0,
-      "table_TEDS": 0.0,
+      "text_edit": 0.8417712212665027,
+      "code_edit": 0.9739243807040417,
+      "table_edit": 1.0,
+      "table_TEDS": 1.0,
       "formula_edit": 0.0,
-      "overall": 0.17399224130411944
+      "overall": 0.7631391203941089
     },
     "sample_results": [
       {
         "sample_id": "7cdb7231-9337-4104-a562-9b8f285add7d",
         "extraction_success": true,
-        "extraction_time": 0.0339200496673584,
+        "extraction_time": 0.034438133239746094,
         "metrics": {
           "code_edit": {
-            "score": 0.10070257611241218,
+            "score": 0.9739243807040417,
             "success": true,
             "details": {
-              "distance": 768,
-              "predicted_length": 86,
-              "groundtruth_length": 854,
+              "distance": 20,
+              "predicted_length": 755,
+              "groundtruth_length": 767,
               "normalized": true,
-              "predicted_code_length": 86,
-              "groundtruth_code_length": 854,
+              "predicted_code_length": 755,
+              "groundtruth_code_length": 767,
               "content_type": "code"
             }
           },
@@ -417,14 +417,14 @@
             "error": "Both predicted and groundtruth are empty"
           },
           "text_edit": {
-            "score": 0.8570119156736938,
+            "score": 0.8536585365853658,
             "success": true,
             "details": {
-              "distance": 312,
-              "predicted_length": 2182,
+              "distance": 318,
+              "predicted_length": 2173,
               "groundtruth_length": 1977,
               "normalized": true,
-              "predicted_text_length": 2182,
+              "predicted_text_length": 2173,
               "groundtruth_text_length": 1977,
               "content_type": "text"
             }
@@ -435,7 +435,8 @@
             "details": {
               "predicted_table_length": 0,
               "groundtruth_table_length": 0,
-              "content_type": "table"
+              "content_type": "table",
+              "normalization": "teds_based"
             },
             "error": "Both predicted and groundtruth are empty"
           },
@@ -449,7 +450,7 @@
             "error": "Skipped due to table_edit failure: unknown reason"
           },
           "overall": {
-            "score": 0.478857245893053,
+            "score": 0.9137914586447038,
             "success": true,
             "details": {
               "source": "average_of_all_metrics",
@@ -457,8 +458,8 @@
               "successful_metrics": 2,
               "failed_metrics": 3,
               "individual_scores": {
-                "code_edit": 0.10070257611241218,
-                "text_edit": 0.8570119156736938
+                "code_edit": 0.9739243807040417,
+                "text_edit": 0.8536585365853658
               }
             }
           }
@@ -474,7 +475,7 @@
       {
         "sample_id": "3026972b-8a26-48c3-bc00-c181138702f2",
         "extraction_success": true,
-        "extraction_time": 0.06366896629333496,
+        "extraction_time": 0.057988643646240234,
         "metrics": {
           "code_edit": {
             "score": 0.0,
@@ -490,24 +491,24 @@
             "score": 0.0,
             "success": true,
             "details": {
-              "distance": 11580,
-              "predicted_length": 11580,
+              "distance": 11579,
+              "predicted_length": 11579,
               "groundtruth_length": 0,
               "normalized": true,
-              "predicted_formula_length": 11580,
+              "predicted_formula_length": 11579,
               "groundtruth_formula_length": 0,
               "content_type": "formula"
             }
           },
           "text_edit": {
-            "score": 0.9848316283613274,
+            "score": 0.9975019346430074,
             "success": true,
             "details": {
-              "distance": 1118,
-              "predicted_length": 73706,
+              "distance": 184,
+              "predicted_length": 73657,
               "groundtruth_length": 73498,
               "normalized": true,
-              "predicted_text_length": 73706,
+              "predicted_text_length": 73657,
               "groundtruth_text_length": 73498,
               "content_type": "text"
             }
@@ -518,7 +519,8 @@
             "details": {
               "predicted_table_length": 0,
               "groundtruth_table_length": 0,
-              "content_type": "table"
+              "content_type": "table",
+              "normalization": "teds_based"
             },
             "error": "Both predicted and groundtruth are empty"
           },
@@ -532,7 +534,7 @@
             "error": "Skipped due to table_edit failure: unknown reason"
           },
           "overall": {
-            "score": 0.4924158141806637,
+            "score": 0.4987509673215037,
             "success": true,
             "details": {
               "source": "average_of_all_metrics",
@@ -541,7 +543,7 @@
               "failed_metrics": 3,
               "individual_scores": {
                 "formula_edit": 0.0,
-                "text_edit": 0.9848316283613274
+                "text_edit": 0.9975019346430074
               }
             }
           }
@@ -557,7 +559,7 @@
       {
         "sample_id": "ee0a113d-bdd5-48cf-ac9c-a7cadfbfb74b",
         "extraction_success": true,
-        "extraction_time": 0.06996703147888184,
+        "extraction_time": 0.06598615646362305,
         "metrics": {
           "code_edit": {
             "score": 0.0,
@@ -580,37 +582,38 @@
             "error": "Both predicted and groundtruth are empty"
           },
           "text_edit": {
-            "score": 0.5453646748681897,
+            "score": 0.8226575809199319,
             "success": true,
             "details": {
-              "distance": 4139,
-              "predicted_length": 9104,
+              "distance": 1041,
+              "predicted_length": 5870,
               "groundtruth_length": 5828,
               "normalized": true,
-              "predicted_text_length": 9104,
+              "predicted_text_length": 5870,
               "groundtruth_text_length": 5828,
               "content_type": "text"
             }
           },
           "table_edit": {
-            "score": 0.0,
+            "score": 1.0,
             "success": true,
             "details": {
-              "distance": 179,
-              "predicted_length": 0,
-              "groundtruth_length": 179,
+              "distance": 0,
+              "predicted_length": 299,
+              "groundtruth_length": 299,
               "normalized": true,
-              "predicted_table_length": 0,
-              "groundtruth_table_length": 179,
-              "content_type": "table"
+              "predicted_table_length": 299,
+              "groundtruth_table_length": 299,
+              "content_type": "table",
+              "normalization": "teds_based"
             }
           },
           "table_TEDS": {
-            "score": 0.0,
+            "score": 1.0,
             "success": true,
             "details": {
-              "edit_distance": 26.0,
-              "predicted_nodes": 3,
+              "edit_distance": 0.0,
+              "predicted_nodes": 19,
               "groundtruth_nodes": 19,
               "max_nodes": 19,
               "structure_only": false,
@@ -619,7 +622,7 @@
             }
           },
           "overall": {
-            "score": 0.18178822495606325,
+            "score": 0.940885860306644,
             "success": true,
             "details": {
               "source": "average_of_all_metrics",
@@ -627,9 +630,9 @@
               "successful_metrics": 3,
               "failed_metrics": 2,
               "individual_scores": {
-                "text_edit": 0.5453646748681897,
-                "table_edit": 0.0,
-                "table_TEDS": 0.0
+                "text_edit": 0.8226575809199319,
+                "table_edit": 1.0,
+                "table_TEDS": 1.0
               }
             }
           }
@@ -645,7 +648,7 @@
       {
         "sample_id": "33e291cd-5b26-48b1-977f-3c63b45e6d13",
         "extraction_success": true,
-        "extraction_time": 0.020486116409301758,
+        "extraction_time": 0.020375728607177734,
         "metrics": {
           "code_edit": {
             "score": 0.0,
@@ -668,14 +671,14 @@
             "error": "Both predicted and groundtruth are empty"
           },
           "text_edit": {
-            "score": 0.6898263027295286,
+            "score": 0.6932668329177057,
             "success": true,
             "details": {
-              "distance": 125,
-              "predicted_length": 403,
+              "distance": 123,
+              "predicted_length": 401,
               "groundtruth_length": 289,
               "normalized": true,
-              "predicted_text_length": 403,
+              "predicted_text_length": 401,
               "groundtruth_text_length": 289,
               "content_type": "text"
             }
@@ -686,7 +689,8 @@
             "details": {
               "predicted_table_length": 0,
               "groundtruth_table_length": 0,
-              "content_type": "table"
+              "content_type": "table",
+              "normalization": "teds_based"
             },
             "error": "Both predicted and groundtruth are empty"
           },
@@ -700,7 +704,7 @@
             "error": "Skipped due to table_edit failure: unknown reason"
           },
           "overall": {
-            "score": 0.6898263027295286,
+            "score": 0.6932668329177057,
             "success": true,
             "details": {
               "source": "average_of_all_metrics",
@@ -708,7 +712,7 @@
               "successful_metrics": 1,
               "failed_metrics": 4,
               "individual_scores": {
-                "text_edit": 0.6898263027295286
+                "text_edit": 0.6932668329177057
               }
             }
           }
@@ -724,12 +728,12 @@
     ],
     "category_metrics": {
       "unknown": {
-        "text_edit": 0.769258630408185,
-        "code_edit": 0.10070257611241218,
-        "table_edit": 0.0,
-        "table_TEDS": 0.0,
+        "text_edit": 0.8417712212665027,
+        "code_edit": 0.9739243807040417,
+        "table_edit": 1.0,
+        "table_TEDS": 1.0,
         "formula_edit": 0.0,
-        "overall": 0.17399224130411944
+        "overall": 0.7631391203941089
       }
     },
     "error_analysis": {
@@ -746,33 +750,33 @@
     "metadata": {
       "dataset_name": "sample_dataset",
       "extractor_name": "trafilatura",
-      "timestamp": "2025-09-04T15:01:20.121846",
+      "timestamp": "2025-09-12T16:00:31.127664",
       "total_samples": 4
     },
     "overall_metrics": {
-      "text_edit": 0.5618017579282533,
-      "code_edit": 0.10070257611241218,
+      "text_edit": 0.5603024791013755,
+      "code_edit": 0.0,
       "table_edit": 0.0,
       "table_TEDS": 0.0,
       "formula_edit": 0.0,
-      "overall": 0.13250086680813308
+      "overall": 0.11206049582027511
     },
     "sample_results": [
       {
         "sample_id": "7cdb7231-9337-4104-a562-9b8f285add7d",
         "extraction_success": true,
-        "extraction_time": 0.030450820922851562,
+        "extraction_time": 0.030469894409179688,
         "metrics": {
           "code_edit": {
-            "score": 0.10070257611241218,
+            "score": 0.0,
             "success": true,
             "details": {
-              "distance": 768,
-              "predicted_length": 86,
-              "groundtruth_length": 854,
+              "distance": 767,
+              "predicted_length": 0,
+              "groundtruth_length": 767,
               "normalized": true,
-              "predicted_code_length": 86,
-              "groundtruth_code_length": 854,
+              "predicted_code_length": 0,
+              "groundtruth_code_length": 767,
               "content_type": "code"
             }
           },
@@ -805,7 +809,8 @@
             "details": {
               "predicted_table_length": 0,
               "groundtruth_table_length": 0,
-              "content_type": "table"
+              "content_type": "table",
+              "normalization": "teds_based"
             },
             "error": "Both predicted and groundtruth are empty"
           },
@@ -819,7 +824,7 @@
             "error": "Skipped due to table_edit failure: unknown reason"
           },
           "overall": {
-            "score": 0.42187379690800175,
+            "score": 0.37152250885179566,
             "success": true,
             "details": {
               "source": "average_of_all_metrics",
@@ -827,7 +832,7 @@
               "successful_metrics": 2,
               "failed_metrics": 3,
               "individual_scores": {
-                "code_edit": 0.10070257611241218,
+                "code_edit": 0.0,
                 "text_edit": 0.7430450177035913
               }
             }
@@ -844,7 +849,7 @@
       {
         "sample_id": "3026972b-8a26-48c3-bc00-c181138702f2",
         "extraction_success": true,
-        "extraction_time": 0.017701148986816406,
+        "extraction_time": 0.018096923828125,
         "metrics": {
           "code_edit": {
             "score": 0.0,
@@ -885,7 +890,8 @@
             "details": {
               "predicted_table_length": 0,
               "groundtruth_table_length": 0,
-              "content_type": "table"
+              "content_type": "table",
+              "normalization": "teds_based"
             },
             "error": "Both predicted and groundtruth are empty"
           },
@@ -923,7 +929,7 @@
       {
         "sample_id": "ee0a113d-bdd5-48cf-ac9c-a7cadfbfb74b",
         "extraction_success": true,
-        "extraction_time": 0.09441804885864258,
+        "extraction_time": 0.09360408782958984,
         "metrics": {
           "code_edit": {
             "score": 0.0,
@@ -946,14 +952,14 @@
             "error": "Both predicted and groundtruth are empty"
           },
           "text_edit": {
-            "score": 0.37871239701092163,
+            "score": 0.3727152817034106,
             "success": true,
             "details": {
-              "distance": 6485,
-              "predicted_length": 10438,
+              "distance": 6658,
+              "predicted_length": 10614,
               "groundtruth_length": 5828,
               "normalized": true,
-              "predicted_text_length": 10438,
+              "predicted_text_length": 10614,
               "groundtruth_text_length": 5828,
               "content_type": "text"
             }
@@ -962,30 +968,27 @@
             "score": 0.0,
             "success": true,
             "details": {
-              "distance": 179,
+              "distance": 299,
               "predicted_length": 0,
-              "groundtruth_length": 179,
+              "groundtruth_length": 299,
               "normalized": true,
               "predicted_table_length": 0,
-              "groundtruth_table_length": 179,
-              "content_type": "table"
+              "groundtruth_table_length": 299,
+              "content_type": "table",
+              "normalization": "teds_based"
             }
           },
           "table_TEDS": {
             "score": 0.0,
             "success": true,
             "details": {
-              "edit_distance": 26.0,
-              "predicted_nodes": 3,
-              "groundtruth_nodes": 19,
-              "max_nodes": 19,
-              "structure_only": false,
-              "algorithm": "TEDS",
-              "content_type": "table"
+              "note": "One table is empty or invalid",
+              "content_type": "table",
+              "algorithm": "TEDS"
             }
           },
           "overall": {
-            "score": 0.12623746567030722,
+            "score": 0.1242384272344702,
             "success": true,
             "details": {
               "source": "average_of_all_metrics",
@@ -993,7 +996,7 @@
               "successful_metrics": 3,
               "failed_metrics": 2,
               "individual_scores": {
-                "text_edit": 0.37871239701092163,
+                "text_edit": 0.3727152817034106,
                 "table_edit": 0.0,
                 "table_TEDS": 0.0
               }
@@ -1011,7 +1014,7 @@
       {
         "sample_id": "33e291cd-5b26-48b1-977f-3c63b45e6d13",
         "extraction_success": true,
-        "extraction_time": 0.019816160202026367,
+        "extraction_time": 0.020328044891357422,
         "metrics": {
           "code_edit": {
             "score": 0.0,
@@ -1052,7 +1055,8 @@
             "details": {
               "predicted_table_length": 0,
               "groundtruth_table_length": 0,
-              "content_type": "table"
+              "content_type": "table",
+              "normalization": "teds_based"
             },
             "error": "Both predicted and groundtruth are empty"
           },
@@ -1090,12 +1094,12 @@
     ],
     "category_metrics": {
       "unknown": {
-        "text_edit": 0.5618017579282533,
-        "code_edit": 0.10070257611241218,
+        "text_edit": 0.5603024791013755,
+        "code_edit": 0.0,
         "table_edit": 0.0,
         "table_TEDS": 0.0,
         "formula_edit": 0.0,
-        "overall": 0.13250086680813308
+        "overall": 0.11206049582027511
       }
     },
     "error_analysis": {
@@ -1112,7 +1116,7 @@
     "metadata": {
       "dataset_name": "sample_dataset",
       "extractor_name": "resiliparse",
-      "timestamp": "2025-09-04T15:01:20.300011",
+      "timestamp": "2025-09-12T16:00:31.298157",
       "total_samples": 4
     },
     "overall_metrics": {
@@ -1127,18 +1131,18 @@
       {
         "sample_id": "7cdb7231-9337-4104-a562-9b8f285add7d",
         "extraction_success": true,
-        "extraction_time": 0.0033152103424072266,
+        "extraction_time": 0.004547119140625,
         "metrics": {
           "code_edit": {
             "score": 0.0,
             "success": true,
             "details": {
-              "distance": 854,
+              "distance": 767,
               "predicted_length": 0,
-              "groundtruth_length": 854,
+              "groundtruth_length": 767,
               "normalized": true,
               "predicted_code_length": 0,
-              "groundtruth_code_length": 854,
+              "groundtruth_code_length": 767,
               "content_type": "code"
             }
           },
@@ -1171,7 +1175,8 @@
             "details": {
               "predicted_table_length": 0,
               "groundtruth_table_length": 0,
-              "content_type": "table"
+              "content_type": "table",
+              "normalization": "teds_based"
             },
             "error": "Both predicted and groundtruth are empty"
           },
@@ -1210,7 +1215,7 @@
       {
         "sample_id": "3026972b-8a26-48c3-bc00-c181138702f2",
         "extraction_success": true,
-        "extraction_time": 0.0029952526092529297,
+        "extraction_time": 0.0031251907348632812,
         "metrics": {
           "code_edit": {
             "score": 0.0,
@@ -1254,7 +1259,8 @@
             "details": {
               "predicted_table_length": 0,
               "groundtruth_table_length": 0,
-              "content_type": "table"
+              "content_type": "table",
+              "normalization": "teds_based"
             },
             "error": "Both predicted and groundtruth are empty"
           },
@@ -1293,7 +1299,7 @@
       {
         "sample_id": "ee0a113d-bdd5-48cf-ac9c-a7cadfbfb74b",
         "extraction_success": true,
-        "extraction_time": 0.002476930618286133,
+        "extraction_time": 0.002187013626098633,
         "metrics": {
           "code_edit": {
             "score": 0.0,
@@ -1332,26 +1338,23 @@
             "score": 0.0,
             "success": true,
             "details": {
-              "distance": 179,
+              "distance": 299,
               "predicted_length": 0,
-              "groundtruth_length": 179,
+              "groundtruth_length": 299,
               "normalized": true,
               "predicted_table_length": 0,
-              "groundtruth_table_length": 179,
-              "content_type": "table"
+              "groundtruth_table_length": 299,
+              "content_type": "table",
+              "normalization": "teds_based"
             }
           },
           "table_TEDS": {
             "score": 0.0,
             "success": true,
             "details": {
-              "edit_distance": 26.0,
-              "predicted_nodes": 3,
-              "groundtruth_nodes": 19,
-              "max_nodes": 19,
-              "structure_only": false,
-              "algorithm": "TEDS",
-              "content_type": "table"
+              "note": "One table is empty or invalid",
+              "content_type": "table",
+              "algorithm": "TEDS"
             }
           },
           "overall": {
@@ -1381,7 +1384,7 @@
       {
         "sample_id": "33e291cd-5b26-48b1-977f-3c63b45e6d13",
         "extraction_success": true,
-        "extraction_time": 0.0013070106506347656,
+        "extraction_time": 0.0011968612670898438,
         "metrics": {
           "code_edit": {
             "score": 0.0,
@@ -1422,7 +1425,8 @@
             "details": {
               "predicted_table_length": 0,
               "groundtruth_table_length": 0,
-              "content_type": "table"
+              "content_type": "table",
+              "normalization": "teds_based"
             },
             "error": "Both predicted and groundtruth are empty"
           },
