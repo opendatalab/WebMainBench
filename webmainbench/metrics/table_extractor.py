@@ -1,4 +1,3 @@
-# webmainbench/metrics/extractors/table_extractor.py
 import re
 from bs4 import BeautifulSoup
 from typing import List, Dict, Any

@@ -1,4 +1,3 @@
-# webmainbench/metrics/extractors/code_extractor.py
 import re
 from typing import List, Dict, Any
 
