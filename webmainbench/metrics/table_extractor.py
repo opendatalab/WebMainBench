@@ -6,7 +6,7 @@ from .base_extractor import ContentExtractor
 
 
 class TableExtractor(ContentExtractor):
-    """从文本中提取表格"""
+    """从 Markdown 文本中提取表格"""
 
     def extract(self, text: str, field_name: str = None) -> str:
         """提取表格"""

@@ -5,7 +5,7 @@ from openai import OpenAI
 from .base_extractor import ContentExtractor
 
 class FormulaExtractor(ContentExtractor):
-    """从文本中提取数学公式"""
+    """从 Markdown 文本中提取数学公式"""
 
     def extract(self, text: str, field_name: str = None) -> str:
         """提取数学公式"""

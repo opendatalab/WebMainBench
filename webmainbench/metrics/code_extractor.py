@@ -5,7 +5,7 @@ from .base_extractor import ContentExtractor
 
 
 class CodeExtractor(ContentExtractor):
-    """从文本中提取代码块"""
+    """从 Markdown 文本中提取代码块"""
 
     def extract(self, text: str, field_name: str = None) -> str:
         """提取代码块"""
