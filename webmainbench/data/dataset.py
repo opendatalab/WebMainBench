@@ -18,9 +18,9 @@ class DataSample:
     html: str  # HTML with cc-select=true annotations
     groundtruth_content: str  # Groundtruth markdown content
     # Optional fields with defaults
-    groundtruth_content_list: Optional[List[Dict[str, Any]]] = None  # Groundtruth content_list from llm-webkit
-    content_list: List[Dict[str, Any]] = None # Content_list from llm-webkit
-    content: str = None  # Content from llm-webkit
+    groundtruth_content_list: Optional[List[Dict[str, Any]]] = None  # Groundtruth content_list 
+    content_list: List[Dict[str, Any]] = None # Content_list
+    content: str = None  # Content
     # Optional metadata
     url: Optional[str] = None
     domain: Optional[str] = None

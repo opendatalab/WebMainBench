@@ -257,7 +257,7 @@ class TestErrorHandling(unittest.TestCase):
 
 
 class TestRealSampleMetrics(unittest.TestCase):
-    """测试基于LLM-WebKit实际提取结果的指标计算"""
+    """测试基于实际提取结果的指标计算"""
 
     def setUp(self):
         """测试前准备"""

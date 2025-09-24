@@ -8,15 +8,9 @@ def all_extractor_comparison():
     print("\n=== 多抽取器对比演示 ===\n")
     
     # 创建数据集
-    dataset_path = Path("../data/WebMainBench_llm-webkit_v1_WebMainBench_7887_within_formula.jsonl")
+    dataset_path = Path("data/sample_dataset.jsonl")
     dataset = DataLoader.load_jsonl(dataset_path)
     
-    # 创建webkit抽取器
-    config = {
-        "use_preprocessed_html": True,          # 🔑 关键配置：启用预处理HTML模式
-        "preprocessed_html_field": "llm_webkit_html"  # 指定预处理HTML字段名
-    }
-    webkit_extractor = ExtractorFactory.create("llm-webkit", config=config)
     # 创建magic-extractor抽取器
     magic_extractor = ExtractorFactory.create("magic-html")
     # 创建trafilatura抽取器
@@ -26,8 +20,7 @@ def all_extractor_comparison():
     
     # 运行对比
     evaluator = Evaluator()
-    extractors = [webkit_extractor, magic_extractor, trafilatura_extractor, resiliparse_extractor]
-    # extractors = [webkit_extractor]
+    extractors = [magic_extractor, trafilatura_extractor, resiliparse_extractor]
 
     
     results = evaluator.compare_extractors(

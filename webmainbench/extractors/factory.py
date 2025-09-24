@@ -17,8 +17,8 @@ def extractor(name: str):
         name: Name to register the extractor under
     
     Example:
-        @extractor("llm-webkit")
-        class LlmWebkitExtractor(BaseExtractor):
+        @extractor("trafilatura")
+        class TrafilaturaExtractor(BaseExtractor):
             pass
     """
     def decorator(cls: Type[BaseExtractor]):

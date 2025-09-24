@@ -118,7 +118,7 @@ class BaseExtractor(ABC):
             ExtractionResult实例，内容直接取自sample
         """
         # 兼容常见字段
-        # 这里直接从sample中获取'llm-webkit_md'字段内容，注意字段名有'-'，不能用点操作符，需要用[]方式
+        # 注意字段名有'-'，不能用点操作符，需要用[]方式
         content = sample.llm_webkit_md
         content_list = sample.content_list
         language = sample.language

@@ -150,7 +150,6 @@ class DataSaver:
             try:
                 # 映射抽取器名称到包名
                 package_mapping = {
-                    'llm-webkit': 'llm_web_kit',
                     'magic-html': 'magic_html',
                     'trafilatura': 'trafilatura',
                     'resiliparse': 'resiliparse'

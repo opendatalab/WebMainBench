@@ -131,7 +131,7 @@ class BaseMetric(ABC):
 
         Args:
             text: 原始markdown文本
-            content_list: 结构化内容列表（来自llm-webkit等）
+            content_list: 结构化内容列表
             field_name: 当前处理的字段名称，传递给_extract_from_markdown
         Returns:
             Dict with keys: 'code', 'formula', 'table', 'text'

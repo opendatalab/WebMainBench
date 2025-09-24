@@ -1,7 +1,7 @@
 '''
 本脚本用于从jsonl文件读取表格数据，并在streamlit应用中展示和编辑。
 命令行输入示例：
-streamlit run /home/zhangshuo/Desktop/vscodeworkspace/WebMainBench/tools/label_tool.py -- WebMainBench/data/WebMainBench_test_0814_llm-webkit_filtered_table_results.jsonl
+streamlit run /home/zhangshuo/Desktop/vscodeworkspace/WebMainBench/tools/label_tool.py -- WebMainBench/data/sample_dataset.jsonl
 注意：-- 后面有个空格，否则会报错，然后再接数据文件路径
 
 '''

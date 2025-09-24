@@ -5,7 +5,7 @@ from pathlib import Path
 dataset = DataLoader.load_jsonl(Path("data/sample_dataset.jsonl"))
 
 # 2. 创建抽取器
-extractor = ExtractorFactory.create("llm-webkit")
+extractor = ExtractorFactory.create("resiliparse")
 
 # 3. 运行评测
 evaluator = Evaluator()
