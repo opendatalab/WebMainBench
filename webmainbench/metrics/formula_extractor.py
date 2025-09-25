@@ -2,9 +2,9 @@ import re
 from typing import List
 from openai import OpenAI
 
-from .base_extractor import ContentExtractor
+from .base_content_splitter import BaseContentSplitter
 
-class FormulaExtractor(ContentExtractor):
+class FormulaSplitter(BaseContentSplitter):
     """从文本中提取数学公式"""
 
     def extract(self, text: str, field_name: str = None) -> str:
