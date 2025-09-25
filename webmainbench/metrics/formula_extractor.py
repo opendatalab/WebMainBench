@@ -1,8 +1,7 @@
 import re
 from typing import List
-from openai import OpenAI
-
 from .base_content_splitter import BaseContentSplitter
+
 
 class FormulaSplitter(BaseContentSplitter):
     """从文本中提取数学公式"""
@@ -39,10 +38,9 @@ class FormulaSplitter(BaseContentSplitter):
 
     def _llm_enhance(self, basic_results: List[str]) -> List[str]:
         """使用LLM增强公式提取结果"""
-        client = OpenAI(
-            base_url=self.config.get('llm_base_url', ""),
-            api_key=self.config.get('llm_api_key', "")
-        )
+        if not self.client:
+            print("[DEBUG] OpenAI客户端未初始化，返回基础提取结果")
+            return basic_results
 
         formulas_text = '\n'.join(basic_results)
 
@@ -86,7 +84,7 @@ class FormulaSplitter(BaseContentSplitter):
         注意，输出结果中不要添加任何解释！。
         [输入内容列表开始]'''
 
-        response = client.chat.completions.create(
+        response = self.client.chat.completions.create(
             model=self.config.get('llm_model', "deepseek-chat"),
             temperature=0,
             messages=[
