@@ -6,7 +6,7 @@ LLM_CONFIG = {
     'llm_base_url': '',
     'llm_api_key': '',
     'llm_model': '',
-    'use_llm': True  # 🤖使用时改为True
+    'use_llm': True
 }
 
 def all_extractor_comparison():
