@@ -1,6 +1,13 @@
 from webmainbench import DataLoader, Evaluator, ExtractorFactory, DataSaver
 from pathlib import Path
 
+# 全局LLM配置
+LLM_CONFIG = {
+    'llm_base_url': '',
+    'llm_api_key': '',
+    'llm_model': '',
+    'use_llm': True
+}
 
 def all_extractor_comparison():
     """演示多抽取器对比"""
@@ -8,14 +15,15 @@ def all_extractor_comparison():
     print("\n=== 多抽取器对比演示 ===\n")
     
     # 创建数据集
-    dataset_path = Path("../data/WebMainBench_llm-webkit_v1_WebMainBench_7887_within_formula.jsonl")
+    dataset_path = Path("../data/test_math.jsonl")
     dataset = DataLoader.load_jsonl(dataset_path)
-    
+
     # 创建webkit抽取器
     config = {
         "use_preprocessed_html": True,          # 🔑 关键配置：启用预处理HTML模式
         "preprocessed_html_field": "llm_webkit_html"  # 指定预处理HTML字段名
     }
+
     webkit_extractor = ExtractorFactory.create("llm-webkit", config=config)
     # 创建magic-extractor抽取器
     magic_extractor = ExtractorFactory.create("magic-html")

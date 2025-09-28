@@ -13,3 +13,4 @@ streamlit
 markdown
 jieba
 apted
+openai
