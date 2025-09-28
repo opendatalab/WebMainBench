@@ -1,6 +1,13 @@
 from webmainbench import DataLoader, Evaluator, ExtractorFactory, DataSaver
 from pathlib import Path
 
+# 全局LLM配置
+LLM_CONFIG = {
+    'llm_base_url': '',
+    'llm_api_key': '',
+    'llm_model': '',
+    'use_llm': True  # 🤖使用时改为True
+}
 
 def all_extractor_comparison():
     """演示多抽取器对比"""

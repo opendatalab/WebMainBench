@@ -196,22 +196,16 @@ class BaseMetric(ABC):
         if not text:
             return {'code': '', 'formula': '', 'table': '', 'text': ''}
 
-        # 创建提取器配置
-        config = {
-            'llm_base_url': 'http://35.220.164.252:3888/v1/',
-            'llm_api_key': 'sk-PZgDr7sZdt77805Cg8s5ZB9QnGMGke61ovYnHYcHKIYVGHNA',
-            'llm_model': 'deepseek-chat',
-            'use_llm': True  # 使用时改为True
-        }
-
+        # 加载 llm 配置
+        from examples.multi_extractor_compare import LLM_CONFIG
         # 直接创建具体的提取器实例
         from .code_extractor import CodeSplitter
         from .formula_extractor import FormulaSplitter
         from .table_extractor import TableSplitter
 
-        code_extractor = CodeSplitter(config)
-        formula_extractor = FormulaSplitter(config)
-        table_extractor = TableSplitter(config)
+        code_extractor = CodeSplitter(LLM_CONFIG)
+        formula_extractor = FormulaSplitter(LLM_CONFIG)
+        table_extractor = TableSplitter(LLM_CONFIG)
 
         # 提取各类内容
         code_content = code_extractor.extract(text, field_name)
