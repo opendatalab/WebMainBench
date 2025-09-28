@@ -52,8 +52,11 @@ class FormulaSplitter(BaseContentSplitter):
         if self.should_use_llm(field_name):
             print(f"[DEBUG] 使用LLM增强公式提取")
             formula_parts = self.enhance_with_llm(regex_formulas)
+            if not formula_parts:
+                print("[DEBUG] LLM增强后无有效公式")
         else:
             formula_parts = regex_formulas
+            print("[DEBUG] 跳过LLM增强，使用基础正则结果")
         return '\n'.join(formula_parts)
 
     def extract_basic(self, text: str) -> List[str]:
