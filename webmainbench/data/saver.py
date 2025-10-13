@@ -153,6 +153,7 @@ class DataSaver:
                     'llm-webkit': 'llm_web_kit',
                     'magic-html': 'magic_html',
                     'trafilatura': 'trafilatura',
+                    'trafilatura_txt': 'trafilatura',
                     'resiliparse': 'resiliparse'
                 }
                 package_name = package_mapping.get(extractor_name, extractor_name)

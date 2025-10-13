@@ -27,14 +27,16 @@ def all_extractor_comparison():
     webkit_extractor = ExtractorFactory.create("llm-webkit", config=config)
     # 创建magic-extractor抽取器
     magic_extractor = ExtractorFactory.create("magic-html")
-    # 创建trafilatura抽取器
+    # 创建trafilatura抽取器,抽取成markdown
     trafilatura_extractor = ExtractorFactory.create("trafilatura")
+    # 创建trafilatura抽取器,抽取成txt
+    trafilatura_txt_extractor = ExtractorFactory.create("trafilatura_txt")
     # 创建resiliparse抽取器
     resiliparse_extractor = ExtractorFactory.create("resiliparse")
     
     # 运行对比
     evaluator = Evaluator()
-    extractors = [webkit_extractor, magic_extractor, trafilatura_extractor, resiliparse_extractor]
+    extractors = [webkit_extractor, magic_extractor, trafilatura_extractor,trafilatura_txt_extractor, resiliparse_extractor]
     # extractors = [webkit_extractor]
 
     

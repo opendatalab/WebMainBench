@@ -6,7 +6,7 @@ from typing import Dict, Any, Optional, List
 from dataclasses import dataclass
 from .base import BaseExtractor, ExtractionResult
 from .factory import extractor
-from trafilatura import extract
+from trafilatura import extract,html2txt,baseline
 import re
 
 
@@ -24,7 +24,7 @@ class TrafilaturaInferenceConfig:
     output_format: str = "markdown"  # 支持多种格式输出:"csv", "json", "html", "markdown", "txt", "xml"等
 
 
-@extractor("trafilatura")
+@extractor("trafilatura_txt")
 class TrafilaturaExtractor(BaseExtractor):
     """Extractor using Trafilatura."""
 
@@ -59,19 +59,25 @@ class TrafilaturaExtractor(BaseExtractor):
         """
         try:
             # 使用配置参数进行内容抽取
-            content = extract(
-                html,
-                url=url,
-                favor_precision=self.inference_config.favor_precision,
-                favor_recall=self.inference_config.favor_recall,
-                include_comments=self.inference_config.include_comments,
-                include_tables=self.inference_config.include_tables,
-                include_images=self.inference_config.include_images,
-                include_links=self.inference_config.include_links,
-                with_metadata=self.inference_config.with_metadata,
-                output_format=self.inference_config.output_format  # 传入输出格式
+            # content = extract(
+            #     html,
+            #     url=url,
+            #     favor_precision=self.inference_config.favor_precision,
+            #     favor_recall=self.inference_config.favor_recall,
+            #     include_comments=self.inference_config.include_comments,
+            #     include_tables=self.inference_config.include_tables,
+            #     include_images=self.inference_config.include_images,
+            #     include_links=self.inference_config.include_links,
+            #     with_metadata=self.inference_config.with_metadata,
+            #     output_format=self.inference_config.output_format  # 传入输出格式
+            #
+            # )
 
-            )
+            # 使用最大化召回率进行内容抽取成txt
+            # content = html2txt(html)
+
+            # 使用输出更准确的抽取txt结果
+            postbody, content, len_text = baseline(html)
 
             # 创建 content_list（简单分割段落）
             content_list = []
