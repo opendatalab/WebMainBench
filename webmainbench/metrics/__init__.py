@@ -11,6 +11,10 @@ from .formula_metrics import FormulaEditMetric
 from .teds_metrics import TEDSMetric, StructureTEDSMetric
 from .calculator import MetricCalculator
 from .mainhtml_calculator import MainHTMLMetricCalculator
+from .base_content_splitter import BaseContentSplitter
+from .formula_extractor import FormulaSplitter
+from .code_extractor import CodeSplitter
+from .table_extractor import TableSplitter
 
 __all__ = [
     "BaseMetric",
@@ -27,4 +31,8 @@ __all__ = [
     "TextEditMetric",
     "MetricCalculator",
     "MainHTMLMetricCalculator",
+    'BaseContentSplitter',
+    'FormulaSplitter',
+    'CodeSplitter',
+    'TableSplitter',
 ] 
