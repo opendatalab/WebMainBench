@@ -197,7 +197,8 @@ class BaseMetric(ABC):
             return {'code': '', 'formula': '', 'table': '', 'text': ''}
 
         # 加载 llm 配置
-        from config import LLM_CONFIG
+        from ..config import LLM_CONFIG
+
         # 直接创建具体的提取器实例
         from .code_extractor import CodeSplitter
         from .formula_extractor import FormulaSplitter

@@ -1,7 +1,7 @@
 from webmainbench import DataLoader, Evaluator, ExtractorFactory, DataSaver
 from pathlib import Path
 
-# 如需调用LLM修正抽取结果，在config.py中配置 LLM api
+# 如需调用LLM修正抽取结果，在 webmainbench/config.py 中配置 LLM api
 
 def all_extractor_comparison():
     """演示多抽取器对比"""
