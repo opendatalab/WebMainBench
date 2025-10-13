@@ -318,7 +318,7 @@ class BaseMetric(ABC):
             print(f"[DEBUG] 检测到groundtruth内容，仅使用正则提取公式")
             formula_parts = regex_formulas
         else:
-            print(f"[DEBUG] 检测到llm_webkit_md内容，使用正则+API修正模式")
+            print(f"[DEBUG] 检测到md内容，使用正则+API修正模式")
             # 对于llm_webkit_md，将正则结果传递给API进行修正
             if regex_formulas:
                 # 将正则提取的公式作为输入传递给API
