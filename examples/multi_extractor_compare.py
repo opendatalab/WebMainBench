@@ -29,7 +29,7 @@ def all_extractor_comparison():
     # 运行对比
     evaluator = Evaluator()
     extractors = [webkit_extractor, magic_extractor, trafilatura_extractor, resiliparse_extractor]
-    extractors = [webkit_extractor]
+    # extractors = [webkit_extractor]
 
     
     results = evaluator.compare_extractors(
