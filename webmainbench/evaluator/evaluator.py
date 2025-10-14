@@ -4,7 +4,7 @@ Main evaluator for WebMainBench.
 
 from dataclasses import dataclass
 from typing import Dict, Any, List, Optional, Union, Iterator
-import time
+import time, sys
 import itertools
 from datetime import datetime
 from pathlib import Path
@@ -85,10 +85,78 @@ class Evaluator:
         Args:
             metric_config: Configuration for metrics
         """
+
+        self._validate_llm_config()
+
         self.metric_calculator = MetricCalculator(metric_config)
         self.metric_config = metric_config or {}
-    
-    def evaluate(self, 
+
+    def _validate_llm_config(self):
+        """验证LLM配置的完整性和有效性"""
+        import time
+        from ..config import LLM_CONFIG
+
+        if LLM_CONFIG.get('use_llm', False):
+            # 检查配置完整性
+            if not LLM_CONFIG.get('llm_base_url') or not LLM_CONFIG.get('llm_api_key'):
+                print("\n" + "=" * 60)
+                print("❌ 错误：LLM配置不完整！")
+                print("-" * 60)
+                print("当前 use_llm = True，但缺少必要的API配置。")
+                print("\n请在 webmainbench/config.py 中完成以下配置：")
+                print("  1. llm_base_url  (例如: 'https://api.deepseek.com')")
+                print("  2. llm_api_key   (例如: 'sk-xxxxxxxxxxxx')")
+                print("\n或者设置 use_llm = False 来禁用LLM功能。")
+                print("=" * 60 + "\n")
+                sys.exit(1)
+
+            # 验证API有效性
+            try:
+                from openai import OpenAI
+
+                print("正在验证LLM API配置...")
+                client = OpenAI(
+                    base_url=LLM_CONFIG.get('llm_base_url'),
+                    api_key=LLM_CONFIG.get('llm_api_key')
+                )
+
+                # 发送测试请求
+                response = client.chat.completions.create(
+                    model=LLM_CONFIG.get('llm_model', 'deepseek-chat'),
+                    messages=[{"role": "user", "content": "test"}],
+                    max_tokens=5,
+                    temperature=0
+                )
+
+                print("✅ LLM API配置验证成功！\n使用 基础方案➕LLM增强提取效果 进行评测。")
+
+            except Exception as e:
+                print("\n" + "=" * 60)
+                print("❌ 错误：LLM API配置无效！")
+                print("-" * 60)
+                print(f"验证失败原因: {str(e)}")
+                print("\n请检查 webmainbench/config.py 中的配置：")
+                print("  1. llm_base_url 是否正确")
+                print("  2. llm_api_key 是否有效")
+                print("  3. llm_model 是否支持")
+                print("  4. 网络连接是否正常")
+                print("\n或者设置 use_llm = False 来禁用LLM功能。")
+                print("=" * 60 + "\n")
+                sys.exit(1)
+        else:
+            # 未启用LLM的提示
+            print("\n" + "=" * 60)
+            print("⚠️  注意：当前未启用LLM增强提取效果功能")
+            print("   如需启用LLM增强提取效果，请在 webmainbench/config.py 中配置：")
+            print("   - 设置 use_llm = True")
+            print("   - 填写 llm_base_url")
+            print("   - 填写 llm_api_key")
+            print("=" * 60)
+            print("   (5秒后使用基础方案进行对比...)")
+            time.sleep(5)
+            print()
+
+    def evaluate(self,
                 dataset: BenchmarkDataset,
                 extractor: Union[BaseExtractor, str],
                 extractor_config: Dict[str, Any] = None,
