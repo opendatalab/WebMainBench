@@ -52,7 +52,6 @@ class BaseContentSplitter(ABC):
 
         # 默认逻辑：对groundtruth内容不使用LLM，对其他内容使用
         if field_name == "groundtruth_content":
-            print(f"[DEBUG] 检测到groundtruth内容，不使用LLM")
             return False
         return True
 

@@ -1,13 +1,7 @@
 from webmainbench import DataLoader, Evaluator, ExtractorFactory, DataSaver
 from pathlib import Path
 
-# 全局LLM配置
-LLM_CONFIG = {
-    'llm_base_url': '',
-    'llm_api_key': '',
-    'llm_model': '',
-    'use_llm': True
-}
+# 如需调用LLM修正抽取结果，在 webmainbench/config.py 中配置 LLM api
 
 def all_extractor_comparison():
     """演示多抽取器对比"""
@@ -15,7 +9,7 @@ def all_extractor_comparison():
     print("\n=== 多抽取器对比演示 ===\n")
     
     # 创建数据集
-    dataset_path = Path("../data/test_math.jsonl")
+    dataset_path = Path("../data/WebMainBench_llm-webkit_v1_WebMainBench_7887_within_formula.jsonl")
     dataset = DataLoader.load_jsonl(dataset_path)
 
     # 创建webkit抽取器
