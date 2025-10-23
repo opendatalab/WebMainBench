@@ -24,8 +24,12 @@ class TableSplitter(BaseContentSplitter):
         """基本表格提取方法"""
         table_parts = []
 
-        # HTML表格提取
-        soup = BeautifulSoup(text, "html.parser")
+        # 移除代码块内容
+        text_without_code = self._remove_code_blocks(text)
+
+        # HTML表格提取（在清理后的文本中）
+        soup = BeautifulSoup(text_without_code, "html.parser")
+
         for table in soup.find_all("table"):
             if not table.find_parent(["td", "tr", "tbody", "table"]):
                 table_parts.append(str(table))
@@ -71,6 +75,14 @@ class TableSplitter(BaseContentSplitter):
             save_table()
 
         return table_parts
+
+    def _remove_code_blocks(self, text: str) -> str:
+        """移除Markdown代码块"""
+        # 移除多行代码块 ```
+        text_without_blocks = re.sub(r'```.*?```', '', text, flags=re.DOTALL)
+        # 移除内联代码块 `
+        text_without_code = re.sub(r'`[^`]*`', '', text_without_blocks)
+        return text_without_code
 
     def _llm_enhance(self, basic_results: List[str]) -> List[str]:
         """使用LLM增强表格提取结果（未实现）"""
