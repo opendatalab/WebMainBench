@@ -1069,10 +1069,8 @@ def main():
     parser = argparse.ArgumentParser(description="数据集统计和筛选工具")
     # data/sample_dataset.jsonl
     # data/WebMainBench_1827_v1_WebMainBench_dataset_merge_with_llm_webkit.jsonl
-    parser.add_argument("input_file", nargs='?', 
-                       default="data/WebMainBench_7887_language_output.jsonl",
-                       help="输入JSONL文件路径")
-    parser.add_argument("--output", default="data/WebMainBench_7887_language_output_with_stats.jsonl", type=str, help="输出文件路径")
+    parser.add_argument("--input", "-i", required=True, type=str, help="输入JSONL文件路径")
+    parser.add_argument("--output", "-o", required=True, type=str, help="输出文件路径")
 
     args = parser.parse_args()
     
@@ -1081,7 +1079,7 @@ def main():
     
     try:
         # 初始化和加载数据
-        stats_tool = DatasetStatistics(args.input_file, args.output)       
+        stats_tool = DatasetStatistics(args.input, args.output)       
         stats_tool.load_data()
         
         # 计算统计信息

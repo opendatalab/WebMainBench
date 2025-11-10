@@ -93,6 +93,8 @@ print(f"Overall Score: {result.overall_metrics['overall']:.4f}")
 
 - **trafilatura**: trafilatura抽取器
 - **resiliparse**: resiliparse抽取器
+- **llm-webkit**: llm-webkit 抽取器
+- **magic-html**: magic-html 抽取器
 - **自定义抽取器**: 通过继承 `BaseExtractor` 实现
 
 ## 评测榜单
