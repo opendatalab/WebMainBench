@@ -6,12 +6,13 @@
 
 ### 数据处理脚本
 
-| 脚本 | 功能 | 添加字段 |
+| 脚本 | 功能 | 添加/处理字段 |
 |------|------|----------|
 | `statics.py` | 统计分析 | `meta.level`, `meta.table`, `meta.code`, `meta.equation` |
 | `language_classify.py` | 语言检测 | `meta.language` |
 | `style_classify.py` | 类型分类 | `meta.style` |
-| `process_dataset.sh` | 一键处理 | 上述所有字段 |
+| `simplify_meta.py` | 简化字段 | 保留核心字段，移除统计信息 |
+| `process_dataset.sh` | 一键处理 | 上述所有步骤 |
 
 ### 数据管理脚本
 
@@ -64,9 +65,14 @@ python scripts/language_classify.py \
 # 步骤 3: 类型分类
 python scripts/style_classify.py \
   data/step2.jsonl \
-  --output data/final.jsonl \
+  --output data/step3.jsonl \
   --api-key YOUR_API_KEY \
   --base-url https://api.deepseek.com/v1
+
+# 步骤 4: 简化 meta 字段（无需 API）
+python scripts/simplify_meta.py \
+  data/step3.jsonl \
+  --output data/final.jsonl
 ```
 
 ## 🔑 环境变量
@@ -85,6 +91,16 @@ export OPENAI_API_KEY="your_api_key"
 ```bash
 python scripts/statics.py --input <input_file> --output <output_file>
 ```
+
+**无需 API 密钥**
+
+### simplify_meta.py
+
+```bash
+python scripts/simplify_meta.py <input_file> --output <output_file>
+```
+
+**功能：** 简化 meta 字段，只保留核心字段（language, style, level, table, code, equation），移除复杂的统计信息
 
 **无需 API 密钥**
 

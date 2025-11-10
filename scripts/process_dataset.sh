@@ -7,6 +7,7 @@
 # - meta.level, meta.table, meta.code, meta.equation (通过 statics.py)
 # - meta.language (通过 language_classify.py)
 # - meta.style (通过 style_classify.py)
+# - 简化 meta 字段 (通过 simplify_meta.py)
 #
 # 使用方法：
 #   ./scripts/process_dataset.sh <input_file> <output_file> <api_key> [base_url]
@@ -83,6 +84,7 @@ TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 TEMP_DIR="data/temp_${TIMESTAMP}"
 STEP1_OUTPUT="${TEMP_DIR}/step1_with_stats.jsonl"
 STEP2_OUTPUT="${TEMP_DIR}/step2_with_language.jsonl"
+STEP3_OUTPUT="${TEMP_DIR}/step3_with_style.jsonl"
 
 # 验证输入文件
 if [ ! -f "$INPUT_FILE" ]; then
@@ -110,7 +112,7 @@ echo ""
 # ============================================================================
 # 步骤 1: 添加统计字段
 # ============================================================================
-print_step "📊 步骤 1/3: 计算统计字段 (level, table, code, equation)"
+print_step "📊 步骤 1/4: 计算统计字段 (level, table, code, equation)"
 
 if python scripts/statics.py --input "$INPUT_FILE" --output "$STEP1_OUTPUT"; then
     STEP1_LINES=$(wc -l < "$STEP1_OUTPUT" | tr -d ' ')
@@ -129,7 +131,7 @@ fi
 # ============================================================================
 # 步骤 2: 添加语言字段
 # ============================================================================
-print_step "🌐 步骤 2/3: 检测语言 (language)"
+print_step "🌐 步骤 2/4: 检测语言 (language)"
 
 export OPENAI_API_KEY="$API_KEY"
 
@@ -156,25 +158,47 @@ fi
 # ============================================================================
 # 步骤 3: 添加网页类型字段
 # ============================================================================
-print_step "🎨 步骤 3/3: 分类网页类型 (style)"
+print_step "🎨 步骤 3/4: 分类网页类型 (style)"
 
 if python scripts/style_classify.py \
     "$STEP2_OUTPUT" \
-    --output "$FINAL_OUTPUT" \
+    --output "$STEP3_OUTPUT" \
     --api-key "$API_KEY" \
     --base-url "$BASE_URL" \
     --batch-size "$BATCH_SIZE"; then
     
-    FINAL_LINES=$(wc -l < "$FINAL_OUTPUT" | tr -d ' ')
-    print_success "步骤 3 完成！处理了 $FINAL_LINES 条数据"
+    STEP3_LINES=$(wc -l < "$STEP3_OUTPUT" | tr -d ' ')
+    print_success "步骤 3 完成！处理了 $STEP3_LINES 条数据"
     
     # 验证数据完整性
-    if [ "$STEP2_LINES" -ne "$FINAL_LINES" ]; then
-        print_warning "数据行数不一致！输入: $STEP2_LINES, 输出: $FINAL_LINES"
+    if [ "$STEP2_LINES" -ne "$STEP3_LINES" ]; then
+        print_warning "数据行数不一致！输入: $STEP2_LINES, 输出: $STEP3_LINES"
     fi
 else
     print_error "步骤 3 失败！"
     print_warning "保留中间文件: $STEP2_OUTPUT"
+    exit 1
+fi
+
+# ============================================================================
+# 步骤 4: 简化 meta 字段
+# ============================================================================
+print_step "🔧 步骤 4/4: 简化 meta 字段 (只保留核心字段)"
+
+if python scripts/simplify_meta.py \
+    "$STEP3_OUTPUT" \
+    --output "$FINAL_OUTPUT"; then
+    
+    FINAL_LINES=$(wc -l < "$FINAL_OUTPUT" | tr -d ' ')
+    print_success "步骤 4 完成！处理了 $FINAL_LINES 条数据"
+    
+    # 验证数据完整性
+    if [ "$STEP3_LINES" -ne "$FINAL_LINES" ]; then
+        print_warning "数据行数不一致！输入: $STEP3_LINES, 输出: $FINAL_LINES"
+    fi
+else
+    print_error "步骤 4 失败！"
+    print_warning "保留中间文件: $STEP3_OUTPUT"
     exit 1
 fi
 
@@ -199,7 +223,7 @@ fi
 
 # 显示输出文件示例
 print_step "📋 输出数据示例"
-print_info "查看第一条数据的 meta 字段："
+print_info "查看第一条数据的 meta 字段（已简化）："
 echo ""
 head -n 1 "$FINAL_OUTPUT" | python -c "
 import json
@@ -208,8 +232,10 @@ import sys
 data = json.loads(sys.stdin.read())
 meta = data.get('meta', {})
 
-print('Meta 字段内容:')
+print('Meta 字段内容（已简化）:')
 print(json.dumps(meta, indent=2, ensure_ascii=False))
+print()
+print('包含字段:', ', '.join(meta.keys()))
 "
 
 print_success "全部完成！🎊"
