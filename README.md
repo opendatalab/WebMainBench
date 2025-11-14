@@ -1,86 +1,88 @@
 # WebMainBench
 
-WebMainBench 是一个专门用于端到端评测网页正文抽取质量的基准测试工具。
+[简体中文](README_zh.md) | English
 
-## 功能特点
+WebMainBench is a specialized benchmark tool for end-to-end evaluation of web main content extraction quality.
 
-### 🎯 **核心功能**
-- **多抽取器支持**: 支持 trafilatura,resiliparse 等多种抽取工具
-- **全面的评测指标**: 包含文本编辑距离、表格结构相似度(TEDS)、公式抽取质量等多维度指标
-- **人工标注支持**: 评测数据集100%人工标注
+## Features
 
-#### 指标详细说明
+### 🎯 **Core Features**
+- **Multiple Extractor Support**: Supports various extraction tools such as trafilatura, resiliparse, and more
+- **Comprehensive Evaluation Metrics**: Includes multi-dimensional metrics such as text edit distance, table structure similarity (TEDS), formula extraction quality, etc.
+- **Manual Annotation Support**: 100% manually annotated evaluation dataset
 
-| 指标名称 | 计算方式 | 取值范围 | 说明 |
+#### Metric Details
+
+| Metric Name | Calculation Method | Value Range | Description |
 |---------|----------|----------|------|
-| `overall` | 所有成功指标的平均值 | 0.0-1.0 | 综合质量评分，分数越高质量越好 |
-| `text_edit` | `1 - (编辑距离 / 最大文本长度)` | 0.0-1.0 | 纯文本相似度，分数越高质量越好 |
-| `code_edit` | `1 - (编辑距离 / 最大代码长度)` | 0.0-1.0 | 代码内容相似度，分数越高质量越好 |
-| `table_TEDS` | `1 - (树编辑距离 / 最大节点数)` | 0.0-1.0 | 表格结构相似度，分数越高质量越好 |
-| `table_edit` | `1 - (编辑距离 / 最大表格长度)` | 0.0-1.0 | 表格内容相似度，分数越高质量越好 |
-| `formula_edit` | `1 - (编辑距离 / 最大公式长度)` | 0.0-1.0 | 公式内容相似度，分数越高质量越好 |
+| `overall` | Average of all successful metrics | 0.0-1.0 | Comprehensive quality score, higher is better |
+| `text_edit` | `1 - (edit distance / max text length)` | 0.0-1.0 | Plain text similarity, higher is better |
+| `code_edit` | `1 - (edit distance / max code length)` | 0.0-1.0 | Code content similarity, higher is better |
+| `table_TEDS` | `1 - (tree edit distance / max nodes)` | 0.0-1.0 | Table structure similarity, higher is better |
+| `table_edit` | `1 - (edit distance / max table length)` | 0.0-1.0 | Table content similarity, higher is better |
+| `formula_edit` | `1 - (edit distance / max formula length)` | 0.0-1.0 | Formula content similarity, higher is better |
 
 
-### 🏗️ **系统架构**
+### 🏗️ **System Architecture**
 
 ![WebMainBench Architecture](docs/assets/arch.png)
 
-### 🔧 **核心模块**
-1. **data 模块**: 评测集文件和结果的读写管理
-2. **extractors 模块**: 各种抽取工具的统一接口
-3. **metrics 模块**: 评测指标的计算实现
-4. **evaluator 模块**: 评测任务的执行和结果输出
+### 🔧 **Core Modules**
+1. **data module**: Read/write management of evaluation sets and results
+2. **extractors module**: Unified interface for various extraction tools
+3. **metrics module**: Implementation of evaluation metrics calculation
+4. **evaluator module**: Execution and result output of evaluation tasks
 
 
-## 快速开始
+## Quick Start
 
-### 安装
+### Installation
 
 ```bash
-# 基础安装
+# Basic installation
 pip install webmainbench
 
-# 安装所有可选依赖
+# Install with all optional dependencies
 pip install webmainbench[all]
 
-# 开发环境安装
+# Development environment installation
 pip install webmainbench[dev]
 ```
 
-### 基本使用
+### Basic Usage
 
 ```python
 from webmainbench import DataLoader, Evaluator, ExtractorFactory
 
-# 1. 加载评测数据集
+# 1. Load evaluation dataset
 dataset = DataLoader.load_jsonl("your_dataset.jsonl")
 
-# 2. 创建抽取器
+# 2. Create extractor
 extractor = ExtractorFactory.create("trafilatura")
 
-# 3. 运行评测
+# 3. Run evaluation
 evaluator = Evaluator()
 result = evaluator.evaluate(dataset, extractor)
 
-# 4. 查看结果
+# 4. View results
 print(f"Overall Score: {result.overall_metrics['overall']:.4f}")
 ```
 
-### 数据格式
+### Data Format
 
-评测数据集应包含以下字段：
+Evaluation datasets should contain the following fields:
 
 ```jsonl
 {
   "track_id": "0b7f2636-d35f-40bf-9b7f-94be4bcbb396",
-  "html": "<html><body><h1 cc-select=\"true\">这是标题</h1></body></html>",   # 人工标注带cc-select="true" 属性
+  "html": "<html><body><h1 cc-select=\"true\">This is a title</h1></body></html>",   # Manually annotated with cc-select="true" attribute
   "url": "https://orderyourbooks.com/product-category/college-books-p-u/?products-per-page=all",
-  "main_html": "<h1 cc-select=\"true\">这是标题</h1>",  # 从html中剪枝得到的正文html
-  "convert_main_content": "# 这是标题",  # 从main_html+html2text转化来
-  "groundtruth_content": "# 这是标题",  # 人工校准的markdown（部分提供）
+  "main_html": "<h1 cc-select=\"true\">This is a title</h1>",  # Main content HTML pruned from html
+  "convert_main_content": "# This is a title",  # Converted from main_html + html2text
+  "groundtruth_content": "# This is a title",  # Manually calibrated markdown (partially provided)
   "meta": {
-    "language": "en",  # 网页的语言
-    "style": "artical",  # 网页的文体
+    "language": "en",  # Web page language
+    "style": "artical",  # Web page style
     "table": [],  # [], ["layout"], ["data"], ["layout", "data"]
     "equation": [],  # [], ["inline"], ["interline"], ["inline", "interline"]
     "code": [],  # [], ["inline"], ["interline"], ["inline", "interline"]
@@ -89,17 +91,17 @@ print(f"Overall Score: {result.overall_metrics['overall']:.4f}")
 }
 ```
 
-## 支持的抽取器
+## Supported Extractors
 
-- **trafilatura**: trafilatura抽取器
-- **resiliparse**: resiliparse抽取器
-- **llm-webkit**: llm-webkit 抽取器
-- **magic-html**: magic-html 抽取器
-- **自定义抽取器**: 通过继承 `BaseExtractor` 实现
+- **trafilatura**: trafilatura extractor
+- **resiliparse**: resiliparse extractor
+- **llm-webkit**: llm-webkit extractor
+- **magic-html**: magic-html extractor
+- **Custom extractors**: Implement by inheriting from `BaseExtractor`
 
-## 评测榜单
+## Evaluation Leaderboard
 
-| extractor | extractor_version | dataset | total_samples | overall（macro avg） | code_edit | formula_edit | table_TEDS | table_edit | text_edit |
+| extractor | extractor_version | dataset | total_samples | overall (macro avg) | code_edit | formula_edit | table_TEDS | table_edit | text_edit |
 |-----------|-------------------|---------|---------------|---------------------|-----------|--------------|------------|-----------|-----------|
 | llm-webkit | 4.1.1 | WebMainBench1.0 | 545 | 0.8256 | 0.9093 | 0.9399 | 0.7388 | 0.678 | 0.8621 |
 | magic-html | 0.1.5 | WebMainBench1.0 | 545 | 0.5141 | 0.4117 | 0.7204 | 0.3984 | 0.2611 | 0.7791 |
@@ -107,12 +109,12 @@ print(f"Overall Score: {result.overall_metrics['overall']:.4f}")
 | trafilatura_txt | 2.0.0 | WebMainBench1.0 | 545 | 0.2657 | 0 | 0.6162 | 0 | 0 | 0.7126 |
 | resiliparse | 0.14.5 | WebMainBench1.0 | 545 | 0.2954 | 0.0641 | 0.6747 | 0 | 0 | 0.7381 |
 
-## 高级功能
+## Advanced Features
 
-### 多抽取器对比评估
+### Multi-Extractor Comparison
 
 ```python
-# 对比多个抽取器
+# Compare multiple extractors
 extractors = ["trafilatura", "resiliparse"]
 results = evaluator.compare_extractors(dataset, extractors)
 
@@ -120,34 +122,34 @@ for name, result in results.items():
     print(f"{name}: {result.overall_metrics['overall']:.4f}")
 ```
 
-#### 具体示例
+#### Detailed Example
 
 ```python
 python examples/multi_extractor_compare.py
 ```
 
-这个例子演示了如何：
+This example demonstrates how to:
 
-1. **加载测试数据集**：使用包含代码、公式、表格、文本等多种内容类型的样本数据
-2. **创建多个抽取器**：
-   - `magic-html`：基于 magic-html 库的抽取器
-   - `trafilatura`：基于 trafilatura 库的抽取器  
-   - `resiliparse`：基于 resiliparse 库的抽取器
-3. **批量评估对比**：使用 `evaluator.compare_extractors()` 同时评估所有抽取器
-4. **生成对比报告**：自动保存多种格式的评估结果
+1. **Load test dataset**: Use sample data containing multiple content types such as code, formulas, tables, text, etc.
+2. **Create multiple extractors**:
+   - `magic-html`: Extractor based on magic-html library
+   - `trafilatura`: Extractor based on trafilatura library  
+   - `resiliparse`: Extractor based on resiliparse library
+3. **Batch evaluation comparison**: Use `evaluator.compare_extractors()` to evaluate all extractors simultaneously
+4. **Generate comparison report**: Automatically save evaluation results in multiple formats
 
-#### 输出文件说明
+#### Output File Description
 
-评估完成后会在 `results/` 目录下生成三个重要文件：
+After evaluation is complete, three important files will be generated in the `results/` directory:
 
-| 文件名 | 格式 | 内容描述 |
+| File Name | Format | Content Description |
 |--------|------|----------|
-| `leaderboard.csv` | CSV | **排行榜文件**：包含各抽取器的整体排名和分项指标对比，便于快速查看性能差异 |
-| `evaluation_results.json` | JSON | **详细评估结果**：包含每个抽取器的完整评估数据、指标详情和元数据信息 |
-| `dataset_with_results.jsonl` | JSONL | **增强数据集**：原始测试数据加上所有抽取器的提取结果，便于人工检查和分析 |
+| `leaderboard.csv` | CSV | **Leaderboard file**: Contains overall rankings and sub-metric comparisons for each extractor, for quick performance comparison |
+| `evaluation_results.json` | JSON | **Detailed evaluation results**: Contains complete evaluation data, metric details and metadata for each extractor |
+| `dataset_with_results.jsonl` | JSONL | **Enhanced dataset**: Original test data plus extraction results from all extractors, for manual inspection and analysis |
 
 
-`leaderboard.csv` 内容示例：
+`leaderboard.csv` content example:
 ```csv
 extractor,dataset,total_samples,success_rate,overall,code_edit,formula_edit,table_TEDS,table_edit,text_edit
 magic-html,sample_dataset,4,1.0,0.1526,0.1007,0.0,0.0,0.0,0.6624
@@ -155,7 +157,7 @@ resiliparse,sample_dataset,4,1.0,0.1379,0.0,0.0,0.0,0.0,0.6897
 trafilatura,sample_dataset,4,1.0,0.1151,0.1007,0.0,0.0,0.0,0.4746
 ```
 
-### 自定义指标
+### Custom Metrics
 
 ```python
 from webmainbench.metrics import BaseMetric, MetricResult
@@ -165,7 +167,7 @@ class CustomMetric(BaseMetric):
         pass
     
     def _calculate_score(self, predicted, groundtruth, **kwargs):
-        # 实现自定义评测逻辑
+        # Implement custom evaluation logic
         score = your_calculation(predicted, groundtruth)
         return MetricResult(
             metric_name=self.name,
@@ -173,22 +175,22 @@ class CustomMetric(BaseMetric):
             details={"custom_info": "value"}
         )
 
-# 添加到评测器
+# Add to evaluator
 evaluator.metric_calculator.add_metric("custom", CustomMetric("custom"))
 ```
 
-### 自定义抽取器
+### Custom Extractors
 
 ```python
 from webmainbench.extractors import BaseExtractor, ExtractionResult
 
 class MyExtractor(BaseExtractor):
     def _setup(self):
-        # 初始化抽取器
+        # Initialize extractor
         pass
     
     def _extract_content(self, html, url=None):
-        # 实现抽取逻辑
+        # Implement extraction logic
         content = your_extraction_logic(html)
         
         return ExtractionResult(
@@ -197,34 +199,35 @@ class MyExtractor(BaseExtractor):
             success=True
         )
 
-# 注册自定义抽取器
+# Register custom extractor
 ExtractorFactory.register("my-extractor", MyExtractor)
 ```
 
-## 项目架构
+## Project Architecture
 
 ```
 webmainbench/
-├── data/           # 数据处理模块
-│   ├── dataset.py  # 数据集类
-│   ├── loader.py   # 数据加载器
-│   └── saver.py    # 数据保存器
-├── extractors/     # 抽取器模块
-│   ├── base.py     # 基础接口
-│   ├── factory.py  # 工厂模式
-│   └── ...         # 具体实现
-├── metrics/        # 指标模块
-│   ├── base.py     # 基础接口
-│   ├── text_metrics.py    # 文本指标
-│   ├── table_metrics.py   # 表格指标
-│   └── calculator.py      # 指标计算器
-├── evaluator/      # 评估器模块
-│   └── evaluator.py       # 主评估器
-└── utils/          # 工具模块
-    └── helpers.py          # 辅助函数
+├── data/           # Data processing module
+│   ├── dataset.py  # Dataset class
+│   ├── loader.py   # Data loader
+│   └── saver.py    # Data saver
+├── extractors/     # Extractor module
+│   ├── base.py     # Base interface
+│   ├── factory.py  # Factory pattern
+│   └── ...         # Specific implementations
+├── metrics/        # Metrics module
+│   ├── base.py     # Base interface
+│   ├── text_metrics.py    # Text metrics
+│   ├── table_metrics.py   # Table metrics
+│   └── calculator.py      # Metric calculator
+├── evaluator/      # Evaluator module
+│   └── evaluator.py       # Main evaluator
+└── utils/          # Utility module
+    └── helpers.py          # Helper functions
 ```
 
 
-## 许可证
+## License
 
-本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情。
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
