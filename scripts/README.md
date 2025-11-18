@@ -30,6 +30,7 @@
 |------|------|
 | `analyze_style_results.py` | 分析网页类型分布 |
 | `quick_style_stats.py` | 快速统计网页类型 |
+| `domain_stats.py` | **域名分布统计** - 统计域名、TLD、内容类型分布 |
 
 ## 🚀 快速开始
 
