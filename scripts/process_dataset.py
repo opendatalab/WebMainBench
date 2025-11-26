@@ -27,11 +27,6 @@ def process_single_item(data: dict, verbose: bool = False) -> dict:
         html = data.get('llm_webkit_html', '')  # 预处理HTML
         llm_response = data.get('llm_response_html', '')  # LLM响应HTML
 
-        if verbose:
-            print(f"\n📝 字段信息:")
-            print(f"  llm_webkit_html 长度: {len(typical_raw_tag_html)}")
-            print(f"  llm_response_html 长度: {len(llm_response)}")
-
         # 检查必要字段
         if not typical_raw_tag_html:
             if verbose:
@@ -56,9 +51,6 @@ def process_single_item(data: dict, verbose: bool = False) -> dict:
 
         # 提取 main_html
         main_html = pre_data.get(PreDataJsonKey.TYPICAL_MAIN_HTML, "")
-
-        if verbose:
-            print(f"  main_html 长度: {len(main_html)}")
 
         # 添加新字段
         data['llm_webkit430_main_html'] = main_html
