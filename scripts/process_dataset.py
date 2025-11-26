@@ -58,7 +58,7 @@ def process_single_item(data: dict, verbose: bool = False) -> dict:
 
         # 映射 - 使用 MapItemToHtmlTagsParser
         parser = MapItemToHtmlTagsParser({})
-        pre_data = parser.parse_single(pre_data)
+        pre_data = parser.parse(pre_data)
 
         if verbose:
             print(f"  映射解析完成")
