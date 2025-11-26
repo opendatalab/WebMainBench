@@ -23,8 +23,7 @@ def process_single_item(data: dict, verbose: bool = False) -> dict:
         from llm_web_kit.main_html_parser.parser.tag_mapping import MapItemToHtmlTagsParser
 
         # 从数据中获取字段
-        typical_raw_tag_html = data.get('llm_webkit_html', '')  # 预处理HTML
-        html = data.get('llm_webkit_html', '')  # 预处理HTML
+        typical_raw_tag_html = data.get('typical_raw_tag_html', '')  # 预处理HTML
         llm_response = data.get('llm_response_html', '')  # LLM响应HTML
 
         # 检查必要字段
@@ -37,7 +36,7 @@ def process_single_item(data: dict, verbose: bool = False) -> dict:
         # 构建 pre_data（参考 llm_webkit_extractor.py:665）
         pre_data = {
             'typical_raw_tag_html': typical_raw_tag_html,
-            'typical_raw_html': html,
+            'typical_raw_html': typical_raw_tag_html,
             'llm_response': llm_response,
             'html_source': typical_raw_tag_html
         }
