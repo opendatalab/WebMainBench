@@ -47,21 +47,12 @@ def process_single_item(data: dict, verbose: bool = False) -> dict:
             'html_source': typical_raw_tag_html
         }
 
-        if verbose:
-            print(f"  构建 pre_data 完成")
-
         # 转换为 PreDataJson 对象
         pre_data = PreDataJson(pre_data)
-
-        if verbose:
-            print(f"  PreDataJson 创建完成")
 
         # 映射 - 使用 MapItemToHtmlTagsParser
         parser = MapItemToHtmlTagsParser({})
         pre_data = parser.parse(pre_data)
-
-        if verbose:
-            print(f"  映射解析完成")
 
         # 提取 main_html
         main_html = pre_data.get(PreDataJsonKey.TYPICAL_MAIN_HTML, "")
