@@ -95,7 +95,7 @@ Evaluation datasets should contain the following fields:
 
 - **trafilatura**: trafilatura extractor
 - **resiliparse**: resiliparse extractor
-- **llm-webkit**: llm-webkit extractor
+- **mineru-html**: mineru-html extractor
 - **magic-html**: magic-html extractor
 - **Custom extractors**: Implement by inheriting from `BaseExtractor`
 
@@ -103,7 +103,7 @@ Evaluation datasets should contain the following fields:
 
 | extractor | extractor_version | dataset | total_samples | overall (macro avg) | code_edit | formula_edit | table_TEDS | table_edit | text_edit |
 |-----------|-------------------|---------|---------------|---------------------|-----------|--------------|------------|-----------|-----------|
-| llm-webkit | 4.1.1 | WebMainBench1.0 | 545 | 0.8256 | 0.9093 | 0.9399 | 0.7388 | 0.678 | 0.8621 |
+| mineru-html | 4.1.1 | WebMainBench1.0 | 545 | 0.8256 | 0.9093 | 0.9399 | 0.7388 | 0.678 | 0.8621 |
 | magic-html | 0.1.5 | WebMainBench1.0 | 545 | 0.5141 | 0.4117 | 0.7204 | 0.3984 | 0.2611 | 0.7791 |
 | trafilatura_md | 2.0.0 | WebMainBench1.0 | 545 | 0.3858 | 0.1305 | 0.6242 | 0.3203 | 0.1653 | 0.6887 |
 | trafilatura_txt | 2.0.0 | WebMainBench1.0 | 545 | 0.2657 | 0 | 0.6162 | 0 | 0 | 0.7126 |
