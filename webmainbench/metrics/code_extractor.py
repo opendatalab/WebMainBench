@@ -2,7 +2,7 @@
 import re
 from typing import List, Dict, Any
 
-from .base_content_splitter import BaseContentSplitter
+from .base_content_splitter import BaseContentSplitter, _metrics_debug
 
 
 class CodeSplitter(BaseContentSplitter):
@@ -87,5 +87,5 @@ class CodeSplitter(BaseContentSplitter):
 
     def _llm_enhance(self, basic_results: List[str]) -> List[str]:
         """使用LLM增强代码提取结果（未实现）"""
-        print(f"[DEBUG] 代码LLM增强功能尚未实现，返回原始结果")
+        _metrics_debug("Code LLM enhancement not implemented; returning raw results")
         return basic_results
