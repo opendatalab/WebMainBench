@@ -41,12 +41,6 @@ WebMainBench is a specialized benchmark tool for end-to-end evaluation of web ma
 ```bash
 # Basic installation
 pip install webmainbench
-
-# Install with all optional dependencies
-pip install webmainbench[all]
-
-# Development environment installation
-pip install webmainbench[dev]
 ```
 
 ### Basic Usage
@@ -55,13 +49,18 @@ pip install webmainbench[dev]
 from webmainbench import DataLoader, Evaluator, ExtractorFactory
 
 # 1. Load evaluation dataset
-dataset = DataLoader.load_jsonl("your_dataset.jsonl")
+dataset = DataLoader.load_jsonl("data/WebMainBench_dataset_sample2.jsonl")
 
 # 2. Create extractor
 extractor = ExtractorFactory.create("trafilatura")
 
 # 3. Run evaluation
-evaluator = Evaluator()
+evaluator = Evaluator(llm_config={
+    "use_llm": True,
+    "llm_base_url": "",
+    "llm_api_key": "",
+    "llm_model": "gpt-5-chat-latest",
+})
 result = evaluator.evaluate(dataset, extractor)
 
 # 4. View results

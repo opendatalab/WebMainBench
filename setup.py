@@ -9,11 +9,11 @@ setup(
     name="webmainbench",
     version="0.1.0",
     author="WebMainBench Team",
-    author_email="webmainbench@example.com",
+    author_email="chupei@pjlab.org.cn",
     description="A comprehensive benchmark for web main content extraction",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/example/webmainbench",
+    url="https://github.com/opendatalab/WebMainBench",
     packages=find_packages(),
     classifiers=[
         "Development Status :: 3 - Alpha",
@@ -32,11 +32,15 @@ setup(
     ],
     python_requires=">=3.8",
     install_requires=[
-        "lxml==5.3.0",
+        "lxml>=5.3.0",
         "jsonlines>=3.1.0",
         "requests>=2.28.0",
-        "beautifulsoup4==4.12.0",
+        "beautifulsoup4>=4.12.0",
         "numpy>=1.21.0,<2.0.0",  # 避免NumPy 2.x兼容性问题
+        "rapidfuzz>=3.0.0",  # 用于文本编辑距离计算
+        "apted>=1.0.3",  # 用于树编辑距离计算（TEDS）
+        "jieba>=0.42.0",  # 用于中文分词
+        "rouge>=1.0.0",  # 用于 ROUGE 指标
     ],
     extras_require={
         "all": [

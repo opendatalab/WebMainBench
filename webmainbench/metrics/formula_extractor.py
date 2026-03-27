@@ -1,6 +1,6 @@
 import re
 from typing import List
-from .base_content_splitter import BaseContentSplitter
+from .base_content_splitter import BaseContentSplitter, _metrics_debug
 
 
 class FormulaSplitter(BaseContentSplitter):
@@ -50,13 +50,13 @@ class FormulaSplitter(BaseContentSplitter):
         """提取数学公式"""
         regex_formulas = self.extract_basic(text)
         if self.should_use_llm(field_name):
-            print(f"[DEBUG] 使用LLM增强公式提取")
+            _metrics_debug("Using LLM-enhanced formula extraction")
             formula_parts = self.enhance_with_llm(regex_formulas)
             if not formula_parts:
-                print("[DEBUG] LLM增强后无有效公式")
+                _metrics_debug("No valid formulas after LLM enhancement")
         else:
             formula_parts = regex_formulas
-            print("[DEBUG] 跳过LLM增强，使用基础正则结果")
+            _metrics_debug("Skipping LLM enhancement; using regex-only results")
         return '\n'.join(formula_parts)
 
     def extract_basic(self, text: str) -> List[str]:
@@ -89,7 +89,7 @@ class FormulaSplitter(BaseContentSplitter):
     def _llm_enhance(self, basic_results: List[str]) -> List[str]:
         """使用LLM增强公式提取结果"""
         if not self.client:
-            print("[DEBUG] OpenAI客户端未初始化，返回基础提取结果")
+            _metrics_debug("OpenAI client not initialized; returning basic extraction results")
             return basic_results
 
         formulas_text = '\n'.join(basic_results)

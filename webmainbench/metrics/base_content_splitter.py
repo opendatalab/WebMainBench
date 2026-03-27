@@ -6,6 +6,16 @@ import json
 from openai import OpenAI
 
 
+def _metrics_debug(message: str) -> None:
+    """Print diagnostics only when METRICS_DEBUG is True (see webmainbench/config.py)."""
+    try:
+        from ..config import METRICS_DEBUG
+    except ImportError:
+        METRICS_DEBUG = False
+    if METRICS_DEBUG:
+        print(f"[DEBUG] {message}")
+
+
 class BaseContentSplitter(ABC):
     """抽象基类，用于从文本中提取特定类型的内容"""
 
@@ -58,7 +68,7 @@ class BaseContentSplitter(ABC):
     def enhance_with_llm(self, basic_results: List[str], cache_key: str = None) -> List[str]:
         """使用LLM增强基本提取结果"""
         if not basic_results:
-            print(f"[DEBUG] 输入内容为空，跳过LLM增强")
+            _metrics_debug("Empty input; skipping LLM enhancement")
             return []
 
         # 生成缓存键
@@ -73,10 +83,10 @@ class BaseContentSplitter(ABC):
             try:
                 with open(cache_file, 'r', encoding='utf-8') as f:
                     cached_result = json.load(f)
-                    print(f"[DEBUG] 从缓存加载LLM增强结果: {len(cached_result)} 个")
+                    _metrics_debug(f"Loaded LLM-enhanced result from cache: {len(cached_result)} items")
                     return cached_result
             except Exception as e:
-                print(f"[DEBUG] 缓存读取失败: {e}")
+                _metrics_debug(f"Cache read failed: {e}")
 
         # 实际的LLM增强逻辑
         try:
@@ -86,13 +96,13 @@ class BaseContentSplitter(ABC):
             try:
                 with open(cache_file, 'w', encoding='utf-8') as f:
                     json.dump(enhanced_results, f, ensure_ascii=False, indent=2)
-                print(f"[DEBUG] LLM增强结果已缓存到: {cache_file}")
+                _metrics_debug(f"LLM-enhanced result cached at: {cache_file}")
             except Exception as e:
-                print(f"[DEBUG] 缓存保存失败: {e}")
+                _metrics_debug(f"Cache write failed: {e}")
 
             return enhanced_results
         except Exception as e:
-            print(f"[DEBUG] LLM增强失败: {type(e).__name__}: {e}")
+            _metrics_debug(f"LLM enhancement failed: {type(e).__name__}: {e}")
             return basic_results
 
     @abstractmethod

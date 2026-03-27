@@ -46,3 +46,11 @@ results/
 coverage.xml
 
 webmainbench.egg-info/*
+
+# PyPI packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+*.egg
+.pypirc

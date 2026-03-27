@@ -1,11 +1,12 @@
-"""
-全局配置文件
-"""
+"""Package-wide configuration."""
 
-# LLM配置，用于修正抽取工具的抽取结果
+# LLM settings for refinement of extractor outputs
 LLM_CONFIG = {
     'llm_base_url': '',
     'llm_api_key': '',
     'llm_model': 'deepseek-chat',
-    'use_llm': True
+    'use_llm': True,
 }
+
+# When True, print LLM enhancement / cache diagnostics (very noisy).
+METRICS_DEBUG = False

@@ -78,81 +78,101 @@ class EvaluationResult:
 class Evaluator:
     """Main evaluator for web content extraction benchmarks."""
     
-    def __init__(self, metric_config: Dict[str, Any] = None):
+    def __init__(self, metric_config: Dict[str, Any] = None,
+                 llm_config: Dict[str, Any] = None):
         """
         Initialize the evaluator.
         
         Args:
             metric_config: Configuration for metrics
+            llm_config: Optional LLM configuration dict to override webmainbench/config.py.
+                        Supported keys:
+                          - use_llm (bool): whether to enable LLM enhancement
+                          - llm_base_url (str): API base URL
+                          - llm_api_key (str): API key
+                          - llm_model (str): model name (default: 'deepseek-chat')
+                        Example:
+                          Evaluator(llm_config={
+                              'use_llm': True,
+                              'llm_base_url': 'https://api.deepseek.com',
+                              'llm_api_key': 'sk-xxxxxxxxxxxx',
+                              'llm_model': 'deepseek-chat',
+                          })
         """
-
-        self._validate_llm_config()
+        self._validate_llm_config(llm_config)
 
         self.metric_calculator = MetricCalculator(metric_config)
         self.metric_config = metric_config or {}
 
-    def _validate_llm_config(self):
-        """验证LLM配置的完整性和有效性"""
+    def _validate_llm_config(self, llm_config: Dict[str, Any] = None):
+        """Validate LLM configuration completeness and API connectivity."""
         import time
         from ..config import LLM_CONFIG
 
-        if LLM_CONFIG.get('use_llm', False):
-            # 检查配置完整性
-            if not LLM_CONFIG.get('llm_base_url') or not LLM_CONFIG.get('llm_api_key'):
+        # External llm_config takes priority over config.py
+        config = {**LLM_CONFIG, **(llm_config or {})}
+
+        if config.get('use_llm', False):
+            if not config.get('llm_base_url') or not config.get('llm_api_key'):
                 print("\n" + "=" * 60)
-                print("❌ 错误：LLM配置不完整！")
+                print("❌ Error: Incomplete LLM configuration!")
                 print("-" * 60)
-                print("当前 use_llm = True，但缺少必要的API配置。")
-                print("\n请在 webmainbench/config.py 中完成以下配置：")
-                print("  1. llm_base_url  (例如: 'https://api.deepseek.com')")
-                print("  2. llm_api_key   (例如: 'sk-xxxxxxxxxxxx')")
-                print("\n或者设置 use_llm = False 来禁用LLM功能。")
+                print("'use_llm' is set to True, but required API settings are missing.")
+                print("\nOption 1 - Pass config directly to Evaluator:")
+                print("  Evaluator(llm_config={")
+                print("      'use_llm': True,")
+                print("      'llm_base_url': 'https://api.deepseek.com',")
+                print("      'llm_api_key': 'sk-xxxxxxxxxxxx',")
+                print("  })")
+                print("\nOption 2 - Edit webmainbench/config.py:")
+                print("  1. llm_base_url  (e.g. 'https://api.deepseek.com')")
+                print("  2. llm_api_key   (e.g. 'sk-xxxxxxxxxxxx')")
+                print("\nOption 3 - Disable LLM: set use_llm = False")
                 print("=" * 60 + "\n")
                 sys.exit(1)
 
-            # 验证API有效性
             try:
                 from openai import OpenAI
 
-                print("正在验证LLM API配置...")
+                print("Validating LLM API configuration...")
                 client = OpenAI(
-                    base_url=LLM_CONFIG.get('llm_base_url'),
-                    api_key=LLM_CONFIG.get('llm_api_key')
+                    base_url=config.get('llm_base_url'),
+                    api_key=config.get('llm_api_key')
                 )
 
-                # 发送测试请求
-                response = client.chat.completions.create(
-                    model=LLM_CONFIG.get('llm_model', 'deepseek-chat'),
+                client.chat.completions.create(
+                    model=config.get('llm_model', 'deepseek-chat'),
                     messages=[{"role": "user", "content": "test"}],
                     max_tokens=5,
                     temperature=0
                 )
 
-                print("✅ LLM API配置验证成功！\n使用 基础方案➕LLM增强提取效果 进行评测。")
+                print("✅ LLM API validated. Running evaluation with LLM enhancement.\n")
 
             except Exception as e:
                 print("\n" + "=" * 60)
-                print("❌ 错误：LLM API配置无效！")
+                print("❌ Error: LLM API validation failed!")
                 print("-" * 60)
-                print(f"验证失败原因: {str(e)}")
-                print("\n请检查 webmainbench/config.py 中的配置：")
-                print("  1. llm_base_url 是否正确")
-                print("  2. llm_api_key 是否有效")
-                print("  3. llm_model 是否支持")
-                print("  4. 网络连接是否正常")
-                print("\n或者设置 use_llm = False 来禁用LLM功能。")
+                print(f"Reason: {str(e)}")
+                print("\nPlease check:")
+                print("  1. llm_base_url is correct")
+                print("  2. llm_api_key is valid")
+                print("  3. llm_model is supported")
+                print("  4. Network connectivity")
+                print("\nAlternatively, set use_llm = False to disable LLM functionality.")
                 print("=" * 60 + "\n")
                 sys.exit(1)
         else:
-            # 未启用LLM的提示
             print("\n" + "=" * 60)
-            print("⚠️  注意：当前未启用LLM增强提取效果功能")
-            print("   如需启用LLM增强提取效果，请在 webmainbench/config.py 中配置：")
-            print("   - 设置 use_llm = True")
-            print("   - 填写 llm_base_url")
-            print("   - 填写 llm_api_key")
+            print("ℹ️  LLM enhancement is disabled. Running in baseline mode.")
+            print("   To enable LLM enhancement, pass llm_config to Evaluator:")
+            print("     Evaluator(llm_config={")
+            print("         'use_llm': True,")
+            print("         'llm_base_url': '...',")
+            print("         'llm_api_key': '...',")
+            print("     })")
             print("=" * 60)
-            print("   (5秒后使用基础方案进行对比...)")
+            print("   Continuing in 5 seconds...")
             time.sleep(5)
             print()
 
@@ -289,10 +309,10 @@ class Evaluator:
         all_sample_results = []
         all_extraction_errors = []
         
-        print(f"🔄 开始批处理评测")
-        print(f"   数据集: {jsonl_file_path}")
-        print(f"   批大小: {batch_size}")
-        print(f"   最大样本数: {max_samples or '无限制'}")
+        print(f"🔄 Starting batched evaluation")
+        print(f"   Dataset: {jsonl_file_path}")
+        print(f"   Batch size: {batch_size}")
+        print(f"   Max samples: {max_samples if max_samples is not None else 'unlimited'}")
         
         start_time = time.time()
         
@@ -311,7 +331,7 @@ class Evaluator:
             processed_samples += len(batch_samples)
             total_samples += len(batch_samples)
             
-            print(f"   已处理: {processed_samples} 样本")
+            print(f"   Processed: {processed_samples} samples")
             
             # 如果有输出文件，可以立即写入避免内存累积
             if output_file and len(all_sample_results) > 1000:
@@ -319,9 +339,9 @@ class Evaluator:
                 all_sample_results = []  # 清空已保存的结果
         
         end_time = time.time()
-        print(f"✅ 批处理评测完成")
-        print(f"   总耗时: {end_time - start_time:.2f}秒")
-        print(f"   处理样本: {processed_samples}")
+        print(f"✅ Batched evaluation finished")
+        print(f"   Elapsed: {end_time - start_time:.2f}s")
+        print(f"   Samples processed: {processed_samples}")
         
         # 聚合结果
         overall_metrics = self._aggregate_metrics(all_sample_results)
@@ -363,7 +383,7 @@ class Evaluator:
                     })
                     
             except Exception as e:
-                print(f"⚠️  样本 {sample.id} 评测失败: {e}")
+                print(f"⚠️  Sample {sample.id} evaluation failed: {e}")
                 batch_errors.append({
                     'sample_id': sample.id,
                     'error': str(e),
