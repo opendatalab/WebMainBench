@@ -1,158 +1,254 @@
 # WebMainBench
 
-WebMainBench 是一个专门用于端到端评测网页正文抽取质量的基准测试工具。
+简体中文 | [English](README.md)
 
-## 功能特点
+[![Dataset on HF](https://huggingface.co/datasets/huggingface/badges/resolve/main/dataset-on-hf-md-dark.svg)](https://huggingface.co/datasets/opendatalab/WebMainBench)
+[![arXiv](https://img.shields.io/badge/arXiv-2511.23119-b31b1b.svg)](https://arxiv.org/abs/2511.23119)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
-### 🎯 **核心功能**
-- **多抽取器支持**: 支持 trafilatura,resiliparse 等多种抽取工具
-- **全面的评测指标**: 包含文本编辑距离、表格结构相似度(TEDS)、公式抽取质量等多维度指标
-- **人工标注支持**: 评测数据集100%人工标注
+**WebMainBench** 是一个用于评测网页正文抽取质量的高精度基准，提供：
 
-#### 指标详细说明
+- **7,809 页、100% 人工标注**的评测数据集，覆盖 5,434 个独立域名、150 个顶级域名和 46 种语言。
+- **545 条样本子集**，附带人工校准的 ground-truth markdown（`groundtruth_content`），支持文本、代码、公式、表格维度的细粒度指标评测。
+- 统一的 **评测工具包**（`webmainbench`），同时支持 ROUGE-N 和内容类型特定的编辑距离指标。
 
-| 指标名称 | 计算方式 | 取值范围 | 说明 |
-|---------|----------|----------|------|
-| `overall` | 所有成功指标的平均值 | 0.0-1.0 | 综合质量评分，分数越高质量越好 |
-| `text_edit` | `1 - (编辑距离 / 最大文本长度)` | 0.0-1.0 | 纯文本相似度，分数越高质量越好 |
-| `code_edit` | `1 - (编辑距离 / 最大代码长度)` | 0.0-1.0 | 代码内容相似度，分数越高质量越好 |
-| `table_TEDS` | `1 - (树编辑距离 / 最大节点数)` | 0.0-1.0 | 表格结构相似度，分数越高质量越好 |
-| `table_edit` | `1 - (编辑距离 / 最大表格长度)` | 0.0-1.0 | 表格内容相似度，分数越高质量越好 |
-| `formula_edit` | `1 - (编辑距离 / 最大公式长度)` | 0.0-1.0 | 公式内容相似度，分数越高质量越好 |
+> WebMainBench 在论文 [*Dripper: Token-Efficient Main HTML Extraction with a Lightweight LM*](https://arxiv.org/abs/2511.23119) 中被提出，是 [MinerU-HTML](https://github.com/opendatalab/MinerU-HTML) 项目的核心评测基准。
 
-
-### 🏗️ **系统架构**
+## 系统架构
 
 ![WebMainBench Architecture](docs/assets/arch.png)
 
-### 🔧 **核心模块**
-1. **data 模块**: 评测集文件和结果的读写管理
-2. **extractors 模块**: 各种抽取工具的统一接口
-3. **metrics 模块**: 评测指标的计算实现
-4. **evaluator 模块**: 评测任务的执行和结果输出
+**核心模块：**
 
+| 模块 | 说明 |
+|---|---|
+| `data` | 数据集加载、保存与样本管理 |
+| `extractors` | 抽取器的统一接口与工厂注册 |
+| `metrics` | 编辑距离、TEDS、ROUGE 指标实现 |
+| `evaluator` | 编排抽取、评分和报告生成 |
+
+## 数据集统计
+
+完整数据集（7,809 条）在 HTML 标签级别通过严格的三轮流程标注（标注员 → 审核员 → 高级检查员）。
+
+**语言分布（46 种语言中的前 10）**
+
+| 语言 | 数量 | 占比 |
+|---|---|---|
+| 英语 | 6,711 | 85.09% |
+| 中文 | 716 | 9.08% |
+| 西班牙语 | 61 | 0.77% |
+| 德语 | 51 | 0.65% |
+| 日语 | 48 | 0.61% |
+| 俄语 | 45 | 0.57% |
+| 法语 | 36 | 0.46% |
+| 意大利语 | 22 | 0.28% |
+| 韩语 | 20 | 0.25% |
+| 葡萄牙语 | 17 | 0.22% |
+
+**TLD 分布（150 个中的前 10）**
+
+| TLD | 数量 | 占比 |
+|---|---|---|
+| .com | 4,550 | 57.69% |
+| .org | 816 | 10.35% |
+| .cn | 459 | 5.82% |
+| .net | 318 | 4.03% |
+| .uk | 235 | 2.98% |
+| .edu | 180 | 2.28% |
+| .de | 101 | 1.28% |
+| .au | 94 | 1.19% |
+| .ru | 69 | 0.87% |
+| .gov | 59 | 0.75% |
+
+**页面类型与难度**
+
+页面通过 GPT-5 分类为不同类型（Article、Content Listing、Forum 等），并基于 DOM 结构复杂度、文本分布稀疏度、内容类型多样性和链接密度计算综合复杂度分数，划分为 Simple / Mid / Hard 三个难度等级。
+
+## 评测指标
+
+WebMainBench 支持两套互补的评测协议：
+
+### ROUGE-N F1（论文主指标）
+
+所有抽取内容通过 `html2text` 转换为标准 Markdown，再用 ROUGE-N（N=5，jieba 分词）评分。这是 [Dripper 论文](https://arxiv.org/abs/2511.23119) 中报告的指标。
+
+### 细粒度编辑距离指标（本工具包提供）
+
+基于 545 条人工校准 `groundtruth_content` 的子集计算：
+
+| 指标 | 公式 | 说明 |
+|---|---|---|
+| `overall` | 以下五项的算术平均 | 综合质量评分 |
+| `text_edit` | 1 − edit\_dist / max(len\_pred, len\_gt) | 纯文本相似度 |
+| `code_edit` | 同上，仅代码块 | 代码内容相似度 |
+| `formula_edit` | 同上，仅公式 | 公式内容相似度 |
+| `table_edit` | 同上，仅表格文本 | 表格内容相似度 |
+| `table_TEDS` | 1 − tree\_edit\_dist / max(nodes\_pred, nodes\_gt) | 表格结构相似度 |
+
+所有分数范围为 **[0, 1]**，越高越好。
+
+## 排行榜
+
+### ROUGE-N F1 — 全量数据集（7,809 条）
+
+来自 [Dripper 论文](https://arxiv.org/abs/2511.23119)（表 2）：
+
+| 抽取器 | 模式 | All | Simple | Mid | Hard |
+|---|---|---|---|---|---|
+| DeepSeek-V3.2* | Html+MD | 0.9098 | 0.9415 | 0.9104 | 0.8771 |
+| GPT-5* | Html+MD | 0.9024 | 0.9382 | 0.9042 | 0.8638 |
+| Gemini-2.5-Pro* | Html+MD | 0.8979 | 0.9345 | 0.8978 | 0.8610 |
+| **Dripper_fallback** | Html+MD | **0.8925** | 0.9325 | 0.8958 | 0.8477 |
+| **Dripper** (0.6B) | Html+MD | **0.8779** | 0.9205 | 0.8804 | 0.8313 |
+| magic-html | Html+MD | 0.7138 | 0.7857 | 0.7121 | 0.6434 |
+| Readability | Html+MD | 0.6543 | 0.7415 | 0.6550 | 0.5652 |
+| Trafilatura | Html+MD | 0.6402 | 0.7309 | 0.6417 | 0.5466 |
+| Resiliparse | TEXT | 0.6290 | 0.7140 | 0.6323 | 0.5388 |
+
+\* 前沿大模型在 Dripper 流水线中作为替代标注器使用。
+
+### 细粒度指标 — 545 条子集
+
+| 抽取器 | 版本 | overall | text\_edit | code\_edit | formula\_edit | table\_edit | table\_TEDS |
+|---|---|---|---|---|---|---|---|
+| **mineru-html** | 4.1.1 | **0.8256** | 0.8621 | 0.9093 | 0.9399 | 0.6780 | 0.7388 |
+| magic-html | 0.1.5 | 0.5141 | 0.7791 | 0.4117 | 0.7204 | 0.2611 | 0.3984 |
+| trafilatura (md) | 2.0.0 | 0.3858 | 0.6887 | 0.1305 | 0.6242 | 0.1653 | 0.3203 |
+| resiliparse | 0.14.5 | 0.2954 | 0.7381 | 0.0641 | 0.6747 | 0.0000 | 0.0000 |
+| trafilatura (txt) | 2.0.0 | 0.2657 | 0.7126 | 0.0000 | 0.6162 | 0.0000 | 0.0000 |
+
+欢迎提交新抽取器的评测结果 — 请提 PR！
 
 ## 快速开始
 
 ### 安装
 
 ```bash
-# 基础安装
 pip install webmainbench
 
-# 安装所有可选依赖
-pip install webmainbench[all]
-
-# 开发环境安装
-pip install webmainbench[dev]
+# 或从源码安装
+git clone https://github.com/opendatalab/WebMainBench.git
+cd WebMainBench
+pip install -e .
 ```
 
-### 基本使用
+### 下载数据集
+
+数据集托管在 Hugging Face：[opendatalab/WebMainBench](https://huggingface.co/datasets/opendatalab/WebMainBench)
+
+```python
+from huggingface_hub import hf_hub_download
+
+hf_hub_download(
+    repo_id="opendatalab/WebMainBench",
+    repo_type="dataset",
+    filename="WebMainBench_545.jsonl",
+    local_dir="data/",
+)
+```
+
+### 运行评测
 
 ```python
 from webmainbench import DataLoader, Evaluator, ExtractorFactory
 
-# 1. 加载评测数据集
-dataset = DataLoader.load_jsonl("your_dataset.jsonl")
-
-# 2. 创建抽取器
+dataset = DataLoader.load_jsonl("data/WebMainBench_545.jsonl")
 extractor = ExtractorFactory.create("trafilatura")
 
-# 3. 运行评测
-evaluator = Evaluator()
+evaluator = Evaluator(llm_config={
+    "use_llm": True,
+    "llm_base_url": "https://api.openai.com/v1",
+    "llm_api_key": "sk-xxxxxxxxxxxx",
+    "llm_model": "gpt-4o",
+})
 result = evaluator.evaluate(dataset, extractor)
 
-# 4. 查看结果
 print(f"Overall Score: {result.overall_metrics['overall']:.4f}")
 ```
 
-### 数据格式
-
-评测数据集应包含以下字段：
-
-```jsonl
-{
-  "track_id": "0b7f2636-d35f-40bf-9b7f-94be4bcbb396",
-  "html": "<html><body><h1 cc-select=\"true\">这是标题</h1></body></html>",   # 人工标注带cc-select="true" 属性
-  "url": "https://orderyourbooks.com/product-category/college-books-p-u/?products-per-page=all",
-  "main_html": "<h1 cc-select=\"true\">这是标题</h1>",  # 从html中剪枝得到的正文html
-  "convert_main_content": "# 这是标题",  # 从main_html+html2text转化来
-  "groundtruth_content": "# 这是标题",  # 人工校准的markdown（部分提供）
-  "meta": {
-    "language": "en",  # 网页的语言
-    "style": "artical",  # 网页的文体
-    "table": [],  # [], ["layout"], ["data"], ["layout", "data"]
-    "equation": [],  # [], ["inline"], ["interline"], ["inline", "interline"]
-    "code": [],  # [], ["inline"], ["interline"], ["inline", "interline"]
-    "level": "mid"  # simple, mid, hard
-  }
-}
-```
-
-## 支持的抽取器
-
-- **trafilatura**: trafilatura抽取器
-- **resiliparse**: resiliparse抽取器
-- **mineru-html**: mineru-html 抽取器
-- **magic-html**: magic-html 抽取器
-- **自定义抽取器**: 通过继承 `BaseExtractor` 实现
-
-## 评测榜单
-
-| extractor | extractor_version | dataset | total_samples | overall（macro avg） | code_edit | formula_edit | table_TEDS | table_edit | text_edit |
-|-----------|-------------------|---------|---------------|---------------------|-----------|--------------|------------|-----------|-----------|
-| mineru-html | 4.1.1 | WebMainBench1.0 | 545 | 0.8256 | 0.9093 | 0.9399 | 0.7388 | 0.678 | 0.8621 |
-| magic-html | 0.1.5 | WebMainBench1.0 | 545 | 0.5141 | 0.4117 | 0.7204 | 0.3984 | 0.2611 | 0.7791 |
-| trafilatura_md | 2.0.0 | WebMainBench1.0 | 545 | 0.3858 | 0.1305 | 0.6242 | 0.3203 | 0.1653 | 0.6887 |
-| trafilatura_txt | 2.0.0 | WebMainBench1.0 | 545 | 0.2657 | 0 | 0.6162 | 0 | 0 | 0.7126 |
-| resiliparse | 0.14.5 | WebMainBench1.0 | 545 | 0.2954 | 0.0641 | 0.6747 | 0 | 0 | 0.7381 |
-
-## 高级功能
-
-### 多抽取器对比评估
+如不需要 LLM 增强内容拆分（用于公式/表格/代码抽取），可显式关闭：
 
 ```python
-# 对比多个抽取器
-extractors = ["trafilatura", "resiliparse"]
+evaluator = Evaluator(llm_config={"use_llm": False})
+```
+
+### 多抽取器对比
+
+```python
+extractors = ["trafilatura", "resiliparse", "magic-html"]
 results = evaluator.compare_extractors(dataset, extractors)
 
 for name, result in results.items():
     print(f"{name}: {result.overall_metrics['overall']:.4f}")
 ```
 
-#### 具体示例
+完整示例见 `examples/multi_extractor_compare.py`。
 
-```python
-python examples/multi_extractor_compare.py
+## 数据格式
+
+JSONL 文件每行一个网页样本：
+
+```json
+{
+  "track_id": "0b7f2636-d35f-40bf-9b7f-94be4bcbb396",
+  "url": "https://example.com/page",
+  "html": "<html>...<h1 cc-select=\"true\">Title</h1>...</html>",
+  "main_html": "<h1>Title</h1><p>Body text...</p>",
+  "convert_main_content": "# Title\n\nBody text...",
+  "groundtruth_content": "# Title\n\nBody text...",
+  "meta": {
+    "language": "en",
+    "style": "Article",
+    "level": "mid",
+    "table": [],
+    "code": ["interline"],
+    "equation": ["inline"]
+  }
+}
 ```
 
-这个例子演示了如何：
+| 字段 | 说明 |
+|---|---|
+| `track_id` | 样本唯一标识符（UUID） |
+| `url` | 原始网页 URL |
+| `html` | 完整页面 HTML；人工标注区域带有 `cc-select="true"` 属性 |
+| `main_html` | 从 `html` 剪枝得到的 ground-truth HTML 子树（全部 7,809 条均有） |
+| `convert_main_content` | 通过 `html2text` 从 `main_html` 转换的 Markdown（全部 7,809 条均有） |
+| `groundtruth_content` | 人工校准的 ground-truth markdown（仅 545 条子集提供） |
+| `meta.language` | 语言代码 — `en`、`zh`、`es`、`de`、`ja`、`ko`、`ru` 等（46 种语言） |
+| `meta.style` | 页面类型 — `Article`、`Content Listing`、`Forum_or_Article_with_commentsection`、`Other` |
+| `meta.level` | 复杂度 — `simple`、`mid`、`hard` |
+| `meta.table` | 表格类型：`[]`、`["data"]`、`["layout"]`、`["data", "layout"]` |
+| `meta.code` | 代码类型：`[]`、`["inline"]`、`["interline"]`、`["inline", "interline"]` |
+| `meta.equation` | 公式类型：`[]`、`["inline"]`、`["interline"]`、`["inline", "interline"]` |
 
-1. **加载测试数据集**：使用包含代码、公式、表格、文本等多种内容类型的样本数据
-2. **创建多个抽取器**：
-   - `magic-html`：基于 magic-html 库的抽取器
-   - `trafilatura`：基于 trafilatura 库的抽取器  
-   - `resiliparse`：基于 resiliparse 库的抽取器
-3. **批量评估对比**：使用 `evaluator.compare_extractors()` 同时评估所有抽取器
-4. **生成对比报告**：自动保存多种格式的评估结果
+## 支持的抽取器
 
-#### 输出文件说明
+| 抽取器 | 依赖 | 输出格式 |
+|---|---|---|
+| `mineru-html` | [MinerU-HTML](https://github.com/opendatalab/MinerU-HTML) | HTML → Markdown |
+| `trafilatura` | [trafilatura](https://github.com/adbar/trafilatura) | Markdown 或纯文本 |
+| `resiliparse` | [resiliparse](https://resiliparse.chatnoir.eu/) | 纯文本 |
+| `magic-html` | [magic-html](https://github.com/opendatalab/magic-html) | HTML |
+| 自定义 | 继承 `BaseExtractor` | 任意 |
 
-评估完成后会在 `results/` 目录下生成三个重要文件：
+## 进阶用法
 
-| 文件名 | 格式 | 内容描述 |
-|--------|------|----------|
-| `leaderboard.csv` | CSV | **排行榜文件**：包含各抽取器的整体排名和分项指标对比，便于快速查看性能差异 |
-| `evaluation_results.json` | JSON | **详细评估结果**：包含每个抽取器的完整评估数据、指标详情和元数据信息 |
-| `dataset_with_results.jsonl` | JSONL | **增强数据集**：原始测试数据加上所有抽取器的提取结果，便于人工检查和分析 |
+### 自定义抽取器
 
+```python
+from webmainbench.extractors import BaseExtractor, ExtractionResult, ExtractorFactory
 
-`leaderboard.csv` 内容示例：
-```csv
-extractor,dataset,total_samples,success_rate,overall,code_edit,formula_edit,table_TEDS,table_edit,text_edit
-magic-html,sample_dataset,4,1.0,0.1526,0.1007,0.0,0.0,0.0,0.6624
-resiliparse,sample_dataset,4,1.0,0.1379,0.0,0.0,0.0,0.0,0.6897
-trafilatura,sample_dataset,4,1.0,0.1151,0.1007,0.0,0.0,0.0,0.4746
+class MyExtractor(BaseExtractor):
+    def _setup(self):
+        pass
+
+    def _extract_content(self, html, url=None):
+        content = your_extraction_logic(html)
+        return ExtractionResult(content=content, content_list=[], success=True)
+
+ExtractorFactory.register("my-extractor", MyExtractor)
 ```
 
 ### 自定义指标
@@ -163,68 +259,51 @@ from webmainbench.metrics import BaseMetric, MetricResult
 class CustomMetric(BaseMetric):
     def _setup(self):
         pass
-    
-    def _calculate_score(self, predicted, groundtruth, **kwargs):
-        # 实现自定义评测逻辑
-        score = your_calculation(predicted, groundtruth)
-        return MetricResult(
-            metric_name=self.name,
-            score=score,
-            details={"custom_info": "value"}
-        )
 
-# 添加到评测器
+    def _calculate_score(self, predicted, groundtruth, **kwargs):
+        score = your_scoring_logic(predicted, groundtruth)
+        return MetricResult(metric_name=self.name, score=score, details={})
+
 evaluator.metric_calculator.add_metric("custom", CustomMetric("custom"))
 ```
 
-### 自定义抽取器
+### 输出文件
 
-```python
-from webmainbench.extractors import BaseExtractor, ExtractionResult
+评测完成后在 `results/` 目录生成：
 
-class MyExtractor(BaseExtractor):
-    def _setup(self):
-        # 初始化抽取器
-        pass
-    
-    def _extract_content(self, html, url=None):
-        # 实现抽取逻辑
-        content = your_extraction_logic(html)
-        
-        return ExtractionResult(
-            content=content,
-            content_list=[...],
-            success=True
-        )
+| 文件 | 说明 |
+|---|---|
+| `leaderboard.csv` | 各抽取器的总分与分项指标 |
+| `evaluation_results.json` | 完整评测详情及元数据 |
+| `dataset_with_results.jsonl` | 原始样本 + 所有抽取器输出 |
 
-# 注册自定义抽取器
-ExtractorFactory.register("my-extractor", MyExtractor)
-```
-
-## 项目架构
+## 项目结构
 
 ```
 webmainbench/
-├── data/           # 数据处理模块
-│   ├── dataset.py  # 数据集类
-│   ├── loader.py   # 数据加载器
-│   └── saver.py    # 数据保存器
-├── extractors/     # 抽取器模块
-│   ├── base.py     # 基础接口
-│   ├── factory.py  # 工厂模式
-│   └── ...         # 具体实现
-├── metrics/        # 指标模块
-│   ├── base.py     # 基础接口
-│   ├── text_metrics.py    # 文本指标
-│   ├── table_metrics.py   # 表格指标
-│   └── calculator.py      # 指标计算器
-├── evaluator/      # 评估器模块
-│   └── evaluator.py       # 主评估器
-└── utils/          # 工具模块
-    └── helpers.py          # 辅助函数
+├── data/           # 数据集加载与保存
+├── extractors/     # 抽取器实现与工厂
+├── metrics/        # 指标实现与计算器
+├── evaluator/      # 编排抽取与评分
+└── utils/          # 日志和辅助函数
 ```
 
+## 引用
+
+如果您在研究中使用了 WebMainBench，请引用 Dripper 论文：
+
+```bibtex
+@misc{liu2025dripper,
+    title   = {Dripper: Token-Efficient Main HTML Extraction with a Lightweight LM},
+    author  = {Mengjie Liu and Jiahui Peng and Pei Chu and Jiantao Qiu and Ren Ma and He Zhu and Rui Min and Lindong Lu and Wenchang Ning and Linfeng Hou and Kaiwen Liu and Yuan Qu and Zhenxiang Li and Chao Xu and Zhongying Tu and Wentao Zhang and Conghui He},
+    year    = {2025},
+    eprint  = {2511.23119},
+    archivePrefix = {arXiv},
+    primaryClass  = {cs.CL},
+    url     = {https://arxiv.org/abs/2511.23119},
+}
+```
 
 ## 许可证
 
-本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情。
+本项目采用 Apache License 2.0 许可 — 详见 [LICENSE](LICENSE)。
