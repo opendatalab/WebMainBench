@@ -108,21 +108,21 @@ class BaseExtractor(ABC):
         
     def extract_from_sample(self, sample: Dict[str, Any]) -> ExtractionResult:
         """
-        直接从数据样本（如评测数据集的dict）中读取groundtruth内容，返回ExtractionResult。
-        适用于评测流程的基线测试或简单抽取器。
+        Read groundtruth content directly from a data sample (e.g., evaluation dataset dict) and return ExtractionResult.
+        Suitable for baseline testing or simple extractors in the evaluation pipeline.
 
-        参数:
-            sample: 包含groundtruth内容的数据样本dict
+        Args:
+            sample: Data sample dict containing groundtruth content
 
-        返回:
-            ExtractionResult实例，内容直接取自sample
+        Returns:
+            ExtractionResult instance with content taken directly from sample
         """
-        # 兼容常见字段
-        # 这里直接从sample中获取'llm-webkit_md'字段内容，注意字段名有'-'，不能用点操作符，需要用[]方式
+        # Handle common fields
+        # Directly get 'llm-webkit_md' field content from sample. Note: field name contains '-', cannot use dot operator, must use [] notation
         content = sample.llm_webkit_md
         content_list = sample.content_list
         language = sample.language
-        # 置信度直接设为1.0，表示“完美抽取”
+        # Set confidence to 1.0, indicating "perfect extraction"
         confidence_score = 1.0
 
         return ExtractionResult(

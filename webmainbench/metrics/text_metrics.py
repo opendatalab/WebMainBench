@@ -46,7 +46,7 @@ class EditDistanceMetric(BaseMetric):
             # else:
             #     score = 1.0 - (distance / max_len)
             if max_len == 0:
-                # 两者都为空时标记为失败
+                # Mark as failed when both are empty
                 return MetricResult.create_error_result(
                     self.name,
                     "Both predicted and groundtruth are empty"
@@ -215,22 +215,22 @@ class ROUGEMetric(BaseMetric):
 
 
 class CodeEditMetric(EditDistanceMetric):
-    """代码编辑距离指标"""
-    
+    """Code edit distance metric"""
+
     version = "1.0.0"
     description = "Code block edit distance metric"
-    
-    def _calculate_score(self, predicted: str, groundtruth: str, 
+
+    def _calculate_score(self, predicted: str, groundtruth: str,
                         predicted_content_list: List[Dict[str, Any]] = None,
                         groundtruth_content_list: List[Dict[str, Any]] = None,
                         **kwargs) -> MetricResult:
-        """计算代码块的编辑距离"""
-        
-        # 从content_list中提取代码内容
+        """Calculate edit distance for code blocks"""
+
+        # Extract code content from content_list
         pred_code = self._extract_code_content(predicted, predicted_content_list)
         gt_code = self._extract_code_content(groundtruth, groundtruth_content_list)
-        
-        # 计算编辑距离
+
+        # Calculate edit distance
         result = super()._calculate_score(pred_code, gt_code, **kwargs)
         result.metric_name = self.name
         result.details.update({
@@ -238,65 +238,65 @@ class CodeEditMetric(EditDistanceMetric):
             "groundtruth_code_length": len(gt_code),
             "content_type": "code"
         })
-        
+
         return result
-    
+
     def _extract_code_content(self, text: str, content_list: List[Dict[str, Any]] = None) -> str:
-        """从文本和content_list中提取代码内容"""
-        # 使用统一的内容分割方法
+        """Extract code content from text and content_list"""
+        # Use the unified content splitting method
         content_parts = self.split_content(text, content_list)
         return content_parts.get('code', '')
-    
+
     def _extract_codes_from_content_list(self, content_list: List[Dict[str, Any]]) -> List[str]:
-        """递归从content_list中提取代码内容"""
+        """Recursively extract code content from content_list"""
         codes = []
-        
+
         def _recursive_extract(items):
             if not isinstance(items, list):
                 return
-            
+
             for item in items:
                 if not isinstance(item, dict):
                     continue
-                
-                # 检查当前项是否为代码
+
+                # Check if the current item is code
                 item_type = item.get('type', '')
                 if item_type in ['code']:
                     content = item.get('content', '')
                     if content:
                         codes.append(content)
-                
-                # 递归检查children字段
+
+                # Recursively check the children field
                 children = item.get('children')
                 if children:
                     _recursive_extract(children)
-                
-                # 递归检查items字段
+
+                # Recursively check the items field
                 items_field = item.get('items')
                 if items_field:
                     _recursive_extract(items_field)
-        
+
         _recursive_extract(content_list)
         return codes
 
 
 class TextEditMetric(EditDistanceMetric):
-    """纯文本编辑距离指标（除代码、表格、公式外的文本）"""
-    
+    """Pure text edit distance metric (excluding code, tables, and formulas)"""
+
     version = "1.0.0"
     description = "Pure text edit distance metric (excluding code, tables, formulas)"
-    
+
     def _calculate_score(self, predicted: str, groundtruth: str,
                         predicted_content_list: List[Dict[str, Any]] = None,
                         groundtruth_content_list: List[Dict[str, Any]] = None,
                         **kwargs) -> MetricResult:
-        """计算纯文本的编辑距离"""
-        
-        # 从文本中移除代码、表格、公式
+        """Calculate edit distance for pure text"""
+
+        # Remove code, tables, and formulas from text
         pred_text = self._extract_pure_text(predicted, predicted_content_list)
         gt_text = self._extract_pure_text(groundtruth, groundtruth_content_list)
-        
-        # 计算编辑距离
+
+        # Calculate edit distance
         result = super()._calculate_score(pred_text, gt_text, **kwargs)
         result.metric_name = self.name
         result.details.update({
@@ -304,51 +304,51 @@ class TextEditMetric(EditDistanceMetric):
             "groundtruth_text_length": len(gt_text),
             "content_type": "text"
         })
-        
+
         return result
-    
+
     def _extract_pure_text(self, text: str, content_list: List[Dict[str, Any]] = None) -> str:
-        """提取纯文本内容（排除代码、表格、公式）"""
-        # 使用统一的内容分割方法
+        """Extract pure text content (excluding code, tables, and formulas)"""
+        # Use the unified content splitting method
         content_parts = self.split_content(text, content_list)
         return content_parts.get('text', '')
-    
+
     def _extract_text_from_content_list(self, content_list: List[Dict[str, Any]]) -> List[str]:
-        """递归从content_list中提取纯文本内容（排除代码、表格、公式）"""
+        """Recursively extract pure text content from content_list (excluding code, tables, formulas)"""
         texts = []
-        
+
         def _recursive_extract(items):
             if not isinstance(items, list):
                 return
-            
+
             for item in items:
                 if not isinstance(item, dict):
                     continue
-                
-                # 检查当前项是否为纯文本内容
+
+                # Check if the current item is pure text content
                 item_type = item.get('type', '')
-                # 排除代码、表格、公式等特殊内容类型
+                # Exclude special content types such as code, tables, and formulas
                 if item_type in ['paragraph', 'heading', 'text', 'list_item', 'list-item']:
                     content = item.get('content', '')
                     if content:
                         texts.append(content)
-                
-                # 递归检查children字段
+
+                # Recursively check the children field
                 children = item.get('children')
                 if children:
                     _recursive_extract(children)
-                
-                # 递归检查items字段
+
+                # Recursively check the items field
                 items_field = item.get('items')
                 if items_field:
                     _recursive_extract(items_field)
-        
+
         _recursive_extract(content_list)
         return texts
 
 
 class TextRougeNgramMetric(BaseMetric):
-    """文本Rouge-Ngram相似度指标"""
+    """Text Rouge-Ngram similarity metric"""
     
     version = "1.0.0"
     description = "Text Rouge-Ngram similarity metric"
@@ -411,7 +411,7 @@ class TextRougeNgramMetric(BaseMetric):
 
         score = self._score_ngrams(target_ngrams, prediction_ngrams)
 
-        # 将scoress转换为rouge-L的precision, recall, f1-score
+        # Convert scores to precision, recall, f1-score in ROUGE-L format
         result = {'prec': score.precision, 'rec': score.recall, 'f1': score.fmeasure}
         return result
 

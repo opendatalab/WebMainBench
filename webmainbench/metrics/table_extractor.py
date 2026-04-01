@@ -7,46 +7,40 @@ from .base_content_splitter import BaseContentSplitter, _metrics_debug
 
 
 class TableSplitter(BaseContentSplitter):
-    """从文本中提取表格"""
+    """Extract tables from text."""
 
     def extract(self, text: str, field_name: str = None) -> str:
-        """提取表格"""
+        """Extract tables."""
         tables = self.extract_basic(text)
-
-        if self.should_use_llm(field_name):
-            table_parts = self.enhance_with_llm(tables)
-        else:
-            table_parts = tables
-
-        return '\n'.join(table_parts)
+        return '\n'.join(tables)
 
     def extract_basic(self, text: str) -> List[str]:
-        """基本表格提取方法"""
+        """Basic table extraction method."""
         table_parts = []
 
-        # 移除代码块内容
+        # Remove code block content
         text_without_code = self._remove_code_blocks(text)
 
-        # HTML表格提取（在清理后的文本中）
+        # Extract HTML tables (from cleaned text)
         soup = BeautifulSoup(text_without_code, "html.parser")
 
         for table in soup.find_all("table"):
             if not table.find_parent(["td", "tr", "tbody", "table"]):
                 table_parts.append(str(table))
 
-        # Markdown表格提取
+        # Extract Markdown tables
         lines = text.split('\n')
         table_lines = []
         in_markdown_table = False
 
         def is_md_table_line(line):
-            """判断是否可能是 Markdown 表格行"""
+            """Check if a line could be a Markdown table row."""
             if line.count("|") < 1:
                 return False
             return True
 
         def is_md_separator_line(line):
-            """判断是否为 Markdown 分隔行"""
+            """Check if a line is a Markdown separator row."""
             parts = [p.strip() for p in line.split("|")]
             for p in parts:
                 if p and not re.match(r"^:?\-{3,}:?$", p):
@@ -54,7 +48,7 @@ class TableSplitter(BaseContentSplitter):
             return True
 
         def save_table():
-            """保存当前表格并清空缓存"""
+            """Save the current table and clear the buffer."""
             nonlocal table_lines
             if len(table_lines) >= 2 and is_md_separator_line(table_lines[1]):
                 md_table = '\n'.join(table_lines)
@@ -70,21 +64,20 @@ class TableSplitter(BaseContentSplitter):
                     table_lines = []
                     in_markdown_table = False
 
-        # 处理文档末尾的 Markdown 表格
+        # Handle Markdown tables at the end of the document
         if in_markdown_table:
             save_table()
 
         return table_parts
 
     def _remove_code_blocks(self, text: str) -> str:
-        """移除Markdown代码块"""
-        # 移除多行代码块 ```
+        """Remove Markdown code blocks."""
+        # Remove multi-line fenced code blocks ```
         text_without_blocks = re.sub(r'```.*?```', '', text, flags=re.DOTALL)
-        # 移除内联代码块 `
+        # Remove inline code blocks `
         text_without_code = re.sub(r'`[^`]*`', '', text_without_blocks)
         return text_without_code
 
     def _llm_enhance(self, basic_results: List[str]) -> List[str]:
-        """使用LLM增强表格提取结果（未实现）"""
-        _metrics_debug("Table LLM enhancement not implemented; returning raw results")
+        """Table extraction does not use LLM enhancement."""
         return basic_results

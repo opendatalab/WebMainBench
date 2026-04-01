@@ -98,7 +98,7 @@ class DataSaver:
         else:
             results_dict = results
         
-        # 移除extracted_content和extracted_content_list字段以减少文件大小
+        # Remove extracted_content and extracted_content_list fields to reduce file size
         results_dict = DataSaver._remove_content_fields(results_dict)
         
         if format.lower() == "json":
@@ -131,7 +131,7 @@ class DataSaver:
         file_path = Path(file_path)
         file_path.parent.mkdir(parents=True, exist_ok=True)
 
-        # 转换结果为字典列表
+        # Convert results to list of dicts
         def to_dict_if_needed(item):
             return item.to_dict() if hasattr(item, 'to_dict') else item
 
@@ -145,10 +145,10 @@ class DataSaver:
             metadata = result.get('metadata', {})
             error_analysis = result.get('error_analysis', {})
 
-            # 获取抽取器版本
+            # Get extractor version
             extractor_name = metadata.get('extractor_name', 'unknown')
             try:
-                # 映射抽取器名称到包名
+                # Map extractor name to package name
                 package_mapping = {
                     'llm-webkit': 'llm_web_kit',
                     'magic-html': 'magic_html',
@@ -302,18 +302,18 @@ class DataSaver:
                         if isinstance(metric_data, dict) and metric_data.get('success', False):
                             sample_dict[f'{current_extractor_name}_{metric_name}_score'] = metric_data.get('score', 0)
 
-                    # 解析预测值（predicted）
+                    # Parse predicted values
                     predicted_content = extraction_result.get('extracted_content', '')
-                    predicted_parts = BaseMetric._extract_from_markdown(predicted_content, field_name="llm_webkit_md")  # 关键：解析预测内容
+                    predicted_parts = BaseMetric._extract_from_markdown(predicted_content, field_name="llm_webkit_md")  # Key: parse predicted content
                     for part_type in ['code', 'formula', 'table', 'text']:
                         sample_dict[f'{current_extractor_name}_predicted_{part_type}'] = predicted_parts.get(part_type, '')
 
-            # 解析真实值（groundtruth）- 只需要解析一次
-            if extractor_names:  # 只有当存在extractor时才解析
+            # Parse groundtruth values - only needs to be parsed once
+            if extractor_names:  # Only parse when extractors exist
                 groundtruth_content = sample_dict.get('groundtruth_content', '')
-                groundtruth_parts = BaseMetric._extract_from_markdown(groundtruth_content, field_name="groundtruth_content")  # 关键：解析真实内容
+                groundtruth_parts = BaseMetric._extract_from_markdown(groundtruth_content, field_name="groundtruth_content")  # Key: parse groundtruth content
                 for part_type in ['code', 'formula', 'table', 'text']:
-                    # 使用第一个extractor的名字作为前缀，或者使用通用前缀
+                    # Use the first extractor name as prefix, or use a generic prefix
                     prefix = extractor_names[0] if len(extractor_names) == 1 else 'groundtruth'
                     sample_dict[f'{prefix}_groundtruth_{part_type}'] = groundtruth_parts.get(part_type, '')
 
@@ -335,17 +335,17 @@ class DataSaver:
     
     @staticmethod
     def _remove_content_fields(data: Dict[str, Any]) -> Dict[str, Any]:
-        """移除extracted_content和extracted_content_list字段以减少保存文件大小"""
+        """Remove extracted_content and extracted_content_list fields to reduce saved file size."""
         import copy
         
         cleaned_data = copy.deepcopy(data)
         
         def remove_fields(obj):
             if isinstance(obj, dict):
-                # 移除extracted_content和extracted_content_list字段
+                # Remove extracted_content and extracted_content_list fields
                 obj.pop('extracted_content', None)
                 obj.pop('extracted_content_list', None)
-                # 递归处理嵌套字典和列表
+                # Recursively process nested dicts and lists
                 for value in obj.values():
                     if isinstance(value, (dict, list)):
                         remove_fields(value)
@@ -361,16 +361,16 @@ class DataSaver:
     def append_intermediate_results(results: List[Dict[str, Any]], 
                                   file_path: Union[str, Path]) -> None:
         """
-        追加保存中间结果，用于批处理时释放内存。
-        
+        Append and save intermediate results, used for releasing memory during batch processing.
+
         Args:
-            results: 要保存的结果列表
-            file_path: 输出文件路径
+            results: List of results to save
+            file_path: Output file path
         """
         file_path = Path(file_path)
         file_path.parent.mkdir(parents=True, exist_ok=True)
         
-        # 追加模式写入JSONL
+        # Append mode write to JSONL
         with open(file_path, 'a', encoding='utf-8') as f:
             for result in results:
                 json.dump(result, f, ensure_ascii=False)
@@ -381,15 +381,15 @@ class DataSaver:
                              file_path: Union[str, Path],
                              batch_size: int = 100) -> int:
         """
-        流式保存评测结果，适用于大数据集处理。
-        
+        Stream and save evaluation results, suitable for large dataset processing.
+
         Args:
-            results_iterator: 结果迭代器
-            file_path: 输出文件路径
-            batch_size: 批次保存大小
-            
+            results_iterator: Results iterator
+            file_path: Output file path
+            batch_size: Batch save size
+
         Returns:
-            int: 保存的结果数量
+            int: Number of saved results
         """
         file_path = Path(file_path)
         file_path.parent.mkdir(parents=True, exist_ok=True)
@@ -402,14 +402,14 @@ class DataSaver:
                 batch.append(result)
                 saved_count += 1
                 
-                # 达到批次大小时写入
+                # Write when batch size is reached
                 if len(batch) >= batch_size:
                     for item in batch:
                         json.dump(item, f, ensure_ascii=False)
                         f.write('\n')
                     batch = []
             
-            # 保存最后一批
+            # Save the last batch
             if batch:
                 for item in batch:
                     json.dump(item, f, ensure_ascii=False)
@@ -420,19 +420,19 @@ class DataSaver:
     @staticmethod
     def create_streaming_writer(file_path: Union[str, Path]):
         """
-        创建流式写入器，用于逐个保存结果。
-        
+        Create a streaming writer for saving results one by one.
+
         Args:
-            file_path: 输出文件路径
-            
+            file_path: Output file path
+
         Returns:
-            StreamingResultWriter: 流式写入器实例
+            StreamingResultWriter: Streaming writer instance
         """
         return StreamingResultWriter(file_path)
 
 
 class StreamingResultWriter:
-    """流式结果写入器，用于逐个保存评测结果"""
+    """Streaming result writer for saving evaluation results one by one."""
     
     def __init__(self, file_path: Union[str, Path]):
         self.file_path = Path(file_path)
@@ -449,15 +449,15 @@ class StreamingResultWriter:
             self.file_handle.close()
     
     def write_result(self, result: Dict[str, Any]) -> None:
-        """写入单个结果"""
+        """Write a single result."""
         if self.file_handle:
             json.dump(result, self.file_handle, ensure_ascii=False)
             self.file_handle.write('\n')
-            self.file_handle.flush()  # 确保立即写入
+            self.file_handle.flush()  # Ensure immediate write
             self.count += 1
     
     def get_count(self) -> int:
-        """获取已写入的结果数量"""
+        """Get the number of results written."""
         return self.count
     
     @staticmethod

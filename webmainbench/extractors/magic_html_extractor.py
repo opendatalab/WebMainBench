@@ -31,16 +31,16 @@ class MagicHtmlExtractor(BaseExtractor):
             # Use Magic HTML for extraction
             data = self.extractor.extract(html)
 
-            # 从输出中提取所需信息
+            # Extract required information from output
             extracted_html = data.get('html', '')
-            # 使用内部HTML2Text方法生成markdown
+            # Use internal HTML2Text method to generate markdown
             h = HTML2TextWrapper()
             markdown = h(extracted_html)
             # markdown = html2text.html2text(extracted_html)
             title = data.get('title', '')
-            # 简单地将提取的 HTML 作为内容
+            # Use extracted HTML as content
             content = markdown
-            # 创建 content_list（简单分割段落）
+            # Create content_list (simple paragraph splitting)
             content_list = []
             if content:
                 paragraphs = content.split('\n\n')
@@ -67,11 +67,11 @@ class MagicHtmlExtractor(BaseExtractor):
 
 
     def _detect_language(self, content: str) -> Optional[str]:
-        """检测内容语言."""
+        """Detect content language."""
         if not content:
             return None
 
-        # 简单的语言检测逻辑
+        # Simple language detection logic
         chinese_chars = len(re.findall(r'[\u4e00-\u9fff]', content))
         english_chars = len(re.findall(r'[a-zA-Z]', content))
 

@@ -11,20 +11,20 @@ import re
 @dataclass
 class ResiliparseInferenceConfig:
     """Configuration for Resiliparse extractor."""
-    main_content: bool = True # 是否提取主要内容,默认开启.(丢弃<nav>（导航列表）、<footer>（版权信息) 、<aside>（侧边栏）、<footer>（页脚）等)
-    alt_texts: bool = True  # 是否提取 <img> 的 alt 属性文本,默认开启
-    links: bool = False  # 是否提取超链接,默认关闭
-    form_fields: bool = False  # 是否提取表单控件,默认关闭
-    noscript: bool = False  # 是否提取 <noscript> 标签的内容,默认关闭
-    list_bullets: bool = True # 是否用 • 标记列表项,默认开启
-    preserve_formatting: bool = True  ## 控制格式保留：True（默认）：保留列表、换行等基础格式,False：完全压缩（无换行、无列表，所有文本连在一起）
-    comments: bool = True # 是否保留用户评论,默认开启
-    post_meta: bool = True  # 是否保留文章元信息,默认开启
-    hidden_elements: bool = False  # 是否保留CSS隐藏元素,默认关闭
+    main_content: bool = True # Whether to extract main content, enabled by default. (Discards <nav> (navigation lists), <footer> (copyright info), <aside> (sidebars), <footer> (page footer), etc.)
+    alt_texts: bool = True  # Whether to extract alt attribute text from <img>, enabled by default
+    links: bool = False  # Whether to extract hyperlinks, disabled by default
+    form_fields: bool = False  # Whether to extract form controls, disabled by default
+    noscript: bool = False  # Whether to extract content of <noscript> tags, disabled by default
+    list_bullets: bool = True # Whether to mark list items with •, enabled by default
+    preserve_formatting: bool = True  ## Controls format preservation: True (default): preserve basic formatting like lists and line breaks, False: fully compress (no line breaks, no lists, all text concatenated)
+    comments: bool = True # Whether to keep user comments, enabled by default
+    post_meta: bool = True  # Whether to keep article metadata, enabled by default
+    hidden_elements: bool = False  # Whether to keep CSS-hidden elements, disabled by default
     
 
 
-    # 可根据需要添加更多resiliparse支持的参数
+    # Additional resiliparse-supported parameters can be added here as needed
 
 
 @extractor("resiliparse")
@@ -38,7 +38,7 @@ class ResiliparseExtractor(BaseExtractor):
         super().__init__(name, config)
         self.inference_config = ResiliparseInferenceConfig()
 
-        # 应用用户配置
+        # Apply user configuration
         if config:
             for key, value in config.items():
                 if hasattr(self.inference_config, key):
@@ -46,7 +46,7 @@ class ResiliparseExtractor(BaseExtractor):
 
     def _setup(self) -> None:
         """Set up the Resiliparse extractor."""
-        # 初始化操作
+        # Initialization operations
         pass
 
     def _extract_content(self, html: str, url: str = None) -> ExtractionResult:
@@ -61,7 +61,7 @@ class ResiliparseExtractor(BaseExtractor):
             ExtractionResult instance
         """
         try:
-            # 使用配置参数进行内容抽取
+            # Extract content using configuration parameters
             content = extract_plain_text(
                 html,
                 main_content=self.inference_config.main_content,
@@ -74,7 +74,7 @@ class ResiliparseExtractor(BaseExtractor):
                 comments=self.inference_config.comments
             )
 
-            # 创建 content_list（简单分割段落）
+            # Create content_list (simple paragraph splitting)
             content_list = []
             if content:
                 paragraphs = content.split('\n\n')
@@ -100,7 +100,7 @@ class ResiliparseExtractor(BaseExtractor):
             )
 
     def _extract_title(self, html: str) -> Optional[str]:
-        """提取页面标题."""
+        """Extract page title."""
         try:
             import re
             title_match = re.search(r'<title[^>]*>(.*?)</title>', html, re.IGNORECASE | re.DOTALL)
@@ -111,11 +111,11 @@ class ResiliparseExtractor(BaseExtractor):
         return None
 
     def _detect_language(self, content: str) -> Optional[str]:
-        """检测内容语言."""
+        """Detect content language."""
         if not content:
             return None
 
-        # 简单的语言检测逻辑
+        # Simple language detection logic
         chinese_chars = len(re.findall(r'[\u4e00-\u9fff]', content))
         english_chars = len(re.findall(r'[a-zA-Z]', content))
 

@@ -6,24 +6,18 @@ from .base_content_splitter import BaseContentSplitter, _metrics_debug
 
 
 class CodeSplitter(BaseContentSplitter):
-    """从文本中提取代码块"""
+    """Extract code blocks from text."""
 
     def extract(self, text: str, field_name: str = None) -> str:
-        """提取代码块"""
+        """Extract code blocks."""
         code_blocks = self.extract_basic(text)
-
-        if self.should_use_llm(field_name):
-            code_parts = self.enhance_with_llm(code_blocks)
-        else:
-            code_parts = code_blocks
-
-        return '\n'.join(code_parts)
+        return '\n'.join(code_blocks)
 
     def extract_basic(self, text: str) -> List[str]:
-        """使用正则表达式提取代码块"""
+        """Extract code blocks using regular expressions."""
         code_parts = []
 
-        # 处理三个反引号包裹的代码块
+        # Handle fenced code blocks wrapped in triple backticks
         backtick_pattern = r'(```[\s\S]*?```)'
         for match in re.finditer(backtick_pattern, text):
             code_segment = match.group(0)
@@ -34,13 +28,13 @@ class CodeSplitter(BaseContentSplitter):
                 if code_content:
                     code_parts.append(code_content)
 
-        # 处理缩进代码块 - 定义缺失的模式
+        # Handle indented code blocks
         indent_pattern = r'(?:\n\s*\n)((?:(?: {4,}|\t+)[^\n]*(?:\n|$)){2,})(?=\n\s*\n|$)'
 
         for match in re.finditer(indent_pattern, text, re.MULTILINE):
             code_segment = match.group(1)
 
-            # 验证：确保所有行都是缩进的
+            # Validate: ensure all lines are indented
             lines = code_segment.split('\n')
             all_indented = all(
                 line.startswith('    ') or line.startswith('\t') or not line.strip()
@@ -51,12 +45,12 @@ class CodeSplitter(BaseContentSplitter):
             if not all_indented:
                 continue
 
-            # 进一步验证代码特征
+            # Further validate code characteristics
             non_empty_lines = [line.strip() for line in lines if line.strip()]
             if len(non_empty_lines) < 2:
                 continue
 
-            # 检查是否有明显的非代码特征
+            # Check for obvious non-code features
             has_list_features = any(
                 re.match(r'^[-•*]\s', line) or
                 re.match(r'^\d+\.\s', line) or
@@ -68,7 +62,7 @@ class CodeSplitter(BaseContentSplitter):
             if has_list_features:
                 continue
 
-            # 清理代码段
+            # Clean up the code segment
             cleaned_lines = []
             for line in code_segment.split('\n'):
                 if line.strip():
@@ -86,6 +80,5 @@ class CodeSplitter(BaseContentSplitter):
         return code_parts
 
     def _llm_enhance(self, basic_results: List[str]) -> List[str]:
-        """使用LLM增强代码提取结果（未实现）"""
-        _metrics_debug("Code LLM enhancement not implemented; returning raw results")
+        """Code extraction does not use LLM enhancement."""
         return basic_results

@@ -1,18 +1,18 @@
 #!/usr/bin/env python
-"""测试Markdown公式提取功能"""
+"""Test Markdown formula extraction functionality"""
 
 import unittest
 import sys
 import os
 
-# 添加项目根目录到Python路径
+# Add project root directory to Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 from webmainbench.metrics.base import BaseMetric, MetricResult
 
 
 class TestFormulaExtractionMetric(BaseMetric):
-    """测试用的公式提取 metric 实现类"""
+    """Concrete formula extraction metric implementation class for testing"""
 
     def _setup(self) -> None:
         pass
@@ -26,160 +26,160 @@ class TestFormulaExtractionMetric(BaseMetric):
 
 
 class TestFormulaExtraction(unittest.TestCase):
-    """测试Markdown公式提取功能"""
+    """Test Markdown formula extraction functionality"""
 
     def setUp(self):
         self.metric = TestFormulaExtractionMetric("test_formula_metric")
 
     def test_inline_formula_extraction(self):
-        """测试行内公式提取"""
-        text = """这是行内公式示例: $E = mc^2$，这是普通文本。"""
+        """Test inline formula extraction"""
+        text = """This is an inline formula example: $E = mc^2$, this is plain text."""
 
         result = self.metric._extract_from_markdown(text)
 
-        # 验证公式被提取
+        # Verify formula was extracted
         self.assertIn('E = mc^2', result['formula'])
 
-        # 验证文本中公式标记被移除
+        # Verify formula marker was removed from text
         # self.assertNotIn('$E = mc^2$', result['text'])
-        # self.assertIn('这是行内公式示例: ，这是普通文本。', result['text'])
+        # self.assertIn('This is an inline formula example: , this is plain text.', result['text'])
         self.assertEqual(result['text'], text)
 
     def test_block_formula_extraction(self):
-        """测试行间公式提取"""
-        text = """这是行间公式:
+        """Test block formula extraction"""
+        text = """This is a block formula:
 $$
 \\int_{-\\infty}^{\\infty} e^{-x^2} dx = \\sqrt{\\pi}
 $$
-公式结束"""
+End of formula"""
 
         result = self.metric._extract_from_markdown(text)
 
-        # 验证公式被提取
+        # Verify formula was extracted
         self.assertIn('\\int_{-\\infty}^{\\infty} e^{-x^2} dx = \\sqrt{\\pi}', result['formula'])
 
-        # 修正：允许提取后有多个空行
-        self.assertIn('这是行间公式:', result['text'])
-        self.assertIn('公式结束', result['text'])
-        # 检查原始公式位置是否被清空
+        # Correction: allow multiple blank lines after extraction
+        self.assertIn('This is a block formula:', result['text'])
+        self.assertIn('End of formula', result['text'])
+        # Check if original formula position has been cleared
         # self.assertNotIn('$$', result['text'])
 
     def test_escaped_dollar_signs(self):
-        """测试转义美元符号不被识别为公式"""
+        """Test that escaped dollar signs are not recognized as formulas"""
         text = """
-        这是转义的美元符号: \\$100，不会被识别为公式。
-而这个是公式: $a + b = c$
+        This is an escaped dollar sign: \\$100, it will not be recognized as a formula.
+And this one is a formula: $a + b = c$
 """
 
         result = self.metric._extract_from_markdown(text)
-        # 验证转义的美元符号不被提取
+        # Verify escaped dollar sign is not extracted
         self.assertNotIn('100', result['formula'])
-        # 验证正常公式被提取
+        # Verify normal formula was extracted
         self.assertIn('a + b = c', result['formula'])
-        # 验证转义符号保留在文本中
+        # Verify escape character is retained in text
         self.assertIn('\\$100', result['text'])
 
     def test_multiple_formulas(self):
-        """测试多个公式提取"""
-        text = """公式1: $a = b + c$
-公式2: $$x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$$
-公式3: $E_k = \\frac{1}{2}mv^2$"""
+        """Test multiple formula extraction"""
+        text = """Formula 1: $a = b + c$
+Formula 2: $$x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$$
+Formula 3: $E_k = \\frac{1}{2}mv^2$"""
 
         result = self.metric._extract_from_markdown(text)
 
-        # 验证所有公式被提取
+        # Verify all formulas were extracted
         self.assertIn('a = b + c', result['formula'])
         self.assertIn('x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}', result['formula'])
         self.assertIn('E_k = \\frac{1}{2}mv^2', result['formula'])
 
-        # 验证公式间的分隔
+        # Verify separator between formulas
         self.assertIn('\n', result['formula'])
 
     def test_formula_with_special_characters(self):
-        """测试包含特殊字符的公式"""
-        text = """复杂公式: $\\sum_{i=1}^n i = \\frac{n(n+1)}{2}$
-带希腊字母: $$\\alpha + \\beta = \\gamma$$"""
+        """Test formulas containing special characters"""
+        text = """Complex formula: $\\sum_{i=1}^n i = \\frac{n(n+1)}{2}$
+With Greek letters: $$\\alpha + \\beta = \\gamma$$"""
 
         result = self.metric._extract_from_markdown(text)
 
-        # 验证特殊字符处理正确
+        # Verify special characters are handled correctly
         self.assertIn('\\sum_{i=1}^n i = \\frac{n(n+1)}{2}', result['formula'])
         self.assertIn('\\alpha + \\beta = \\gamma', result['formula'])
 
     def test_formula_within_text(self):
-        """测试文本中的公式提取"""
-        text = """根据相对论 $E = mc^2$，能量和质量可以互相转换。
-更复杂的情况如 $$\\nabla \\cdot \\mathbf{E} = \\frac{\\rho}{\\epsilon_0}$$ 所示。"""
+        """Test formula extraction within text"""
+        text = """According to relativity $E = mc^2$, energy and mass can be converted to each other.
+A more complex case such as $$\\nabla \\cdot \\mathbf{E} = \\frac{\\rho}{\\epsilon_0}$$ is shown."""
 
         result = self.metric._extract_from_markdown(text)
 
-        # 验证公式被提取
+        # Verify formulas were extracted
         self.assertIn('E = mc^2', result['formula'])
         self.assertIn('\\nabla \\cdot \\mathbf{E} = \\frac{\\rho}{\\epsilon_0}', result['formula'])
 
-        # 修正：允许提取后有多个空格
-        # self.assertIn('根据相对论 ，能量和质量可以互相转换。', result['text'])
-        # self.assertIn('更复杂的情况如  所示。', result['text'])
+        # Correction: allow multiple spaces after extraction
+        # self.assertIn('According to relativity , energy and mass can be converted to each other.', result['text'])
+        # self.assertIn('A more complex case such as  is shown.', result['text'])
         self.assertEqual(result['text'], text)
 
     def test_empty_formulas(self):
-        """测试空公式处理"""
-        text = """空行内公式: $   $
-空行间公式: $$   $$"""
+        """Test empty formula handling"""
+        text = """Empty inline formula: $   $
+Empty block formula: $$   $$"""
 
         result = self.metric._extract_from_markdown(text)
 
-        # 验证空公式被提取但内容为空
+        # Verify empty formula was extracted but content is empty
         self.assertTrue(result['formula'].strip() == '')
 
-        # 验证空公式标记从文本中移除
+        # Verify empty formula marker was removed from text
         # self.assertNotIn('$   $', result['text'])
         # self.assertNotIn('$$   $$', result['text'])
 
 #     def test_formula_at_document_edges(self):
-#         """测试文档开头和结尾的公式"""
-#         # 开头的公式
+#         """Test formulas at the beginning and end of the document"""
+#         # Formula at the start
 #         text1 = """$start = 0$
-# 后续文本"""
+# Subsequent text"""
 #         result1 = self.metric._extract_from_markdown(text1)
 #         self.assertIn('start = 0', result1['formula'])
 #
-#         # 结尾的公式
-#         text2 = """前置文本
+#         # Formula at the end
+#         text2 = """Preceding text
 # $$end = 1$$"""
 #         result2 = self.metric._extract_from_markdown(text2)
 #         self.assertIn('end = 1', result2['formula'])
 
     def test_formula_within_table(self):
-        """测试表格中的公式提取"""
-        text = """| 公式类型 | 示例 |
+        """Test formula extraction within a table"""
+        text = """| Formula Type | Example |
 |----------|------|
-| 行内公式 | $a + b = c$ |
-| 行间公式 | $$\\int_0^1 x dx = 0.5$$ |"""
+| Inline formula | $a + b = c$ |
+| Block formula | $$\\int_0^1 x dx = 0.5$$ |"""
 
         result = self.metric._extract_from_markdown(text)
 
-        # 验证表格中的公式被提取
+        # Verify formulas in table were extracted
         self.assertIn('a + b = c', result['formula'])
         self.assertIn('\\int_0^1 x dx = 0.5', result['formula'])
 
-        # 验证表格结构仍然被正确提取
-        self.assertIn('| 公式类型 | 示例 |', result['table'])
+        # Verify table structure is still correctly extracted
+        self.assertIn('| Formula Type | Example |', result['table'])
 
     def test_formula_within_code_block(self):
-        """测试代码块中的公式不会被提取"""
-        text = """以下是一个代码示例：
-            行间代码
+        """Test that formulas in code blocks are not extracted"""
+        text = """Here is a code example:
+            Inline code
 
             ```python
-            # 这里面的公式不应该被提取
+            # Formulas in here should not be extracted
             def calculate():
-                # 行内公式 $a + b = c$ 在代码中
+                # Inline formula $a + b = c$ in code
                 result = 0
                 return result
                 ```
-            行内代码:`$A+B=C$`  
-                
+            Inline code:`$A+B=C$`
+
             """
         result = self.metric._extract_from_markdown(text)
         self.assertNotIn('a + b = c', result['formula'])
