@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-网页类型分类工具
-用于为数据集中的网页内容添加类型标签
+Web page type classification tool
+Adds type labels to web page content in the dataset
 """
 
 import json
@@ -15,16 +15,16 @@ from collections import Counter
 import time
 
 class StyleClassifier:
-    """网页类型分类器"""
+    """Web page type classifier."""
     
     def __init__(self, api_key: Optional[str] = None, model: str = "gpt-5", base_url: str = "https://api.deepseek.com/v1"):
         """
-        初始化网页类型分类器
+        Initialize web page type classifier.
         
         Args:
-            api_key: OpenAI API密钥
-            model: 使用的模型名称
-            base_url: 模型请求的基础URL地址
+            api_key: OpenAI API key
+            model: Model name to use
+            base_url: Base URL for model requests
         """
         self.api_key = api_key
         self.model = model
@@ -32,7 +32,7 @@ class StyleClassifier:
         self.supported_categories = self._get_supported_categories()
         
     def _get_supported_categories(self) -> Dict[str, List[str]]:
-        """获取支持的网页类型分类"""
+        """Get supported web page type categories."""
         return {
             "Article": [
                 "Blog", "News", "Tutorial", "Multiple data article", 
@@ -51,14 +51,14 @@ class StyleClassifier:
     
     def get_style_classification_prompt(self, url: str, html_content: str) -> str:
         """
-        生成网页类型分类的prompt
+        Generate web page type classification prompt.
         
         Args:
-            url: 网页URL
-            html_content: 网页HTML内容
+            url: Web page URL
+            html_content: Web page HTML content
             
         Returns:
-            格式化的prompt
+            Formatted prompt
         """
         prompt = f"""You are an expert in web page classification with a strong focus on web page layout, content analysis, and user interaction. Your task is to accurately classify the provided simplified HTML source code into one of the main categories listed below, while also identifying an appropriate subcategory if applicable. Pay attention to html tag name and significant structural elements.
 
@@ -110,14 +110,14 @@ HTML Text:
     
     def detect_style_llm(self, url: str, html_content: str) -> str:
         """
-        使用LLM进行网页类型检测
+        Detect web page type using LLM.
         
         Args:
-            url: 网页URL
-            html_content: 网页HTML内容
+            url: Web page URL
+            html_content: Web page HTML content
             
         Returns:
-            网页类型分类结果
+            Web page type classification result
         """
         try:
             from openai import OpenAI
@@ -125,7 +125,7 @@ HTML Text:
             if not self.api_key:
                 raise ValueError("API key is required for LLM detection")
             
-            # 配置OpenAI客户端
+            # Configure OpenAI client
             client = OpenAI(
                 base_url = self.base_url,
                 api_key = self.api_key
@@ -143,58 +143,58 @@ HTML Text:
             
             result = response.choices[0].message.content.strip()
             
-            # 解析结果格式: Category | subcategory | explanation
+            # Parse result format: Category | subcategory | explanation
             parts = result.split('|')
             if len(parts) >= 3:
                 category = parts[0].strip()
                 subcategory = parts[1].strip()
                 explanation = parts[2].strip()
                 
-                # 验证分类是否在支持列表中
+                # Validate category is in supported list
                 if category in self.supported_categories:
                     return f"{category}|{subcategory}|{explanation}"
                 else:
-                    print(f"⚠️  LLM返回了无效的分类: {category}，返回默认分类")
+                    print(f"⚠️  LLM returned invalid category: {category}, returning default")
                     return "Other|other|LLM returned invalid category"
             else:
-                print(f"⚠️  LLM返回了格式错误的结果: {result}，返回默认分类")
+                print(f"⚠️  LLM returned malformed result: {result}, returning default")
                 return "Other|other|LLM returned malformed result"
                 
         except Exception as e:
-            print(f"⚠️  LLM检测失败: {e}，返回默认分类")
+            print(f"⚠️  LLM detection failed: {e}, returning default")
             return "Other|other|LLM detection failed"
     
     def detect_style(self, url: str, html_content: str) -> str:
         """
-        检测网页类型
+        Detect web page type.
         
         Args:
-            url: 网页URL
-            html_content: 网页HTML内容
+            url: Web page URL
+            html_content: Web page HTML content
             
         Returns:
-            网页类型分类结果
+            Web page type classification result
         """
         return self.detect_style_llm(url, html_content)
     
     def process_jsonl(self, input_file: str, output_file: str, 
                      batch_size: int = 100) -> None:
         """
-        处理JSONL文件，添加网页类型标签
+        Process JSONL file, adding web page type labels.
         
         Args:
-            input_file: 输入文件路径
-            output_file: 输出文件路径
-            batch_size: 批处理大小
+            input_file: Input file path
+            output_file: Output file path
+            batch_size: Batch size
         """
-        print(f"🔄 开始处理网页类型分类...")
-        print(f"📄 输入文件: {input_file}")
-        print(f"📄 输出文件: {output_file}")
-        print(f"🧠 检测方法: LLM")
-        print(f"🌐 模型地址: {self.base_url}")
-        print(f"🤖 使用模型: {self.model}")
+print(f"🔄 Starting web page type classification...")
+        print(f"📄 Input file: {input_file}")
+        print(f"📄 Output file: {output_file}")
+        print(f"🧠 Detection method: LLM")
+        print(f"🌐 Model URL: {self.base_url}")
+        print(f"🤖 Model: {self.model}")
         
-        # 统计信息
+        # Statistics
         total_count = 0
         processed_count = 0
         style_stats = Counter()
@@ -219,32 +219,32 @@ HTML Text:
                             processed_count += len(batch)
                             batch = []
                             
-                            print(f"  📊 已处理 {processed_count:,} 条数据...")
+    print(f"  📊 Processed {processed_count:,} records...")
                     
                     except json.JSONDecodeError as e:
-                        print(f"⚠️  第{line_num}行JSON解析错误: {e}")
+                        print(f"⚠️  JSON parse error at line {line_num}: {e}")
                         continue
                 
-                # 处理最后一批
+                # Process the last batch
                 if batch:
                     self._process_batch(batch, outfile, style_stats)
                     processed_count += len(batch)
         
         except FileNotFoundError:
-            print(f"❌ 文件未找到: {input_file}")
+            print(f"❌ File not found: {input_file}")
             return
         except Exception as e:
-            print(f"❌ 处理过程中出错: {e}")
+            print(f"❌ Error during processing: {e}")
             return
         
-        # 输出统计结果
-        print(f"\n✅ 处理完成!")
-        print(f"📊 总计处理: {processed_count:,} 条数据")
-        print(f"📊 网页类型分布:")
+        # Output statistics
+        print(f"\n✅ Processing complete!")
+        print(f"📊 Total processed: {processed_count:,} records")
+print(f"📊 Web page type distribution:")
         
         for style_result, count in style_stats.most_common():
             percentage = (count / processed_count) * 100 if processed_count > 0 else 0
-            # 解析分类结果
+            # Parse classification result
             parts = style_result.split('|')
             category = parts[0] if len(parts) > 0 else "Unknown"
             subcategory = parts[1] if len(parts) > 1 else "Unknown"
@@ -252,34 +252,34 @@ HTML Text:
     
     def _process_batch(self, batch: List[Dict], outfile, style_stats: Counter) -> None:
         """
-        处理一批数据
+        Process a batch of data.
         
         Args:
-            batch: 数据批次
-            outfile: 输出文件对象
-            style_stats: 网页类型统计计数器
+            batch: Data batch
+            outfile: Output file object
+            style_stats: Web page type statistics counter
         """
         for data in batch:
-            # 获取URL和HTML内容
+            # Get URL and HTML content
             url = data.get('url', '')
             html_content = data.get('main_html', '')
             
-            # 如果没有main_html，尝试其他字段
+            # If no main_html, try other fields
             if not html_content:
                 html_content = data.get('html', '')
             
-            # 检测网页类型
+            # Detect web page type
             if url and html_content:
                 style_result = self.detect_style(url, html_content)
             else:
                 style_result = "Other|other|Missing URL or HTML content"
             
-            # 解析分类结果
+            # Parse classification result
             parts = style_result.split('|')
             category = parts[0].strip() if len(parts) > 0 else "Other"
             subcategory = parts[1].strip() if len(parts) > 1 else "other"
             
-            # 更新数据
+            # Update data
             if 'meta' not in data:
                 data['meta'] = {}
             data['meta']['style'] = {
@@ -288,87 +288,87 @@ HTML Text:
                 'full_result': style_result
             }
             
-            # 统计
+            # Statistics
             style_stats[style_result] += 1
             
-            # 写入输出文件
+            # Write to output file
             outfile.write(json.dumps(data, ensure_ascii=False) + '\n')
             
-            # 添加延迟避免速率限制
+            # Add delay to avoid rate limits
             time.sleep(0.1)
 
 
 def main():
-    """主函数"""
+    """Main function."""
     parser = argparse.ArgumentParser(
-        description="为JSONL数据集添加网页类型标签",
+        description="Add web page type labels to JSONL dataset",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
-示例用法:
-  # 使用LLM进行网页类型分类
+Examples:
+  # Use LLM for web page type classification
   python scripts/style_classify.py data/input.jsonl --output data/output.jsonl --api-key YOUR_API_KEY
   
-  # 指定自定义模型地址和批处理大小
+  # Specify custom model URL and batch size
   python scripts/style_classify.py data/input.jsonl --output data/output.jsonl --api-key YOUR_API_KEY --base-url https://custom-url/v1 --batch-size 50
   
-  # 使用默认地址和指定模型
+  # Use default URL with specified model
   python scripts/style_classify.py data/input.jsonl --output data/output.jsonl --api-key YOUR_API_KEY --model gpt-4
         """
     )
     
     parser.add_argument(
         "input_file",
-        help="输入JSONL文件路径"
+        help="Input JSONL file path"
     )
     
     parser.add_argument(
         "--output", "-o",
         required=True,
-        help="输出JSONL文件路径"
+        help="Output JSONL file path"
     )
     
     parser.add_argument(
         "--api-key",
         required=True,
         default=os.getenv("OPENAI_API_KEY"),
-        help="OpenAI API密钥（必需）"
+        help="OpenAI API key (required)"
     )
     
     parser.add_argument(
         "--model",
         default="gpt-5",
-        help="LLM模型名称 (默认: gpt-5)"
+        help="LLM model name (default: gpt-5)"
     )
     
     parser.add_argument(
         "--base-url",
         required=True,
         default="https://api.deepseek.com/v1/",
-        help="模型请求的基础URL地址"
+        help="Base URL for model requests"
     )
     
     parser.add_argument(
         "--batch-size",
         type=int,
         default=100,
-        help="批处理大小 (默认: 100)"
+        help="Batch size (default: 100)"
     )
     
     args = parser.parse_args()
     
-    # 验证参数
+    # Validate parameters
     if not Path(args.input_file).exists():
-        print(f"❌ 输入文件不存在: {args.input_file}")
+print(f"❌ Input file does not exist: {args.input_file}")
         sys.exit(1)
     
-    # 创建分类器
+    # Create classifier
     classifier = StyleClassifier(
         api_key=args.api_key,
         model=args.model,
         base_url=args.base_url
     )
     
-    # 处理数据
+    # Process data
     classifier.process_jsonl(
         input_file=args.input_file,
         output_file=args.output,

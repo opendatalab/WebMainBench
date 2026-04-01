@@ -13,15 +13,15 @@ import re
 @dataclass
 class TrafilaturaInferenceConfig:
     """Configuration for Trafilatura extractor."""
-    favor_precision: bool = True  # 优先精度：只提取最核心的内容，过滤更多冗余（如侧边栏、广告）,默认开启
-    favor_recall: bool = True  # 优先召回：尽可能提取所有潜在有效内容，减少遗漏,默认开启
-    include_comments: bool = False  # 是否保留评论,默认关闭
-    include_tables: bool = True  # 是否保留提取html表格,默认开启
-    include_images: bool = False  # 是否保留提取图片信息,默认开启
-    include_links: bool = False  # 是否保留链接,默认关闭
-    with_metadata: bool = False  # 是否保留元信息,默认关闭
-    skip_elements: bool = False  # 是否保留CSS隐藏元素,默认关闭
-    output_format: str = "markdown"  # 支持多种格式输出:"csv", "json", "html", "markdown", "txt", "xml"等
+    favor_precision: bool = True  # Favor precision: only extract the most core content, filter more redundancy (e.g. sidebars, ads), enabled by default
+    favor_recall: bool = True  # Favor recall: extract all potentially valid content as much as possible, minimize omissions, enabled by default
+    include_comments: bool = False  # Whether to keep comments, disabled by default
+    include_tables: bool = True  # Whether to keep extracted HTML tables, enabled by default
+    include_images: bool = False  # Whether to keep extracted image information, disabled by default
+    include_links: bool = False  # Whether to keep links, disabled by default
+    with_metadata: bool = False  # Whether to keep metadata, disabled by default
+    skip_elements: bool = False  # Whether to keep CSS-hidden elements, disabled by default
+    output_format: str = "markdown"  # Supports multiple output formats: "csv", "json", "html", "markdown", "txt", "xml", etc.
 
 
 @extractor("trafilatura")
@@ -35,7 +35,7 @@ class TrafilaturaExtractor(BaseExtractor):
         super().__init__(name, config)
         self.inference_config = TrafilaturaInferenceConfig()
 
-        # 应用用户配置
+        # Apply user configuration
         if config:
             for key, value in config.items():
                 if hasattr(self.inference_config, key):
@@ -43,7 +43,7 @@ class TrafilaturaExtractor(BaseExtractor):
 
     def _setup(self) -> None:
         """Set up the Trafilatura extractor."""
-        # 初始化操作
+        # Initialization operations
         pass
 
     def _extract_content(self, html: str, url: str = None) -> ExtractionResult:
@@ -58,7 +58,7 @@ class TrafilaturaExtractor(BaseExtractor):
             ExtractionResult instance
         """
         try:
-            # 使用配置参数进行内容抽取
+            # Perform content extraction using configuration parameters
             content = extract(
                 html,
                 url=url,
@@ -69,11 +69,11 @@ class TrafilaturaExtractor(BaseExtractor):
                 include_images=self.inference_config.include_images,
                 include_links=self.inference_config.include_links,
                 with_metadata=self.inference_config.with_metadata,
-                output_format=self.inference_config.output_format  # 传入输出格式
+                output_format=self.inference_config.output_format  # Pass in output format
 
             )
 
-            # 创建 content_list（简单分割段落）
+            # Create content_list (simple paragraph split)
             content_list = []
             if content:
                 paragraphs = content.split('\n\n')
@@ -99,7 +99,7 @@ class TrafilaturaExtractor(BaseExtractor):
             )
 
     def _extract_title(self, html: str) -> Optional[str]:
-        """提取页面标题."""
+        """Extract page title."""
         try:
             import re
             title_match = re.search(r'<title[^>]*>(.*?)</title>', html, re.IGNORECASE | re.DOTALL)
@@ -110,11 +110,11 @@ class TrafilaturaExtractor(BaseExtractor):
         return None
 
     def _detect_language(self, content: str) -> Optional[str]:
-        """检测内容语言."""
+        """Detect content language."""
         if not content:
             return None
 
-        # 简单的语言检测逻辑
+        # Simple language detection logic
         chinese_chars = len(re.findall(r'[\u4e00-\u9fff]', content))
         english_chars = len(re.findall(r'[a-zA-Z]', content))
 

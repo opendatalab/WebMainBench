@@ -1,30 +1,46 @@
-"""
+“””
 TEDS (Tree-Edit Distance based Similarity) metrics for WebMainBench.
 
-一、核心算法升级：树编辑距离计算更精准高效
-替换自定义简化 DP 算法为专业 APTED 库
-v1 问题：自定义动态规划算法仅支持基础编辑操作，对嵌套表格（如多层表头、合并单元格）的层级差异处理不准确，且复杂表格计算效率低（DP 矩阵膨胀导致速度慢）。
-v2 优化：采用 apted 库（专门用于有序树编辑距离计算），严格遵循学术级算法，能精准识别子节点顺序、嵌套关系等复杂差异，计算效率提升 5-10 倍（100 节点内表格），彻底解决 v1 对复杂表格的误判问题。
-新增算法失败回退机制
-v1 问题：算法异常（如嵌套过深）直接返回错误，中断评测流程。
-v2 优化：apted 计算失败时，自动回退到 “节点数量差” 兜底（如预测 5 节点、真实 3 节点，距离为 2），确保批量评测不中断，鲁棒性显著提升。
-二、文本差异计算：从 “非黑即白” 到 “量化分级”
-引入 Levenshtein 文本编辑距离
-v1 问题：文本必须完全一致才判定节点相等（如 “产品 A” vs “产品 A” 因空格差异被判定为不相等），文本差异成本固定为 1.0，无法区分 “微小差异” 与 “巨大差异”。
-v2 优化：通过 rapidfuzz.distance.Levenshtein 量化文本差异，将差异归一化为 0-1 区间的成本
-三、边界场景处理：鲁棒性大幅增强
-空输入逻辑修正
-v1 问题：空字符串强制转为 <table><tr><td></td></tr></table>（无效空表格），违背 “空输入即无表格” 的语义，导致空输入与有效表格的分数计算失真。
-v2 优化：空字符串直接返回空，_parse_html_table 识别为空表格，避免生成无效 HTML 结构，空输入场景的评测结果更符合实际语义。
-节点序列化标准化
-v1 问题：用字典存储节点信息，无统一格式，易因字典键值差异导致解析异常。
-v2 优化：新增 _to_bracket_notation 方法，将节点转为 apted 兼容的 “括号表示法”（如 table(tr(th:产品))），标准化节点描述格式，消除解析格式差异问题。
-四、整体价值提升
-准确性：复杂表格（嵌套、合并单元格）的 TEDS 分数更贴近真实结构差异，文本微小差异的量化使结果更客观。
-效率：apted 库的优化算法大幅提升复杂表格的计算速度，支持更大规模批量评测。
-鲁棒性：空输入处理修正、算法失败回退机制，确保评测流程不中断，适配更多异常场景。
-灵活性：文本差异的分级量化，支持 OCR 识别误差、格式微小偏差等实际场景的评测需求。
-"""
+I. Core algorithm upgrade: more accurate and efficient tree edit distance calculation
+Replaced custom simplified DP algorithm with professional APTED library.
+v1 issue: Custom DP algorithm only supported basic edit operations; inaccurate for nested tables
+(multi-level headers, merged cells) and slow for complex tables (DP matrix expansion).
+v2 improvement: Uses apted library (dedicated to ordered tree edit distance), strictly follows
+academic-grade algorithm, accurately identifies child order, nesting, and complex differences.
+5-10x speed improvement for tables under 100 nodes, resolves v1 misclassification of complex tables.
+Added algorithm failure fallback mechanism.
+v1 issue: Algorithm exceptions (e.g. excessive nesting) returned errors and interrupted evaluation.
+v2 improvement: When apted fails, falls back to “node count difference” (e.g. predicted 5 nodes,
+actual 3 nodes, distance=2), ensuring batch evaluation is not interrupted.
+
+II. Text difference: from binary to quantified scoring
+Introduced Levenshtein text edit distance.
+v1 issue: Text must be identical for nodes to be equal (e.g. “Product A” vs “Product A” with
+whitespace difference were considered unequal); text difference cost fixed at 1.0.
+v2 improvement: Uses rapidfuzz.distance.Levenshtein to quantify text differences,
+normalizing them to 0-1 cost range.
+
+III. Edge case handling: greatly improved robustness
+Empty input correction.
+v1 issue: Empty strings were forced into <table><tr><td></td></tr></table> (invalid empty table),
+violating the semantics of “empty input = no table”, distorting score calculation.
+v2 improvement: Empty strings return empty directly; _parse_html_table recognizes empty tables,
+avoiding invalid HTML structures.
+Node serialization standardization.
+v1 issue: Node info stored in dicts without unified format, prone to key-value parsing errors.
+v2 improvement: Added _to_bracket_notation to convert nodes to apted-compatible bracket notation
+(e.g. table(tr(th:Product))), eliminating parsing format discrepancies.
+
+IV. Overall value improvement
+Accuracy: TEDS scores for complex tables (nested, merged cells) better reflect true structural
+differences; quantified text differences make results more objective.
+Efficiency: APTED optimized algorithm greatly improves speed for complex tables, supporting
+larger-scale batch evaluation.
+Robustness: Empty input handling correction and algorithm failure fallback ensure evaluation
+pipeline is not interrupted, adaptable to more edge cases.
+Flexibility: Quantified text differences support evaluation needs for OCR recognition errors
+and minor format deviations.
+“””
 
 from typing import Dict, Any, List, Optional
 import re
@@ -42,7 +58,7 @@ class TableConfig(Config):
         return 1
 
     def rename(self, node1, node2):
-        # 解析节点标签，格式为 "tag:text"
+        # Parse node label, format: "tag:text"
         tag1, text1 = self._parse_node(node1)
         tag2, text2 = self._parse_node(node2)
 
@@ -52,11 +68,11 @@ class TableConfig(Config):
         if text1 == text2:
             return 0
 
-        # 计算文本编辑距离
+        # Calculate text edit distance
         return self._levenshtein(text1, text2)
 
     def _parse_node(self, node_str):
-        """解析节点字符串，格式为 'tag:text' 或 'tag'"""
+        """Parse node string in 'tag:text' or 'tag' format."""
         if ':' in node_str:
             tag, text = node_str.split(':', 1)
             return tag, text
@@ -64,23 +80,23 @@ class TableConfig(Config):
             return node_str, ""
 
     def _levenshtein(self, a, b):
-        """计算文本编辑距离"""
+        """Calculate text edit distance."""
         if not a and not b:
             return 0
         if not a:
-            return len(b)  # 空字符串到非空字符串，成本为字符串长度
+            return len(b)  # cost from empty string to non-empty string is string length
         if not b:
-            return len(a)  # 非空字符串到空字符串，成本为字符串长度
+            return len(a)  # cost from non-empty string to empty string is string length
 
-        # 计算原始编辑距离
+        # Calculate raw edit distance
         raw_distance = Levenshtein.distance(a, b)
 
-        # 使用与text_metrics.py相同的归一化方式：基于较长字符串的长度
+        # Normalize using same approach as text_metrics.py: based on length of longer string
         max_len = max(len(a), len(b))
         if max_len == 0:
             return 0
 
-        # 归一化到0-1范围
+        # Normalize to 0-1 range
         return raw_distance / max_len
 
 
@@ -131,9 +147,9 @@ class TEDSMetric(BaseMetric):
             edit_distance = self._tree_edit_distance(pred_tree, gt_tree)
             max_nodes = max(self._count_nodes(pred_tree), self._count_nodes(gt_tree))
 
-            # 使用归一化方式计算TEDS分数
+            # Calculate TEDS score using normalized formula
             if max_nodes > 0:
-                # 标准TEDS公式：1.0 - (edit_distance / max_nodes)
+                # Standard TEDS formula: 1.0 - (edit_distance / max_nodes)
                 teds_score = 1.0 - (edit_distance / max_nodes)
             else:
                 teds_score = 1.0
@@ -162,7 +178,7 @@ class TEDSMetric(BaseMetric):
         if table_data is None:
             return ""
         if isinstance(table_data, str):
-            # 空字符串应该保持为空，不应该转换成默认HTML
+            # Empty strings should remain empty, not converted to default HTML
             if not table_data.strip():
                 return ""
             if '<table' in table_data.lower():
@@ -235,47 +251,47 @@ class TEDSMetric(BaseMetric):
         return tree
 
     def _tree_edit_distance(self, tree1: Dict, tree2: Dict) -> float:
-        """使用APTED计算树编辑距离"""
+        """Compute tree edit distance using APTED."""
         try:
-            # 转换为APTED的括号表示法
+            # Convert to APTED bracket notation
             t1 = self._to_bracket_notation(tree1)
             t2 = self._to_bracket_notation(tree2)
 
-            # 使用APTED计算编辑距离
+            # Compute edit distance using APTED
             apted = APTED(t1, t2, self.config_apted)
             edit_distance = apted.compute_edit_distance()
 
             return float(edit_distance)
         except Exception as e:
-            # 如果APTED失败，回退到简单的节点计数差异
+            # If APTED fails, fall back to simple node count difference
             print(f"APTED calculation failed: {e}, falling back to simple distance")
             nodes1 = self._count_nodes(tree1)
             nodes2 = self._count_nodes(tree2)
             return abs(nodes1 - nodes2)
 
     def _to_bracket_notation(self, node: Dict) -> str:
-        """将字典树转换为APTED的括号表示法"""
-        # 构建节点标签
+        """Convert dict tree to APTED bracket notation."""
+        # Build node label
         tag = node['tag']
         text = node.get('text', '')
 
-        # 在结构模式下，忽略文本内容
+        # In structure-only mode, ignore text content
         if self.structure_only:
             label = tag
         else:
-            # 在完整模式下，包含文本内容
+            # In full mode, include text content
             if text:
-                # 处理文本中的特殊字符，避免APTED解析错误
+                # Escape special characters to avoid APTED parsing errors
                 safe_text = text.replace('(', '[').replace(')', ']').replace(',', ';')
                 label = f"{tag}:{safe_text}"
             else:
                 label = tag
 
-        # 如果没有子节点，返回标签
+        # If no children, return the label
         if not node.get('children'):
             return label
 
-        # 有子节点，递归处理
+        # Recursively process children
         children_str = ",".join([self._to_bracket_notation(c) for c in node['children']])
         return f"{label}({children_str})"
 

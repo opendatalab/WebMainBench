@@ -49,22 +49,22 @@ class MainHTMLEvaluator(Evaluator):
         if isinstance(extractor, str):
             extractor = ExtractorFactory.create(extractor, extractor_config)
         
-        # Filter samples if needed (避免不必要的副本)
+        # Filter samples if needed (avoid unnecessary copies)
         samples_iter = dataset.samples
         
-        # 只有在需要过滤时才创建副本
+        # Only create a copy when filtering is needed
         if categories:
             samples_iter = [
                 s for s in samples_iter 
                 if s.content_type in categories
             ]
         
-        # 如果有max_samples限制，使用itertools.islice避免完整列表
+        # If max_samples is set, use itertools.islice to avoid loading full list
         if max_samples:
             import itertools
             samples_to_evaluate = list(itertools.islice(samples_iter, max_samples))
         else:
-            # 如果没有任何过滤，直接使用原始列表避免副本
+            # If no filtering at all, use original list directly to avoid copies
             samples_to_evaluate = samples_iter if not categories else samples_iter
         
         # Run evaluation
@@ -186,20 +186,18 @@ class MainHTMLEvaluator(Evaluator):
         return sample_result
     
     def _aggregate_metrics(self, sample_results: List[Dict[str, Any]]) -> Dict[str, float]:
-        """
-            聚合所有样本的指标，计算全局平均值（每个指标单独聚合）
-            """
+        """Aggregate metrics across all samples, computing global averages (each metric aggregated independently)."""
         if not sample_results:
             return {}
 
-        # 初始化每个指标的总分和样本数
+        # Initialize totals and counts per metric
         metric_totals = {
             "human_rouge_n": 0.0,
             "convert_rouge_n": 0.0,
         }
-        metric_counts = {k: 0 for k in metric_totals.keys()}  # 记录每个指标有效样本数
+        metric_counts = {k: 0 for k in metric_totals.keys()}  # Track valid sample count per metric
 
-        # 累加所有样本的指标分数
+        # Accumulate metric scores across all samples
         for sample in sample_results:
             metrics = sample.get("metrics", {})
             for metric_name in metric_totals.keys():
@@ -207,13 +205,13 @@ class MainHTMLEvaluator(Evaluator):
                     metric_totals[metric_name] += metrics[metric_name]["score"]
                     metric_counts[metric_name] += 1
 
-        # 计算每个指标的平均值（全局overall为5个单项指标的平均值）
+        # Calculate average per metric
         overall_metrics = {}
         for metric_name in metric_totals.keys():
             if metric_counts[metric_name] > 0:
                 overall_metrics[metric_name] = metric_totals[metric_name] / metric_counts[metric_name]
             else:
-                overall_metrics[metric_name] = 0.0  # 无有效样本时默认为0
+                overall_metrics[metric_name] = 0.0  # Default to 0 when no valid samples
 
         return overall_metrics
 

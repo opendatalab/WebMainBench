@@ -17,21 +17,21 @@ def _metrics_debug(message: str) -> None:
 
 
 class BaseContentSplitter(ABC):
-    """抽象基类，用于从文本中提取特定类型的内容"""
+    """Abstract base class for extracting specific types of content from text."""
 
-    # 默认的LLM提示词模板
-    DEFAULT_LLM_PROMPT = """请处理以下内容：
+    # Default LLM prompt template
+    DEFAULT_LLM_PROMPT = """Please process the following content:
     {content}
     """
 
     def __init__(self, config: Dict[str, Any] = None):
-        """初始化提取器"""
+        """Initialize the extractor."""
         self.config = config or {}
 
-        # 保留这行代码，用于控制是否使用LLM
+        # Controls whether to use LLM
         self.use_llm = self.config.get('use_llm', True)
 
-        # 初始化OpenAI客户端（如果配置了LLM）
+        # Initialize OpenAI client (if LLM is configured)
         if self.use_llm and self.config.get('llm_base_url') and self.config.get('llm_api_key'):
             self.client = OpenAI(
                 base_url=self.config.get('llm_base_url', ""),
@@ -47,38 +47,38 @@ class BaseContentSplitter(ABC):
 
     @abstractmethod
     def extract(self, text: str, field_name: str = None) -> str:
-        """提取特定类型的内容"""
+        """Extract specific types of content."""
         pass
 
     @abstractmethod
     def extract_basic(self, text: str) -> List[str]:
-        """使用基本方法提取内容（通常是正则表达式）"""
+        """Extract content using basic methods (typically regular expressions)."""
         pass
 
     def should_use_llm(self, field_name: str) -> bool:
-        """判断是否应该使用LLM进行增强提取"""
+        """Determine whether to use LLM for enhanced extraction."""
         if not self.use_llm:
             return False
 
-        # 默认逻辑：对groundtruth内容不使用LLM，对其他内容使用
+        # Default: do not use LLM for groundtruth content, use for others
         if field_name == "groundtruth_content":
             return False
         return True
 
     def enhance_with_llm(self, basic_results: List[str], cache_key: str = None) -> List[str]:
-        """使用LLM增强基本提取结果"""
+        """Enhance basic extraction results using LLM."""
         if not basic_results:
             _metrics_debug("Empty input; skipping LLM enhancement")
             return []
 
-        # 生成缓存键
+        # Generate cache key
         if cache_key is None:
             content_str = '\n'.join(basic_results)
             cache_key = hashlib.md5(content_str.encode('utf-8')).hexdigest()
 
         cache_file = os.path.join(self.cache_dir, f'{self.__class__.__name__.lower()}_cache_{cache_key}.json')
 
-        # 检查缓存
+        # Check cache
         if os.path.exists(cache_file):
             try:
                 with open(cache_file, 'r', encoding='utf-8') as f:
@@ -88,11 +88,11 @@ class BaseContentSplitter(ABC):
             except Exception as e:
                 _metrics_debug(f"Cache read failed: {e}")
 
-        # 实际的LLM增强逻辑
+        # Actual LLM enhancement logic
         try:
             enhanced_results = self._llm_enhance(basic_results)
 
-            # 保存缓存
+            # Save to cache
             try:
                 with open(cache_file, 'w', encoding='utf-8') as f:
                     json.dump(enhanced_results, f, ensure_ascii=False, indent=2)
@@ -107,5 +107,5 @@ class BaseContentSplitter(ABC):
 
     @abstractmethod
     def _llm_enhance(self, basic_results: List[str]) -> List[str]:
-        """使用LLM增强基本提取结果的具体实现"""
+        """Concrete implementation for enhancing basic extraction results with LLM."""
         pass

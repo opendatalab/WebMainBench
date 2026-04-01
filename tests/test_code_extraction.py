@@ -1,19 +1,19 @@
 # tests/test/test_code_extraction.py
 # !/usr/bin/env python
-"""测试code提取功能"""
+"""Test code extraction functionality"""
 
 import unittest
 import sys
 import os
 
-# 添加项目根目录到Python路径
+# Add project root directory to Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 from webmainbench.metrics.base import BaseMetric, MetricResult
 
 
 class TestCodeExtractionMetric(BaseMetric):
-    """测试用的具体实现类"""
+    """Concrete implementation class for testing"""
 
     def _setup(self) -> None:
         pass
@@ -27,27 +27,27 @@ class TestCodeExtractionMetric(BaseMetric):
 
 
 class TestCodeExtraction(unittest.TestCase):
-    """测试code提取功能"""
+    """Test code extraction functionality"""
 
     def setUp(self):
         self.metric = TestCodeExtractionMetric("test_metric")
 
     def test_empty_text(self):
-        """测试空文本"""
+        """Test empty text"""
         result = BaseMetric._extract_from_markdown("")
         self.assertEqual(result['code'], '')
         self.assertEqual(result['text'], '')
 
     # def test_inline_code(self):
-    #     """测试行内代码"""
-    #     text = "这是一个`行内代码`的例子"
+    #     """Test inline code"""
+    #     text = "This is an example of `inline code`"
     #     result = BaseMetric._extract_from_markdown(text)
     #     print(result)
-    #     self.assertEqual(result['code'], '行内代码')
+    #     self.assertEqual(result['code'], 'inline code')
     #     self.assertEqual(result['text'], text)
 
     def test_code_block(self):
-        """测试代码块"""
+        """Test code block"""
         text = """
 I have the following string: `"aaaabbbb"`
 How can I get the last four characters and store them in a string using Python?
@@ -61,7 +61,7 @@ Like this:
 
         result = BaseMetric._extract_from_markdown(text)
 
-        # 验证提取的代码
+        # Verify extracted code
         expected_code = ("""
 >>> mystr = "abcdefghijkl"
 >>> mystr[-4:]
@@ -71,21 +71,21 @@ Like this:
         self.assertEqual(result['formula'], '')
 
     # def test_code_with_leading_trailing_spaces(self):
-    #     """测试代码前后有空格的情况"""
-    #     text = "前面 `  code  ` 后面"
+    #     """Test code with leading/trailing spaces"""
+    #     text = "before `  code  ` after"
     #     result = BaseMetric._extract_from_markdown(text)
-    #     self.assertEqual(result['code'], 'code')  # 应该去除空格
+    #     self.assertEqual(result['code'], 'code')  # should strip spaces
     #     self.assertEqual(result['text'], text)
 
     # def test_multiline_inline_code(self):
-    #     """测试多行行内代码（不应该匹配）"""
-    #     text = "`第一行\n第二行`"
+    #     """Test multiline inline code (should not match)"""
+    #     text = "`line1\nline2`"
     #     result = BaseMetric._extract_from_markdown(text)
-    #     self.assertEqual(result['code'], '')  # 不应该匹配多行行内代码
-    #     self.assertEqual(result['text'], text)  # 原样保留
+    #     self.assertEqual(result['code'], '')  # should not match multiline inline code
+    #     self.assertEqual(result['text'], text)  # preserve as-is
 
     def test_indent_code_block(self):
-        """测试代码块"""
+        """Test indented code block"""
         text = """
 I have the following string: `"aaaabbbb"`
 How can I get the last four characters and store them in a string using Python?
@@ -98,7 +98,7 @@ Like this:
 
         result = BaseMetric._extract_from_markdown(text)
 
-        # 验证提取的代码
+        # Verify extracted code
         expected_code = ("""
 print("hello world")
 print("hi")

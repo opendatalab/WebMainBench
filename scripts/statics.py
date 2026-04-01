@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-数据集统计和筛选工具
-统计WebMainBench数据集中的数据分布
+Dataset statistics and filtering tool
+Analyzes data distribution in the WebMainBench dataset
 """
 import json
 import sys
@@ -18,7 +18,7 @@ from llm_web_kit.input.datajson import ContentList
 
 
 class DatasetStatistics:
-    """数据集统计分析类"""
+    """Dataset statistics and analysis class"""
     
     def __init__(self, jsonl_file: str, output_file: str):
         self.jsonl_file = Path(jsonl_file)
@@ -27,11 +27,11 @@ class DatasetStatistics:
         self.stats = {}
         
     def load_data(self):
-        """加载JSONL数据"""
-        print(f"📖 正在加载数据文件: {self.jsonl_file}")
+        """Load JSONL data"""
+        print(f"📖 Loading data file: {self.jsonl_file}")
         
         if not self.jsonl_file.exists():
-            raise FileNotFoundError(f"文件不存在: {self.jsonl_file}")
+            raise FileNotFoundError(f"File does not exist: {self.jsonl_file}")
         
         line_count = 0
         try:
@@ -46,35 +46,35 @@ class DatasetStatistics:
                         self.data.append(data)
                         line_count += 1
                         
-                        # 每10000行显示进度
+                        # Show progress every 10000 lines
                         if line_count % 10000 == 0:
-                            print(f"  📊 已加载 {line_count:,} 行...")
+                            print(f"  📊 Loaded {line_count:,} lines...")
                             
                     except json.JSONDecodeError as e:
-                        print(f"  ⚠️ 第 {line_num} 行JSON解析错误: {e}")
+                        print(f"  ⚠️ Line {line_num} JSON parse error: {e}")
                         continue
                         
         except Exception as e:
-            raise RuntimeError(f"读取文件时出错: {e}")
+            raise RuntimeError(f"Error reading file: {e}")
         
-        print(f"✅ 成功加载 {len(self.data):,} 条数据")
+        print(f"✅ Successfully loaded {len(self.data):,} records")
         return self
     
     def generate_content_list(self, data):
-        """生成content_list字段，使用llm_web_kit提取内容"""
+        """Generate content_list field using llm_web_kit to extract content"""
         try:                   
             html_content = data.get("html", "")
             url = data.get("url", "")
             
-            # 验证必要字段
+            # Validate required fields
             if not html_content:
                 data["content_list"] = []
                 return data
             
-            # 提取内容
+            # Extract content
             result = extract_content_from_html_with_magic_html(url, html_content, 'json')
             
-            # 解析JSON
+            # Parse JSON
             try:
                 result_json = json.loads(result)
                 data["content_list"] = result_json.get("content_list", [])
@@ -85,15 +85,15 @@ class DatasetStatistics:
             return data
             
         except Exception as e:
-            # 确保即使出错也有content_list字段
+            # Ensure content_list field exists even on error
             data["content_list"] = []
             return data
 
-    # 计算HTML的DOM_WIDTH和DOM_DEPTH
+    # Calculate DOM_WIDTH and DOM_DEPTH of HTML
     def calculate_DOM_WIDTH_DEPTH(self, data):
-        """计算DOM树的深度和宽度"""
+        """Calculate DOM tree depth and width."""
         try:
-            # 确保meta字段存在
+            # Ensure meta field exists
             if "meta" not in data:
                 data["meta"] = {}
                 
@@ -103,10 +103,10 @@ class DatasetStatistics:
                 data["meta"]["DOM_DEPTH"] = 0
                 return data
             
-            # 使用BeautifulSoup解析HTML
+            # Parse HTML with BeautifulSoup
             soup = BeautifulSoup(html_content, 'html.parser')
             
-            # 找到实际的根元素（通常是html标签）
+            # Find actual root elements (usually the html tag)
             root_elements = [child for child in soup.children if child.name]
             
             if not root_elements:
@@ -114,7 +114,7 @@ class DatasetStatistics:
                 data["meta"]["DOM_DEPTH"] = 0
                 return data
             
-            # 计算所有根元素的最大深度和宽度
+            # Calculate max depth and width across all root elements
             max_depth = 0
             max_width = 0
             
@@ -130,7 +130,7 @@ class DatasetStatistics:
             return data
             
         except Exception as e:
-            # 如果解析失败，设置默认值
+            # If parsing fails, set default values
             if "meta" not in data:
                 data["meta"] = {}
             data["meta"]["DOM_WIDTH"] = 0
@@ -138,56 +138,56 @@ class DatasetStatistics:
             return data
     
     def _calculate_dom_depth(self, element):
-        """递归计算DOM树的最大深度"""
+        """Recursively calculate maximum DOM tree depth."""
         if not element or not hasattr(element, 'name') or not element.name:
             return 0
         
-        # 获取所有直接子元素（忽略文本节点）
+        # Get all direct child elements (ignore text nodes)
         children = [child for child in element.children if hasattr(child, 'name') and child.name]
         
         if not children:
             return 1
         
-        # 递归计算所有子元素的深度，取最大值
+        # Recursively calculate depth of all child elements, take max
         max_child_depth = max(self._calculate_dom_depth(child) for child in children)
         return 1 + max_child_depth
     
     def _calculate_dom_width(self, element):
-        """递归计算DOM树的最大宽度（同一层级的最大子节点数）"""
+        """Recursively calculate maximum DOM tree width (max child count at any level)."""
         if not element or not hasattr(element, 'name') or not element.name:
             return 0
         
-        # 获取所有直接子元素（忽略文本节点）
+        # Get all direct child elements (ignore text nodes)
         children = [child for child in element.children if hasattr(child, 'name') and child.name]
         current_width = len(children)
         
-        # 递归计算所有子元素的最大宽度
+        # Recursively calculate max width of all child elements
         max_child_width = 0
         for child in children:
             child_width = self._calculate_dom_width(child)
             max_child_width = max(max_child_width, child_width)
         
-        # 返回当前层级宽度和子层级最大宽度中的较大者
+        # Return the larger of current-level width and max child-level width
         return max(current_width, max_child_width)
 
-    # 计算HTML中的链接文本与总文本比例并更新数据
+    # Calculate link text to total text ratio in HTML and update data
     def calculate_and_update_text_linktext_ratio(self, data):
         try:
             html_content = data.get("html", "")
             
-            # 确保meta字段存在
+            # Ensure meta field exists
             if "meta" not in data:
                 data["meta"] = {}
             
             if not html_content:
-                # 将比例添加到meta字段中
+                # Add ratio to meta field
                 data["meta"]["text_linktext_ratio"] = 0.0
                 return data
                 
-            # 使用html.parser解析器
+            # Use html.parser
             soup = BeautifulSoup(html_content, 'html.parser')
             
-            # 提取所有文本
+            # Extract all text
             all_text = soup.get_text()
             all_text_len = len(all_text)
             
@@ -195,47 +195,47 @@ class DatasetStatistics:
                 data["meta"]["text_linktext_ratio"] = 0.0
                 return data
             
-            # 提取所有链接文本
+            # Extract all link text
             link_text_len = sum(len(link.get_text()) for link in soup.find_all('a'))
             
-            # 计算比例 (非链接文本 / 链接文本)
+            # Calculate ratio (non-link text / link text)
             if link_text_len <= 0:
-                ratio = 1.0  # 使用一个较大的值来表示无限大
+                ratio = 1.0  # Use a large value to represent infinity
             else:
                 ratio = link_text_len / all_text_len
-                ratio = min(float(ratio), 1.0)  # 限制最大值
+                ratio = min(float(ratio), 1.0)  # Cap maximum value
             
-            # 将比例添加到meta字段中
+            # Add ratio to meta field
             data["meta"]["text_linktext_ratio"] = ratio
             
-            # 返回更新后的数据
+            # Return updated data
             return data
             
         except Exception as e:
-            # 如果解析失败，至少尝试添加默认值
+            # If parsing fails, at least add default values
             if "meta" not in data:
                 data["meta"] = {}
             data["meta"]["text_linktext_ratio"] = 0.0
             return data
 
-    # 计算HTML中的非链接文本与链接数量比例并更新数据
+    # Calculate non-link text to link count ratio in HTML and update data
     def calculate_and_update_text_linknum_ratio(self, data):
         try:
             html_content = data.get("html", "")
             
-            # 确保meta字段存在
+            # Ensure meta field exists
             if "meta" not in data:
                 data["meta"] = {}
             
             if not html_content:
-                # 将比例添加到meta字段中
+                # Add ratio to meta field
                 data["meta"]["text_linknum_ratio"] = 0.0
                 return data
                 
-            # 使用html.parser解析器
+            # Use html.parser
             soup = BeautifulSoup(html_content, 'html.parser')
             
-            # 提取所有文本
+            # Extract all text
             all_text = soup.get_text()
             all_text_len = len(all_text)
             
@@ -243,103 +243,103 @@ class DatasetStatistics:
                 data["meta"]["text_linknum_ratio"] = 0.0
                 return data
             
-            # 计算链接数量
+            # Count links
             links = soup.find_all('a')
             link_count = len(links)
             
-            # 提取链接文本总长度
+            # Calculate total link text length
             link_text_len = sum(len(link.get_text()) for link in links)
             
-            # 计算非链接文本长度
+            # Calculate non-link text length
             non_link_text_len = all_text_len - link_text_len
             
-            # 计算比例 (非链接文本长度 / 链接数量)
+            # Calculate ratio (non-link text length / link count)
             if link_count <= 0:
-                ratio = 10000.0  # 使用一个较大的值来表示无限大，但不要太极端
+                ratio = 10000.0  # Use a large value to represent infinity (not too extreme)
             else:
                 ratio = non_link_text_len / link_count
-                ratio = min(float(ratio), 10000.0)  # 限制最大值
+                ratio = min(float(ratio), 10000.0)  # Cap maximum value
             
-            # 将比例添加到meta字段中
+            # Add ratio to meta field
             data["meta"]["text_linknum_ratio"] = ratio
             
-            # 返回更新后的数据
+            # Return updated data
             return data
             
         except Exception as e:
-            # 如果解析失败，至少尝试添加默认值
+            # If parsing fails, at least add default values
             if "meta" not in data:
                 data["meta"] = {}
             data["meta"]["text_linknum_ratio"] = 0.0
             return data
 
-    # 计算HTML中的表格内容与总内容比例，并更新数据
+    # Calculate table content to total content ratio in HTML and update data
     def calculate_and_update_table_html_ratio(self, data):
         try:
             html_content = data.get("html", "")
             
-            # 确保meta字段存在
+            # Ensure meta field exists
             if "meta" not in data:
                 data["meta"] = {}
             
             if not html_content:
-                # 将比例添加到meta字段中
+                # Add ratio to meta field
                 data["meta"]["table_html_source_ratio"] = 0.0
                 return data
                 
-            # 使用html.parser解析器
+            # Use html.parser
             soup = BeautifulSoup(html_content, 'html.parser')
             
-            # 获取整个HTML内容的长度
+            # Get total HTML content length
             total_html_length = len(html_content)
             
             if total_html_length == 0:
                 data["meta"]["table_html_source_ratio"] = 0.0
                 return data
             
-            # 提取所有表格元素
+            # Extract all table elements
             tables = soup.find_all(['table'])
             
-            # 计算所有表格元素的HTML长度
+            # Calculate total HTML length of all table elements
             table_html_length = sum(len(str(table)) for table in tables)
             
-            # 计算表格内容占总HTML内容的比例
+            # Calculate table content ratio of total HTML content
             ratio = table_html_length / total_html_length
             
-            # 确保比例在0到1之间
+            # Ensure ratio is between 0 and 1
             ratio = max(0.0, min(1.0, ratio))
             
-            # 将比例添加到meta字段中
+            # Add ratio to meta field
             data["meta"]["table_html_source_ratio"] = ratio
             
-            # 返回更新后的数据
+            # Return updated data
             return data
             
         except Exception as e:
-            # 如果解析失败，至少尝试添加默认值
+            # If parsing fails, at least add default values
             if "meta" not in data:
                 data["meta"] = {}
             data["meta"]["table_html_source_ratio"] = 0.0
             return data
 
-    # 计算HTML中的表格内文字与总文字比例，并更新数据
+    # Calculate table text to total text ratio in HTML and update data
     def calculate_and_update_table_text_ratio(self, data):
         try:
             html_content = data.get("html", "")
             
-            # 确保meta字段存在
+            # Ensure meta field exists
             if "meta" not in data:
                 data["meta"] = {}
             
             if not html_content:
-                # 将比例添加到meta字段中
+                # Add ratio to meta field
                 data["meta"]["table_text_ratio"] = 0.0
                 return data
                 
-            # 使用html.parser解析器
+            # Use html.parser
             soup = BeautifulSoup(html_content, 'html.parser')
             
-            # 获取整个文档的所有文本
+            # Get all text from the entire document
             all_text = soup.get_text()
             total_text_length = len(all_text)
             
@@ -347,219 +347,219 @@ class DatasetStatistics:
                 data["meta"]["table_text_ratio"] = 0.0
                 return data
             
-            # 提取所有表格元素
+            # Extract all table elements
             tables = soup.find_all(['table'])
             
-            # 计算所有表格内的文本长度
+            # Calculate total text length within all tables
             table_text_length = sum(len(table.get_text()) for table in tables)
             
-            # 计算表格内文字占总文字内容的比例
+            # Calculate table text ratio of total text content
             ratio = table_text_length / total_text_length
             
-            # 确保比例在0到1之间
+            # Ensure ratio is between 0 and 1
             ratio = max(0.0, min(1.0, ratio))
             
-            # 将比例添加到meta字段中
+            # Add ratio to meta field
             data["meta"]["table_text_ratio"] = ratio
             
-            # 返回更新后的数据
+            # Return updated data
             return data
             
         except Exception as e:
-            # 如果解析失败，至少尝试添加默认值
+            # If parsing fails, at least add default values
             if "meta" not in data:
                 data["meta"] = {}
             data["meta"]["table_text_ratio"] = 0.0
             return data
 
-    # 计算HTML中第一个表格的DOM深度，并更新数据
+    # Calculate DOM depth of the first table in HTML and update data
     def calculate_and_update_table_depth(self, data):
         try:
             html_content = data.get("html", "")
             
-            # 确保meta字段存在
+            # Ensure meta field exists
             if "meta" not in data:
                 data["meta"] = {}
             
             if not html_content:
-                # 将深度添加到meta字段中，-1表示没有表格
+                # Add depth to meta field, -1 means no table
                 data["meta"]["table_dom_depth"] = -1
                 return data
                 
-            # 使用html.parser解析器
+            # Use html.parser
             soup = BeautifulSoup(html_content, 'html.parser')
             
-            # 查找第一个表格元素
+            # Find the first table element
             first_table = soup.find('table')
             
-            # 如果没有找到表格
+            # If no table found
             if not first_table:
                 data["meta"]["table_dom_depth"] = -1
                 return data
             
-            # 计算表格的DOM深度
+            # Calculate DOM depth of the table
             depth = 0
             parent = first_table.parent
             while parent and parent.name != '[document]':
                 depth += 1
                 parent = parent.parent
             
-            # 将深度添加到meta字段中
+            # Add depth to meta field
             data["meta"]["table_dom_depth"] = depth
             
-            # 返回更新后的数据
+            # Return updated data
             return data
             
         except Exception as e:
-            # 如果解析失败，至少尝试添加默认值
+            # If parsing fails, at least add default values
             if "meta" not in data:
                 data["meta"] = {}
             data["meta"]["table_dom_depth"] = -1
             return data
     
-    # 检测HTML中包含的公式类型
+    # Detect equation types in HTML
     def detect_equations(self, data: dict) -> dict:
-        """检测并标记页面中的公式类型，返回meta.equation字段作为字符串列表"""
+        """Detect and mark equation types in the page; returns meta.equation field as a string list."""
         try:
-            # 确保meta字段存在
+            # Ensure meta field exists
             if "meta" not in data:
                 data["meta"] = {}
             
-            # 初始化equation列表
+            # Initialize code list
             equation_types = []
             
-            # 检查是否有content_list字段
+            # Check if content_list field exists
             if 'content_list' not in data:
                 data["meta"]["equation"] = equation_types
                 return data
             
-            # 获取content_list的JSON文本
+            # Get JSON text of content_list
             text = ContentList(data['content_list']).to_json()
             
-            # 检测行内公式
+            # Detect inline equations
             inline_matches = re.findall("equation-inline", text)
             if len(inline_matches) > 0:
                 equation_types.append("inline")
             
-            # 检测行间公式
+            # Detect interline equations
             interline_matches = re.findall("equation-interline", text)
             if len(interline_matches) > 0:
                 equation_types.append("interline")
             
-            # 将结果存储到meta.equation字段
+            # Store result in meta.equation field
             data["meta"]["equation"] = equation_types
             
             return data
             
         except Exception as e:
-            # 如果解析失败，返回空列表
+            # If parsing fails, return empty list
             if "meta" not in data:
                 data["meta"] = {}
             data["meta"]["equation"] = []
             return data
 
-    # 检测HTML中包含的代码类型
+    # Detect code types in HTML
     def detect_code(self, data: dict) -> dict:
-        """检测并标记页面中的代码类型，返回meta.code字段作为字符串列表"""
+        """Detect and mark code types in the page; returns meta.code field as a string list."""
         try:
-            # 确保meta字段存在
+            # Ensure meta field exists
             if "meta" not in data:
                 data["meta"] = {}
             
-            # 初始化equation列表
+            # Initialize code list
             code_types = []
             
-            # 检查是否有content_list字段
+            # Check if content_list field exists
             if 'content_list' not in data:
                 data["meta"]["code"] = code_types
                 return data
             
-            # 获取content_list的JSON文本
+            # Get JSON text of content_list
             text = ContentList(data['content_list']).to_json()
             
-            # 检测行内公式
+            # Detect inline equations
             inline_matches = re.findall("code-inline", text)
             if len(inline_matches) > 0:
                 code_types.append("inline")
             
-            # 检测行间公式
+            # Detect interline equations
             target_str = r'"type": "code"'
             interline_matches = re.findall(target_str, text)
             if len(interline_matches) > 0:
                 code_types.append("interline")
             
-            # 将结果存储到meta.code字段
+            # Store result in meta.code field
             data["meta"]["code"] = code_types
             
             return data
             
         except Exception as e:
-            # 如果解析失败，返回空列表
+            # If parsing fails, return empty list
             if "meta" not in data:
                 data["meta"] = {}
             data["meta"]["code"] = []
             return data
 
     def classify_tables(self, data):
-        """根据DOM深度和其他特征分类表格类型"""
+        """Classify table types based on DOM depth and other features."""
         try:
-            # 确保meta字段存在
+            # Ensure meta field exists
             if "meta" not in data:
                 data["meta"] = {}
             
-            # 初始化table类型列表
+            # Initialize table type list
             table_types = []
             
-            # 获取表格相关的meta信息
+            # Get table-related meta information
             table_dom_depth = data["meta"].get("table_dom_depth", -1)
             table_text_ratio = data["meta"].get("table_text_ratio", 0)
             table_html_ratio = data["meta"].get("table_html_source_ratio", 0)
             
-            # 如果没有表格，返回空列表
+            # If no table, return empty list
             if table_dom_depth == -1:
                 data["meta"]["table"] = table_types
                 return data
             
-            # 基于DOM深度和内容比例判断表格类型
+            # Determine table type based on DOM depth and content ratio
             
-            # Layout表格判断逻辑：
-            # 1. DOM深度较浅（通常用于页面布局）
-            # 2. 表格HTML占比高但文本占比低（主要是结构性标签）
+            # Layout table heuristic:
+            # 1. Shallow DOM depth (typically used for page layout)
+            # 2. High table HTML ratio but low text ratio (mainly structural tags)
             if (table_dom_depth <= 3 and table_html_ratio > 0.1 and table_text_ratio < 0.3) or \
                (table_dom_depth <= 2):
                 table_types.append("layout")
             
-            # Data表格判断逻辑：
-            # 1. DOM深度较深（嵌套在内容区域）
-            # 2. 表格文本占比较高（包含实际数据内容）
-            # 3. 或者表格HTML占比适中但文本占比高
+            # Data table heuristic:
+            # 1. Deep DOM depth (nested in content area)
+            # 2. High table text ratio (contains actual data content)
+            # 3. Or moderate table HTML ratio but high text ratio
             if (table_dom_depth >= 3 and table_text_ratio >= 0.1) or \
                (table_text_ratio >= 0.3) or \
                (table_html_ratio > 0.05 and table_text_ratio >= 0.15):
                 table_types.append("data")
             
-            # 如果没有匹配任何类型，但确实有表格，默认为data类型
+            # If no type matched but table exists, default to data type
             if not table_types and table_dom_depth > -1:
                 table_types.append("data")
             
-            # 去重并排序
+            # Deduplicate and sort
             table_types = sorted(list(set(table_types)))
             
             data["meta"]["table"] = table_types
             return data
             
         except Exception as e:
-            # 如果解析失败，返回空列表
+            # If parsing fails, return empty list
             if "meta" not in data:
                 data["meta"] = {}
             data["meta"]["table"] = []
             return data
 
-    # 计算text文本在DOM一维序列中的分布离散程度
+    # Calculate dispersion of text distribution in DOM linear sequence
     def calculate_text_DOM_distribution(self, data):
-        """将DOM树线性化，计算文本分布的离散程度"""
+        """Linearize DOM tree and calculate dispersion of text distribution."""
         try:
-            # 确保meta字段存在
+            # Ensure meta field exists
             if "meta" not in data:
                 data["meta"] = {}
             
@@ -568,31 +568,31 @@ class DatasetStatistics:
                 data["meta"]["text_distribution_dispersion"] = 0.0
                 return data
             
-            # 使用BeautifulSoup解析HTML
+            # Parse HTML with BeautifulSoup
             soup = BeautifulSoup(html_content, 'html.parser')
             
-            # 将DOM树线性化为一维列表
+            # Linearize DOM tree into a 1D list
             dom_sequence = self._linearize_dom_tree(soup)
             
             if not dom_sequence:
                 data["meta"]["text_distribution_dispersion"] = 0.0
                 return data
             
-            # 找到所有文本节点在序列中的位置
+            # Find positions of all text nodes in the sequence
             text_positions = []
             for i, node_info in enumerate(dom_sequence):
                 if node_info['has_text']:
                     text_positions.append({
                         'position': i,
                         'text_length': node_info['text_length'],
-                        'relative_position': i / len(dom_sequence)  # 相对位置 0-1
+                        'relative_position': i / len(dom_sequence)  # relative position 0-1
                     })
             
             if not text_positions:
                 data["meta"]["text_distribution_dispersion"] = 0.0
                 return data
             
-            # 计算文本分布的离散程度
+            # Calculate dispersion of text distribution
             dispersion = self._calculate_text_dispersion(text_positions, len(dom_sequence))
             
             data["meta"]["text_distribution_dispersion"] = dispersion
@@ -600,154 +600,154 @@ class DatasetStatistics:
             return data
             
         except Exception as e:
-            # 如果解析失败，返回默认值
+            # If parsing fails, return default value
             if "meta" not in data:
                 data["meta"] = {}
             data["meta"]["text_distribution_dispersion"] = 0.0
             return data
     
     def _linearize_dom_tree(self, soup):
-        """将DOM树线性化为一维序列（深度优先遍历）"""
+        """Linearize DOM tree into a 1D sequence (depth-first traversal)."""
         dom_sequence = []
         
         def traverse(element):
             if not element or not hasattr(element, 'name'):
                 return
             
-            # 跳过document节点
+            # Skip document node
             if element.name == '[document]':
-                # 处理根节点的子元素
+                # Process children of root node
                 if hasattr(element, 'children'):
                     for child in element.children:
                         if hasattr(child, 'name') and child.name:
                             traverse(child)
                 return
             
-            # 处理当前元素 - 只获取直接文本内容
+            # Process current element - only get direct text content
             text_content = ""
             text_length = 0
             has_text = False
             
-            # 只收集元素的直接文本内容（不包括子元素的文本）
+            # Only collect direct text content (exclude child element text)
             if hasattr(element, 'contents'):
                 for content in element.contents:
-                    # 只处理直接的文本节点，跳过子元素
+                    # Only process direct text nodes, skip child elements
                     if isinstance(content, str) and content.strip():
                         text_content += content.strip() + " "
                         
             text_length = len(text_content.strip())
             has_text = text_length > 0
             
-            # 添加到序列中
+            # Add to sequence
             node_info = {
                 'tag': element.name,
                 'has_text': has_text,
                 'text_length': text_length,
-                'text_content': text_content.strip()[:100] if has_text else ""  # 截取前100字符
+                'text_content': text_content.strip()[:100] if has_text else ""  # Truncate to first 100 chars
             }
             dom_sequence.append(node_info)
             
-            # 递归处理子元素
+            # Recursively process child elements
             if hasattr(element, 'children'):
                 for child in element.children:
                     if hasattr(child, 'name') and child.name:
                         traverse(child)
         
-        # 开始遍历
+        # Start traversal
         traverse(soup)
         return dom_sequence
     
     def _calculate_text_dispersion(self, text_positions, total_nodes):
-        """计算文本在一维序列中的分布离散程度 - 基于状态翻转次数"""
+        """Calculate dispersion of text distribution in 1D sequence based on state flip count."""
         if total_nodes < 2:
             return 0.0
         
-        # 创建文本状态序列：1表示有文本，0表示无文本
+        # Create text state sequence: 1=has text, 0=no text
         text_states = [0] * total_nodes
         for pos_info in text_positions:
             text_states[pos_info['position']] = 1
         
-        # 计算状态翻转次数 (0->1 或 1->0)
+        # Count state flips (0->1 or 1->0)
         flips = 0
         for i in range(1, len(text_states)):
             if text_states[i] != text_states[i-1]:
                 flips += 1
         
-        # 归一化：翻转次数除以总节点数量
+        # Normalize: flip count divided by total node count
         dispersion_score = flips / total_nodes
         
         return round(dispersion_score, 4)
 
     def calculate_level_score(self, data):
-        """计算页面内容难易程度评分"""
-        # 确保meta字段存在
+        """Calculate page content complexity score."""
+        # Ensure meta field exists
         if "meta" not in data:
             data["meta"] = {}
         
         meta = data["meta"]
         
-        # 收集各项复杂度指标
+        # Collect complexity indicators
         complexity_score = 0.0
         
-        # 1. 表格复杂度
+        # 1. Table complexity
         table_text_ratio = meta.get("table_text_ratio", 0)
-        table_complexity = min(table_text_ratio, 1.0)  # 归一化到0-1
+        table_complexity = min(table_text_ratio, 1.0)  # Normalized to 0-1
         # complexity_score += 0.20 * table_complexity
         data["meta"]["table_complexity_score"] = round(table_complexity, 4) 
         
-        # 2. DOM结构复杂度
+        # 2. DOM structure complexity
         dom_depth = meta.get("DOM_DEPTH", 0)
         dom_width = meta.get("DOM_WIDTH", 0)
-        # 基于实际数据分布调整归一化参数：
-        # - 深度90%分位数约104，使用120作为归一化基准
-        # - 宽度90%分位数约1283，使用1500作为归一化基准
-        # - 使用平方根函数降低高值的影响，提供更好的区分度
-        depth_norm = min(dom_depth / 20, 1.0) ** 0.7  # 使用0.7次幂平滑曲线
+        # Adjust normalization based on actual data distribution:
+        # - 90th percentile depth ~104, use 120 as normalization base
+        # - 90th percentile width ~1283, use 1500 as normalization base
+        # - Use power function to reduce effect of large values for better discrimination
+        depth_norm = min(dom_depth / 20, 1.0) ** 0.7  # Use 0.7 power for smoother curve
         width_norm = min(dom_width / 300, 1.0) ** 0.7
-        dom_complexity = (depth_norm + width_norm) / 2  # 取平均值
+        dom_complexity = (depth_norm + width_norm) / 2  # Take average
         complexity_score += 0.25 * dom_complexity
         data["meta"]["dom_complexity_score"] = round(dom_complexity, 4) 
         
-        # 3. 文本分布离散程度
+        # 3. Text distribution dispersion
         text_distribution_dispersion = meta.get("text_distribution_dispersion", 0)
         
-        # 文本分布复杂度评分（简化版）
-        text_dispersion_score = min(text_distribution_dispersion, 1.0)  # 归一化到0-1
+        # Text distribution complexity score (simplified)
+        text_dispersion_score = min(text_distribution_dispersion, 1.0)  # Normalized to 0-1
         complexity_score += 0.25 * text_dispersion_score
         data["meta"]["text_dispersion_score"] = round(text_dispersion_score, 4) 
 
-        # 4. 内容类型多样性
+        # 4. Content type diversity
         content_diversity = 0.0
         equation_types = meta.get("equation", [])
         code_types = meta.get("code", [])
         table_types = meta.get("table", [])
         
-        # 根据内容类型数量评分
+        # Score based on number of content types
         if equation_types:
-            content_diversity += 0.3 * len(equation_types) / 2  # 最多2种公式类型
+            content_diversity += 0.3 * len(equation_types) / 2  # Up to 2 equation types
         if code_types:
-            content_diversity += 0.3 * len(code_types) / 2      # 最多2种代码类型
+            content_diversity += 0.3 * len(code_types) / 2      # Up to 2 code types
         if table_types:
-            content_diversity += 0.4 * len(table_types) / 2     # 最多2种表格类型
+            content_diversity += 0.4 * len(table_types) / 2     # Up to 2 table types
         
         content_diversity = min(content_diversity, 1.0)
         complexity_score += 0.25 * content_diversity
         data["meta"]["content_diversity_score"] = round(content_diversity, 4) 
         
-        # 5. 链接文本比例
+        # 5. Link text ratio
         text_linktext_ratio = meta.get("text_linktext_ratio", 0)
-        # 链接比例过高或过低都可能增加复杂度
+        # Both high and low link ratios can increase complexity
         link_complexity = min(text_linktext_ratio, 1.0)
         complexity_score += 0.25 * link_complexity
         data["meta"]["link_complexity_score"] = round(link_complexity, 4) 
         
-        data["meta"]["overall_complexity_score"] = round(complexity_score, 4)  # 保存综合评分便于分析
+        data["meta"]["overall_complexity_score"] = round(complexity_score, 4)  # Save composite score for analysis
       
         return data
 
     def calculate_level(self, data, threshold_30=None, threshold_70=None):
-        """基于动态阈值计算页面内容难易程度:simple, mid, hard"""
-        # 如果没有提供阈值，使用默认阈值
+        """Calculate page content difficulty level based on dynamic thresholds: simple, mid, hard."""
+        # If no thresholds provided, use defaults
         if threshold_30 is None or threshold_70 is None:
             threshold_30 = 0.35
             threshold_70 = 0.65
@@ -763,41 +763,41 @@ class DatasetStatistics:
         return data
     
     def _calculate_dynamic_thresholds(self):
-        """基于overall_complexity_score分布计算动态阈值"""
+        """Calculate dynamic thresholds based on overall_complexity_score distribution."""
         complexity_scores = []
         for data in self.data:
             if "meta" in data and "overall_complexity_score" in data["meta"]:
                 complexity_scores.append(data["meta"]["overall_complexity_score"])
         
         if not complexity_scores:
-            print("⚠️  警告: 没有找到overall_complexity_score数据，使用默认阈值")
-            return 0.35, 0.65  # 返回默认阈值
+            print("⚠️  Warning: No overall_complexity_score data found, using default thresholds")
+            return 0.35, 0.65  # Return default thresholds
         
-        # 排序并计算分位数
+        # Sort and calculate percentiles
         complexity_scores.sort()
         n = len(complexity_scores)
         
-        # 计算30%和70%分位数
+        # Calculate 30th and 70th percentiles
         percentile_30_idx = int(n * 0.3)
         percentile_70_idx = int(n * 0.7)
         
-        # 确保索引在有效范围内
+        # Ensure indices are within valid range
         percentile_30_idx = min(percentile_30_idx, n - 1)
         percentile_70_idx = min(percentile_70_idx, n - 1)
         
         threshold_30 = complexity_scores[percentile_30_idx]
         threshold_70 = complexity_scores[percentile_70_idx]
         
-        print(f"📊 复杂度分布阈值计算:")
-        print(f"   总样本数: {n:,}")
-        print(f"   30%分位数 (simple/mid分界): {threshold_30:.4f}")
-        print(f"   70%分位数 (mid/hard分界): {threshold_70:.4f}")
-        print(f"   复杂度得分范围: {min(complexity_scores):.4f} - {max(complexity_scores):.4f}")
+        print(f"📊 Complexity distribution threshold calculation:")
+        print(f"   Total samples: {n:,}")
+        print(f"   30th percentile (simple/mid boundary): {threshold_30:.4f}")
+        print(f"   70th percentile (mid/hard boundary): {threshold_70:.4f}")
+        print(f"   Complexity score range: {min(complexity_scores):.4f} - {max(complexity_scores):.4f}")
         
         return threshold_30, threshold_70
     
     def _print_level_distribution(self):
-        """统计并打印难易程度分类结果"""
+        """Count and print difficulty level classification results."""
         simple_count = mid_count = hard_count = 0
         for data in self.data:
             level = data.get("meta", {}).get("level", "unknown")
@@ -809,60 +809,60 @@ class DatasetStatistics:
                 hard_count += 1
         
         total = len(self.data)
-        print(f"📊 难易程度分类结果:")
+        print(f"📊 Difficulty level classification results:")
         print(f"   Simple: {simple_count:,} ({simple_count/total*100:.1f}%)")
         print(f"   Mid:    {mid_count:,} ({mid_count/total*100:.1f}%)")
         print(f"   Hard:   {hard_count:,} ({hard_count/total*100:.1f}%)")
 
     def update_data(self):
-        """更新数据中的统计信息"""
-        print("🔄 第一阶段: 计算基础统计和复杂度得分...")
+        """Update statistics in data."""
+        print("🔄 Phase 1: Calculating base statistics and complexity scores...")
         
-        # 第一阶段：计算所有基础统计信息和复杂度得分
+        # Phase 1: Calculate all base statistics and complexity scores
         for i, data in enumerate(self.data):
-            # 直接在原始数据上追加字段
+            # Append fields directly to original data
             self.generate_content_list(data)
-            self.calculate_DOM_WIDTH_DEPTH(data)  # DOM结构分析
+            self.calculate_DOM_WIDTH_DEPTH(data)  # DOM structure analysis
             self.calculate_and_update_text_linktext_ratio(data)
             # self.calculate_and_update_text_linknum_ratio(data)
             # self.calculate_and_update_table_html_ratio(data)
             self.calculate_and_update_table_text_ratio(data)
             self.calculate_and_update_table_depth(data)
-            self.classify_tables(data)  # 表格分类需要在表格相关统计之后
-            self.calculate_text_DOM_distribution(data)  # 文本DOM分布分析
+            self.classify_tables(data)  # Table classification must come after table statistics
+            self.calculate_text_DOM_distribution(data)  # Text DOM distribution analysis
             self.detect_equations(data)
             self.detect_code(data)
-            self.calculate_level_score(data)  # 只计算复杂度得分，不分类
-            # 删除content_list字段
+            self.calculate_level_score(data)  # Only calculate complexity score, do not classify
+            # Delete content_list field
             if 'content_list' in data:
                 del data['content_list']
 
-            # 显示进度
+            # Show progress
             if (i + 1) % 100 == 0:
-                print(f"  📊 已处理 {i + 1:,} 条数据...")
+                print(f"  📊 Processed {i + 1:,} records...")
         
-        print("🔄 第二阶段: 计算动态阈值和难易程度分类...")
+        print("🔄 Phase 2: Calculating dynamic thresholds and difficulty level classification...")
         
-        # 第二阶段：基于所有复杂度得分计算动态阈值
+        # Phase 2: Calculate dynamic thresholds based on all complexity scores
         threshold_30, threshold_70 = self._calculate_dynamic_thresholds()
         
-        # 第三阶段：应用动态阈值进行难易程度分类
+        # Phase 3: Apply dynamic thresholds for difficulty level classification
         for data in self.data:
             self.calculate_level(data, threshold_30, threshold_70)
         
-        # 统计最终的分类结果
+        # Count final classification results
         self._print_level_distribution()
     
     def write_data(self):
-        """写入数据"""
-        print(f"📝 正在写入数据到: {self.output_file}")
+        """Write data."""
+        print(f"📝 Writing data to: {self.output_file}")
         with open(self.output_file, "w", encoding="utf-8") as f:
             for data in self.data:
                 f.write(json.dumps(data, ensure_ascii=False) + "\n")
-        print(f"✅ 成功写入 {len(self.data):,} 条数据")
+        print(f"✅ Successfully wrote {len(self.data):,} records")
     
     def calculate_meta_statistics(self):
-        """计算meta字段的统计信息"""
+        """Calculate meta field statistics."""
         if not self.data:
             return {}
         
@@ -873,7 +873,7 @@ class DatasetStatistics:
             'correlation_stats': {}
         }
         
-        # 数值型字段统计
+        # Numerical field statistics
         numerical_fields = [
             'text_linktext_ratio', 'text_linknum_ratio', 
             'table_html_source_ratio', 'table_text_ratio', 'table_dom_depth',
@@ -892,7 +892,7 @@ class DatasetStatistics:
             for data in self.data:
                 if 'meta' in data and field in data['meta']:
                     value = data['meta'][field]
-                    if isinstance(value, (int, float)) and value != -1:  # 排除-1这种特殊值
+                    if isinstance(value, (int, float)) and value != -1:  # Exclude special value -1
                         values.append(value)
             
             if values:
@@ -905,7 +905,7 @@ class DatasetStatistics:
                     'std': (sum((x - sum(values)/len(values))**2 for x in values) / len(values))**0.5
                 }
         
-        # 分类型字段统计 - equation
+        # Categorical field statistics - equation
         equation_combinations = {}
         for data in self.data:
             if 'meta' in data and 'equation' in data['meta']:
@@ -915,7 +915,7 @@ class DatasetStatistics:
         
         stats['categorical_stats']['equation'] = equation_combinations
         
-        # 分类型字段统计 - code
+        # Categorical field statistics - code
         code_combinations = {}
         for data in self.data:
             if 'meta' in data and 'code' in data['meta']:
@@ -925,17 +925,17 @@ class DatasetStatistics:
         
         stats['categorical_stats']['code'] = code_combinations
 
-        # 分类型字段统计 - level
+        # Categorical field statistics - level
         level_combinations = {}
         for data in self.data:
             if 'meta' in data and 'level' in data['meta']:
                 level_value = data['meta']['level']
-                # level是字符串，直接使用
+                # level is a string, use directly
                 level_key = level_value if level_value else 'none'
                 level_combinations[level_key] = level_combinations.get(level_key, 0) + 1
         stats['categorical_stats']['level'] = level_combinations
         
-        # 分类型字段统计 - table
+        # Categorical field statistics - table
         table_combinations = {}
         for data in self.data:
             if 'meta' in data and 'table' in data['meta']:
@@ -944,7 +944,7 @@ class DatasetStatistics:
                 table_combinations[table_key] = table_combinations.get(table_key, 0) + 1
         stats['categorical_stats']['table_types'] = table_combinations
 
-        # 交叉统计 - equation和code的组合
+        # Cross-tabulation - equation and code combination
         equation_code_cross = {}
         for data in self.data:
             if 'meta' in data:
@@ -957,7 +957,7 @@ class DatasetStatistics:
         
         stats['correlation_stats']['equation_code_cross'] = equation_code_cross
         
-        # 表格相关统计
+        # Table-related statistics
         table_stats = {
             'has_table': 0,
             'no_table': 0,
@@ -982,30 +982,30 @@ class DatasetStatistics:
         return stats
 
     def print_summary(self):
-        """打印统计摘要"""
+        """Print statistics summary."""
         print("\n" + "=" * 80)
-        print("📊 WebMainBench 数据集统计摘要")
+        print("📊 WebMainBench Dataset Statistics Summary")
         print("=" * 80)
-        print(f"📄 总数据条数: {len(self.data):,}")
+        print(f"📄 Total records: {len(self.data):,}")
         
         if hasattr(self, 'stats') and self.stats:
             stats = self.stats
             
-            # 数值型字段统计
-            print(f"\n📈 数值型字段统计:")
+            # Numerical field statistics
+            print(f"\n📈 Numerical field statistics:")
             print("-" * 60)
             for field, field_stats in stats['numerical_stats'].items():
                 print(f"  {field}:")
-                print(f"    样本数: {field_stats['count']:,}")
-                print(f"    均值: {field_stats['mean']:.4f}")
-                print(f"    中位数: {field_stats['median']:.4f}")
-                print(f"    最小值: {field_stats['min']:.4f}")
-                print(f"    最大值: {field_stats['max']:.4f}")
-                print(f"    标准差: {field_stats['std']:.4f}")
+                print(f"    Sample count: {field_stats['count']:,}")
+                print(f"    Mean: {field_stats['mean']:.4f}")
+                print(f"    Median: {field_stats['median']:.4f}")
+                print(f"    Min: {field_stats['min']:.4f}")
+                print(f"    Max: {field_stats['max']:.4f}")
+                print(f"    Std dev: {field_stats['std']:.4f}")
                 print()
             
-            # 公式类型分布
-            print(f"📐 公式类型分布:")
+            # Equation type distribution
+            print(f"📐 Equation type distribution:")
             print("-" * 60)
             equation_stats = stats['categorical_stats'].get('equation', {})
             total_with_meta = sum(equation_stats.values())
@@ -1013,8 +1013,8 @@ class DatasetStatistics:
                 percentage = (count / total_with_meta * 100) if total_with_meta > 0 else 0
                 print(f"  {eq_type}: {count:,} ({percentage:.1f}%)")
             
-            # 代码类型分布
-            print(f"\n💻 代码类型分布:")
+            # Code type distribution
+            print(f"\n💻 Code type distribution:")
             print("-" * 60)
             code_stats = stats['categorical_stats'].get('code', {})
             total_with_meta = sum(code_stats.values())
@@ -1022,18 +1022,18 @@ class DatasetStatistics:
                 percentage = (count / total_with_meta * 100) if total_with_meta > 0 else 0
                 print(f"  {code_type}: {count:,} ({percentage:.1f}%)")
             
-            # 表格统计
-            print(f"\n📋 表格统计:")
+            # Table statistics
+            print(f"\n📋 Table statistics:")
             print("-" * 60)
             table_stats = stats['categorical_stats'].get('table', {})
             total = table_stats.get('has_table', 0) + table_stats.get('no_table', 0)
             if total > 0:
-                print(f"  包含表格: {table_stats.get('has_table', 0):,} ({table_stats.get('has_table', 0)/total*100:.1f}%)")
-                print(f"  无表格: {table_stats.get('no_table', 0):,} ({table_stats.get('no_table', 0)/total*100:.1f}%)")
-                print(f"  高表格内容比例(>50%): {table_stats.get('high_table_ratio', 0):,}")
+                print(f"  Has table: {table_stats.get('has_table', 0):,} ({table_stats.get('has_table', 0)/total*100:.1f}%)")
+                print(f"  No table: {table_stats.get('no_table', 0):,} ({table_stats.get('no_table', 0)/total*100:.1f}%)")
+                print(f"  High table ratio (>50%): {table_stats.get('high_table_ratio', 0):,}")
             
-            # 表格类型分布
-            print(f"\n📊 表格类型分布:")
+            # Table type distribution
+            print(f"\n📊 Table type distribution:")
             print("-" * 60)
             table_type_stats = stats['categorical_stats'].get('table_types', {})
             total_with_meta = sum(table_type_stats.values())
@@ -1041,8 +1041,8 @@ class DatasetStatistics:
                 percentage = (count / total_with_meta * 100) if total_with_meta > 0 else 0
                 print(f"  {table_type}: {count:,} ({percentage:.1f}%)")
             
-            # 难易程度分布
-            print(f"\n🔍 难易程度分布:")
+            # Difficulty level distribution
+            print(f"\n🔍 Difficulty level distribution:")
             print("-" * 60)
             level_stats = stats['categorical_stats'].get('level', {})
             total_with_meta = sum(level_stats.values())
@@ -1050,8 +1050,8 @@ class DatasetStatistics:
                 percentage = (count / total_with_meta * 100) if total_with_meta > 0 else 0
                 print(f"  {level}: {count:,} ({percentage:.1f}%)")
             
-            # 公式和代码交叉统计（显示前10个最常见的组合）
-            print(f"\n🔗 公式-代码组合分布 (Top 10):")
+            # Equation-code cross-tabulation (show top 10 most common combinations)
+            print(f"\n🔗 Equation-code combination distribution (Top 10):")
             print("-" * 60)
             cross_stats = stats['correlation_stats'].get('equation_code_cross', {})
             sorted_cross = sorted(cross_stats.items(), key=lambda x: x[1], reverse=True)[:10]
@@ -1065,39 +1065,39 @@ class DatasetStatistics:
     
 
 def main():
-    """主函数"""
-    parser = argparse.ArgumentParser(description="数据集统计和筛选工具")
+    """Main function."""
+    parser = argparse.ArgumentParser(description="Dataset statistics and filtering tool")
     # data/sample_dataset.jsonl
     # data/WebMainBench_1827_v1_WebMainBench_dataset_merge_with_llm_webkit.jsonl
-    parser.add_argument("--input", "-i", required=True, type=str, help="输入JSONL文件路径")
-    parser.add_argument("--output", "-o", required=True, type=str, help="输出文件路径")
+    parser.add_argument("--input", "-i", required=True, type=str, help="Input JSONL file path")
+    parser.add_argument("--output", "-o", required=True, type=str, help="Output file path")
 
     args = parser.parse_args()
     
-    print("🔍 数据集统计和筛选工具")
+    print("🔍 Dataset statistics and filtering tool")
     print("="*60)
     
     try:
-        # 初始化和加载数据
+        # Initialize and load data
         stats_tool = DatasetStatistics(args.input, args.output)       
         stats_tool.load_data()
         
-        # 计算统计信息
+        # Calculate statistics
         stats_tool.update_data()
 
-        # 计算meta字段统计
+        # Calculate meta field statistics
         stats_tool.calculate_meta_statistics()
             
-        # 显示统计摘要
+        # Display statistics summary
         stats_tool.print_summary()
         
-        # 写入数据
+        # Write data
         stats_tool.write_data()
         
-        print(f"\n🎉 任务完成!")
+        print(f"\n🎉 Task complete!")
         
     except Exception as e:
-        print(f"❌ 执行失败: {e}")
+        print(f"❌ Execution failed: {e}")
         import traceback
         traceback.print_exc()
         return 1

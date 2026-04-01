@@ -199,22 +199,22 @@ class Evaluator:
         if isinstance(extractor, str):
             extractor = ExtractorFactory.create(extractor, extractor_config)
         
-        # Filter samples if needed (避免不必要的副本)
+        # Filter samples if needed (avoid unnecessary copies)
         samples_iter = dataset.samples
         
-        # 只有在需要过滤时才创建副本
+        # Only create a copy when filtering is needed
         if categories:
             samples_iter = [
                 s for s in samples_iter 
                 if s.content_type in categories
             ]
         
-        # 如果有max_samples限制，使用itertools.islice避免完整列表
+        # If max_samples is set, use itertools.islice to avoid a full list
         if max_samples:
             import itertools
             samples_to_evaluate = list(itertools.islice(samples_iter, max_samples))
         else:
-            # 如果没有任何过滤，直接使用原始列表避免副本
+            # If no filtering at all, use the original list directly to avoid copies
             samples_to_evaluate = samples_iter if not categories else samples_iter
         
         # Run evaluation
@@ -283,19 +283,19 @@ class Evaluator:
                         categories: Optional[List[str]] = None,
                         output_file: Optional[Union[str, Path]] = None) -> EvaluationResult:
         """
-        分批处理评测，减少内存使用。
-        
+        Process batches of evaluation, reducing memory usage.
+
         Args:
-            jsonl_file_path: JSONL数据集文件路径
-            extractor: BaseExtractor实例或名称
-            batch_size: 批处理大小（默认50）
-            extractor_config: 抽取器配置
-            max_samples: 最大样本数限制
-            categories: 特定类别过滤
-            output_file: 可选的结果输出文件（用于大数据集）
-            
+            jsonl_file_path: Path to JSONL dataset file
+            extractor: BaseExtractor instance or name
+            batch_size: Batch processing size (default 50)
+            extractor_config: Extractor configuration
+            max_samples: Maximum sample count limit
+            categories: Specific category filter
+            output_file: Optional result output file (for large datasets)
+
         Returns:
-            EvaluationResult实例
+            EvaluationResult instance
         """
         # Create extractor if string name provided
         if isinstance(extractor, str):
@@ -303,7 +303,7 @@ class Evaluator:
         
         jsonl_file_path = Path(jsonl_file_path)
         
-        # 统计信息
+        # Statistics
         total_samples = 0
         processed_samples = 0
         all_sample_results = []
@@ -316,14 +316,14 @@ class Evaluator:
         
         start_time = time.time()
         
-        # 使用DataLoader的流式批处理方法
+        # Use DataLoader's streaming batch method
         for batch_samples in DataLoader.stream_jsonl_batched(
             file_path=jsonl_file_path,
             batch_size=batch_size,
             categories=categories,
             max_samples=max_samples
         ):
-            # 处理当前批次
+            # Process current batch
             batch_results, batch_errors = self._process_batch(batch_samples, extractor)
             all_sample_results.extend(batch_results)
             all_extraction_errors.extend(batch_errors)
@@ -333,19 +333,19 @@ class Evaluator:
             
             print(f"   Processed: {processed_samples} samples")
             
-            # 如果有输出文件，可以立即写入避免内存累积
+            # If output file is provided, write immediately to avoid memory accumulation
             if output_file and len(all_sample_results) > 1000:
                 DataSaver.append_intermediate_results(all_sample_results, output_file)
-                all_sample_results = []  # 清空已保存的结果
+                all_sample_results = []  # Clear saved results
         
         end_time = time.time()
         print(f"✅ Batched evaluation finished")
         print(f"   Elapsed: {end_time - start_time:.2f}s")
         print(f"   Samples processed: {processed_samples}")
         
-        # 聚合结果
+        # Aggregate results
         overall_metrics = self._aggregate_metrics(all_sample_results)
-        # 批处理模式下跳过分类指标（为了节约内存，不保存样本列表）
+        # Skip category metrics in batch mode (to save memory, sample lists are not retained)
         category_metrics = None
         error_analysis = self._analyze_errors(all_extraction_errors, all_sample_results)
         
@@ -365,7 +365,7 @@ class Evaluator:
         return evaluation_result
     
     def _process_batch(self, batch_samples: List[DataSample], extractor: BaseExtractor) -> tuple[List[Dict[str, Any]], List[Dict[str, str]]]:
-        """处理一批样本"""
+        """Process a batch of samples."""
         batch_results = []
         batch_errors = []
         
@@ -374,7 +374,7 @@ class Evaluator:
                 sample_result = self._evaluate_sample(sample, extractor)
                 batch_results.append(sample_result)
                 
-                # 收集错误信息
+                # Collect error information
                 if not sample_result.get('extraction_success', False):
                     batch_errors.append({
                         'sample_id': sample.id,
@@ -398,7 +398,7 @@ class Evaluator:
         if extractor.__class__.__name__ == 'TestModelExtractor':
             extraction_result = extractor.extract_from_sample(sample)
         elif extractor.__class__.__name__ == 'LlmWebkitExtractor':
-            # LlmWebkitExtractor可以接受DataSample对象来支持预处理HTML
+            # LlmWebkitExtractor can accept DataSample objects to support pre-processed HTML
             extraction_result = extractor.extract(sample, sample.url)
         else:
             # Extract content
@@ -479,23 +479,23 @@ class Evaluator:
         #
         # return aggregated_metrics
         """
-            聚合所有样本的指标，计算全局平均值（每个指标单独聚合）
+            Aggregate metrics across all samples, computing global averages (each metric aggregated independently).
             """
         if not sample_results:
             return {}
 
-        # 初始化每个指标的总分和样本数
+        # Initialize total score and sample count for each metric
         metric_totals = {
             "text_edit": 0.0,
             "code_edit": 0.0,
             "table_edit": 0.0,
             "table_TEDS": 0.0,
             "formula_edit": 0.0,
-            "overall": 0.0  # 全局overall单独计算
+            "overall": 0.0  # Global overall calculated separately
         }
-        metric_counts = {k: 0 for k in metric_totals.keys()}  # 记录每个指标有效样本数
+        metric_counts = {k: 0 for k in metric_totals.keys()}  # Record valid sample count for each metric
 
-        # 累加所有样本的指标分数
+        # Accumulate metric scores across all samples
         for sample in sample_results:
             metrics = sample.get("metrics", {})
             for metric_name in metric_totals.keys():
@@ -503,16 +503,16 @@ class Evaluator:
                     metric_totals[metric_name] += metrics[metric_name]["score"]
                     metric_counts[metric_name] += 1
 
-        # 计算每个指标的平均值（全局overall为5个单项指标的平均值）
+        # Calculate average per metric (global overall = average of 5 core metrics)
         overall_metrics = {}
         for metric_name in metric_totals.keys():
             if metric_counts[metric_name] > 0:
                 overall_metrics[metric_name] = metric_totals[metric_name] / metric_counts[metric_name]
             else:
-                overall_metrics[metric_name] = 0.0  # 无有效样本时默认为0
+                overall_metrics[metric_name] = 0.0  # Default to 0 when no valid samples
 
-        # 特别处理全局overall：固定为5个单项指标的平均值（无论单项是否有有效样本）
-        # 排除样本级overall，仅用5个核心指标计算全局overall
+        # Handle global overall specially: fixed as average of 5 core metrics (regardless of valid samples)
+        # Exclude sample-level overall, use only 5 core metrics for global overall
         core_metrics = ["text_edit", "code_edit", "table_edit", "table_TEDS", "formula_edit"]
         core_scores = [overall_metrics[metric] for metric in core_metrics]
         overall_metrics["overall"] = sum(core_scores) / len(core_metrics)

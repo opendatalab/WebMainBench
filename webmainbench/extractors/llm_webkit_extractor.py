@@ -19,17 +19,17 @@ class LLMInferenceConfig:
     """Configuration for LLM inference."""
     model_path: str = "/path/to/your/model"
     use_logits_processor: bool = True
-    max_tokens: int = 32768         # 最大输入token数
+    max_tokens: int = 32768         # Maximum input token count
     temperature: float = 0.0
     top_p: float = 0.95
-    max_output_tokens: int = 8192   # 最大输出token数
-    tensor_parallel_size: int = 1   # 张量并行大小
-    dtype: str = "bfloat16"         # 数据类型
-    max_item_count: int = 1000      # 最大item数量
-    gpu_memory_utilization: float = 0.8  # GPU内存利用率
-    enforce_eager: bool = True      # 使用eager模式
-    use_preprocessed_html: bool = False  # 是否使用预处理的HTML（跳过HTML简化步骤）
-    preprocessed_html_field: str = "llm_webkit_html"  # 预处理HTML字段名
+    max_output_tokens: int = 8192   # Maximum output token count
+    tensor_parallel_size: int = 1   # Tensor parallel size
+    dtype: str = "bfloat16"         # Data type
+    max_item_count: int = 1000      # Maximum item count
+    gpu_memory_utilization: float = 0.8  # GPU memory utilization
+    enforce_eager: bool = True      # Use eager mode
+    use_preprocessed_html: bool = False  # Whether to use preprocessed HTML (skip HTML simplification step)
+    preprocessed_html_field: str = "llm_webkit_html"  # Preprocessed HTML field name
 
 
 class TokenState(Enum):
@@ -158,7 +158,7 @@ class LlmWebkitExtractor(BaseExtractor):
     version = "4.0.1"
     description = "Advanced LLM-WebKit extractor with intelligent content classification"
     
-    # 分类提示模板
+    # Classification prompt template
     CLASSIFICATION_PROMPT = """As a front-end engineering expert in HTML, your task is to analyze the given HTML structure and accurately classify elements with the _item_id attribute as either "main" (primary content) or "other" (supplementary content). Your goal is to precisely extract the primary content of the page, ensuring that only the most relevant information is labeled as "main" while excluding navigation, metadata, and other non-essential elements. 
 
 Guidelines for Classification:
@@ -210,7 +210,7 @@ Input HTML:
 Output format should be a JSON-formatted string representing a dictionary where keys are item_id strings and values are either 'main' or 'other'. Make sure to include ALL item_ids from the input HTML."""
 
     def __init__(self, name: str, config: Optional[Dict[str, Any]] = None):
-        # 先初始化inference_config，再调用父类初始化（因为父类会调用_setup()）
+        # Initialize inference_config first, then call parent initialization (since parent calls _setup())
         self.inference_config = LLMInferenceConfig()
         self.model = None
         self.tokenizer = None
@@ -222,37 +222,37 @@ Output format should be a JSON-formatted string representing a dictionary where 
                 if hasattr(self.inference_config, key):
                     setattr(self.inference_config, key, value)
         
-        # 现在可以安全地调用父类初始化（会调用_setup()）
+        # Now it is safe to call parent initialization (which calls _setup())
         super().__init__(name, config)
-    
+
     def _setup(self) -> None:
         """Setup the LLM-WebKit extractor with advanced inference capabilities."""
-        # 初始化模块引用
+        # Initialize module references
         self._simplify_html = None
         self._PreDataJson = None
         self._PreDataJsonKey = None
         self._MapItemToHtmlTagsParser = None
         self._SamplingParams = None
         self._model_loaded = False
-        
-        # 检查各个依赖模块的可用性
+
+        # Check availability of each dependency module
         missing_modules = []
-        
-        # 如果使用预处理HTML模式，只需要检查llm_web_kit的基础功能
+
+        # If using preprocessed HTML mode, only need to check llm_web_kit basic functionality
         if self.inference_config.use_preprocessed_html:
-            # 预处理HTML模式：只检查内容提取相关的依赖
+            # Preprocessed HTML mode: only check content extraction related dependencies
             try:
                 from llm_web_kit.main_html_parser.parser.tag_mapping import MapItemToHtmlTagsParser
                 self._MapItemToHtmlTagsParser = MapItemToHtmlTagsParser
             except ImportError as e:
                 missing_modules.append(f"llm_web_kit (content extraction): {e}")
             
-            # 设置可用性标志（预处理模式下不需要LLM）
+            # Set availability flags (LLM not required in preprocessed mode)
             self._transformers_available = False
             self._vllm_available = False
         else:
-            # 标准模式：检查完整的依赖
-            # 检查 llm_web_kit
+            # Standard mode: check full dependencies
+            # Check llm_web_kit
             try:
                 from llm_web_kit.main_html_parser.simplify_html.simplify_html import simplify_html
                 from llm_web_kit.input.pre_data_json import PreDataJson, PreDataJsonKey
@@ -266,15 +266,15 @@ Output format should be a JSON-formatted string representing a dictionary where 
             except ImportError as e:
                 missing_modules.append(f"llm_web_kit: {e}")
             
-            # 检查 transformers（延迟到实际使用时）
+            # Check transformers (deferred until actual use)
             self._transformers_available = False
             try:
                 import transformers
                 self._transformers_available = True
             except ImportError as e:
                 missing_modules.append(f"transformers: {e}")
-            
-            # 检查 vllm（延迟到实际使用时）
+
+            # Check vllm (deferred until actual use)
             self._vllm_available = False
             try:
                 import vllm
@@ -284,7 +284,7 @@ Output format should be a JSON-formatted string representing a dictionary where 
             except ImportError as e:
                 missing_modules.append(f"vllm: {e}")
         
-        # 如果关键模块缺失，提供详细的错误信息
+        # If critical modules are missing, provide detailed error messages
         if missing_modules:
             if self.inference_config.use_preprocessed_html:
                 error_msg = "LLM-WebKit extractor (preprocessed HTML mode) requires:\n"
@@ -302,100 +302,100 @@ Output format should be a JSON-formatted string representing a dictionary where 
             raise RuntimeError(error_msg)
     
     def _load_model(self):
-        """延迟加载LLM模型和tokenizer."""
+        """Lazily load the LLM model and tokenizer."""
         if self._model_loaded:
             return
-        
-        # 检查依赖是否可用
+
+        # Check if dependencies are available
         if not self._transformers_available:
             raise RuntimeError("transformers library is not available. Please install it: pip install transformers")
         
         import torch
-        
-        # 检测运行环境
+
+        # Detect runtime environment
         is_apple_silicon = hasattr(torch.backends, 'mps') and torch.backends.mps.is_available()
         has_cuda = torch.cuda.is_available()
-        
-        print(f"🔍 检测到运行环境:")
+
+        print(f"Detected runtime environment:")
         print(f"   CUDA: {has_cuda}")
         print(f"   Apple Silicon (MPS): {is_apple_silicon}")
-        
-        # 对于Apple Silicon，优先使用transformers而不是vLLM（避免兼容性问题）
+
+        # For Apple Silicon, prefer transformers over vLLM (to avoid compatibility issues)
         if is_apple_silicon and not has_cuda:
-            print("🍎 Apple Silicon环境检测到，使用transformers模式以避免vLLM兼容性问题")
+            print("Apple Silicon environment detected, using transformers mode to avoid vLLM compatibility issues")
             self._load_transformers_model()
         else:
-            # 其他环境尝试使用vLLM
+            # Other environments: attempt to use vLLM
             if not self._vllm_available:
-                print("⚠️  vLLM不可用，回退到transformers模式")
+                print("vLLM not available, falling back to transformers mode")
                 self._load_transformers_model()
             else:
                 self._load_vllm_model()
     
     def _load_transformers_model(self):
-        """使用transformers加载模型（兼容性更好）"""
+        """Load model using transformers (better compatibility)."""
         try:
             from transformers import AutoTokenizer, AutoModelForCausalLM
             import torch
-            
-            print(f"📦 使用transformers加载模型: {self.inference_config.model_path}")
-            
-            # 加载tokenizer
+
+            print(f"Loading model with transformers: {self.inference_config.model_path}")
+
+            # Load tokenizer
             self.tokenizer = AutoTokenizer.from_pretrained(
                 self.inference_config.model_path, 
                 trust_remote_code=True
             )
             
-            # 设置设备
+            # Set device
             if torch.cuda.is_available():
                 device = "cuda"
                 torch_dtype = torch.bfloat16 if self.inference_config.dtype == "bfloat16" else torch.float16
             elif hasattr(torch.backends, 'mps') and torch.backends.mps.is_available():
                 device = "mps"
-                torch_dtype = torch.float16  # MPS目前不支持bfloat16
+                torch_dtype = torch.float16  # MPS does not currently support bfloat16
             else:
                 device = "cpu"
                 torch_dtype = torch.float32
-            
-            print(f"🎯 使用设备: {device}, 数据类型: {torch_dtype}")
-            
-            # 加载模型
+
+            print(f"Using device: {device}, dtype: {torch_dtype}")
+
+            # Load model
             self.model = AutoModelForCausalLM.from_pretrained(
                 self.inference_config.model_path,
                 trust_remote_code=True,
                 torch_dtype=torch_dtype,
-                device_map=device if device != "mps" else None  # MPS不支持device_map
+                device_map=device if device != "mps" else None  # MPS does not support device_map
             )
             
             if device == "mps":
                 self.model = self.model.to(device)
             
             self.model.eval()
-            
-            # 标记为transformers模式
+
+            # Mark as transformers mode
             self._use_transformers = True
             self._model_loaded = True
-            
-            print("✅ transformers模型加载成功!")
-            
+
+            print("Transformers model loaded successfully!")
+
         except Exception as e:
             raise RuntimeError(f"Failed to load transformers model: {e}")
-    
+
     def _load_vllm_model(self):
-        """使用vLLM加载模型（高性能但兼容性要求高）"""
+        """Load model using vLLM (high performance but strict compatibility requirements)."""
         try:
             from transformers import AutoTokenizer
             from vllm import LLM
-            
-            print(f"⚡ 使用vLLM加载模型: {self.inference_config.model_path}")
-            
-            # 加载tokenizer
+
+            print(f"Loading model with vLLM: {self.inference_config.model_path}")
+
+            # Load tokenizer
             self.tokenizer = AutoTokenizer.from_pretrained(
                 self.inference_config.model_path, 
                 trust_remote_code=True
             )
             
-            # vLLM配置 - 参考ray_test_qa.py的简化配置
+            # vLLM configuration - simplified config based on ray_test_qa.py
             model_kwargs = {
                 "model": self.inference_config.model_path,
                 "trust_remote_code": True,
@@ -403,30 +403,30 @@ Output format should be a JSON-formatted string representing a dictionary where 
                 "tensor_parallel_size": self.inference_config.tensor_parallel_size,
             }
             
-            print(f"🔧 vLLM配置: {model_kwargs}")
-            
+            print(f"vLLM configuration: {model_kwargs}")
+
             self.model = LLM(**model_kwargs)
-            
-            # 初始化token状态管理器
+
+            # Initialize token state manager
             if self.inference_config.use_logits_processor:
                 self.token_state_manager = TokenStateManager(self.tokenizer)
-            
-            # 标记为vLLM模式
+
+            # Mark as vLLM mode
             self._use_transformers = False
             self._model_loaded = True
-            
-            print("✅ vLLM模型加载成功!")
-            
+
+            print("vLLM model loaded successfully!")
+
         except Exception as e:
-            print(f"❌ vLLM加载失败: {e}")
-            raise RuntimeError(f"vLLM模型加载失败: {e}")
+            print(f"vLLM loading failed: {e}")
+            raise RuntimeError(f"vLLM model loading failed: {e}")
     
     def _create_prompt(self, simplified_html: str) -> str:
-        """创建分类提示."""
+        """Create the classification prompt."""
         return self.CLASSIFICATION_PROMPT.format(alg_html=simplified_html)
-    
+
     def _add_template(self, prompt: str) -> str:
-        """添加聊天模板."""
+        """Add the chat template."""
         messages = [
             {"role": "user", "content": prompt}
         ]
@@ -439,18 +439,18 @@ Output format should be a JSON-formatted string representing a dictionary where 
         return chat_prompt
     
     def _generate_with_transformers(self, prompt: str) -> str:
-        """使用transformers生成文本"""
+        """Generate text using transformers."""
         try:
             import torch
-            
-            # Tokenize输入
+
+            # Tokenize input
             inputs = self.tokenizer(prompt, return_tensors="pt", truncation=True, max_length=self.inference_config.max_tokens)
             
-            # 移动到正确的设备
+            # Move to the correct device
             device = self.model.device
             inputs = {k: v.to(device) for k, v in inputs.items()}
-            
-            # 生成配置
+
+            # Generation configuration
             generation_config = {
                 "max_new_tokens": self.inference_config.max_output_tokens,
                 "temperature": self.inference_config.temperature,
@@ -460,73 +460,73 @@ Output format should be a JSON-formatted string representing a dictionary where 
                 "eos_token_id": self.tokenizer.eos_token_id,
             }
             
-            print(f"🔄 开始生成文本 (max_new_tokens: {generation_config['max_new_tokens']})")
-            
-            # 生成
+            print(f"Starting text generation (max_new_tokens: {generation_config['max_new_tokens']})")
+
+            # Generate
             with torch.no_grad():
                 outputs = self.model.generate(
                     **inputs,
                     **generation_config
                 )
             
-            # 解码输出（只取新生成的部分）
+            # Decode output (only take newly generated portion)
             input_length = inputs['input_ids'].shape[1]
             generated_ids = outputs[0][input_length:]
             generated_text = self.tokenizer.decode(generated_ids, skip_special_tokens=True)
-            
-            print(f"✅ 生成完成，输出长度: {len(generated_text)}")
-            print(f"🔍 LLM原始输出: {repr(generated_text[:200])}")  # 显示前200字符用于调试
-            
-            # 提取JSON部分
+
+            print(f"Generation complete, output length: {len(generated_text)}")
+            print(f"LLM raw output: {repr(generated_text[:200])}")  # Show first 200 chars for debugging
+
+            # Extract JSON part
             json_result = self._extract_json_from_text(generated_text)
-            print(f"🔍 提取的JSON: {repr(json_result[:200])}")  # 显示JSON结果
+            print(f"Extracted JSON: {repr(json_result[:200])}")  # Show JSON result
             return json_result
-            
+
         except Exception as e:
-            print(f"⚠️  transformers生成失败: {e}")
-            raise RuntimeError(f"transformers生成失败: {e}")
+            print(f"transformers generation failed: {e}")
+            raise RuntimeError(f"transformers generation failed: {e}")
     
     def _extract_json_from_text(self, text: str) -> str:
-        """从生成的文本中提取JSON"""
-        # 查找JSON部分
+        """Extract JSON from generated text."""
+        # Find JSON portion
         start_idx = text.find("{")
         end_idx = text.rfind("}") + 1
-        
+
         if start_idx != -1 and end_idx != 0:
             json_str = text[start_idx:end_idx]
-            # 清理JSON
+            # Clean up JSON
             json_str = json_str.strip()
             json_str = re.sub(r',\s*}', '}', json_str)
             try:
-                # 验证JSON
+                # Validate JSON
                 json.loads(json_str)
                 return json_str
             except:
                 pass
-        
+
         return "{}"
 
     def _clean_output(self, output) -> str:
-        """清理LLM输出，提取JSON."""
+        """Clean LLM output and extract JSON."""
         prediction = output[0].outputs[0].text
-        
-        # 提取JSON
+
+        # Extract JSON
         start_idx = prediction.rfind("{")
         end_idx = prediction.rfind("}") + 1
-        
+
         if start_idx != -1 and end_idx != -1:
             json_str = prediction[start_idx:end_idx]
-            json_str = re.sub(r',\s*}', '}', json_str)  # 清理JSON
+            json_str = re.sub(r',\s*}', '}', json_str)  # Clean up JSON
             try:
-                json.loads(json_str)  # 验证
+                json.loads(json_str)  # Validate
                 return json_str
             except:
                 return "{}"
         else:
             return "{}"
-    
+
     def _reformat_classification_result(self, json_str: str) -> Dict[str, int]:
-        """重新格式化分类结果."""
+        """Reformat classification result."""
         try:
             data = json.loads(json_str)
             return {"item_id " + k: 1 if v == "main" else 0 for k, v in data.items()}
@@ -534,20 +534,20 @@ Output format should be a JSON-formatted string representing a dictionary where 
             return {}
     
     def _reconstruct_content(self, original_html: str, classification_result: Dict[str, int], url: str = None) -> tuple:
-        """根据分类结果重建主要内容."""
+        """Reconstruct main content based on classification results."""
         try:
-            # 按照ray_test_qa.py的正确流程
-            # 第一步：使用MapItemToHtmlTagsParser生成main_html
+            # Follow the correct flow from ray_test_qa.py
+            # Step 1: Use MapItemToHtmlTagsParser to generate main_html
             main_html = self._generate_main_html_with_parser(original_html, classification_result)
-            print(f"🔧 MapItemToHtmlTagsParser生成的main_html长度: {len(main_html)}")
-            
+            print(f"MapItemToHtmlTagsParser generated main_html length: {len(main_html)}")
+
             if not main_html.strip():
-                print("⚠️  没有生成main_html，返回空结果")
+                print("No main_html generated, returning empty result")
                 return "", []
-            
-            # 第二步：使用llm-webkit的方法将main_html提取成content，传入URL
+
+            # Step 2: Use llm-webkit method to extract content from main_html, pass in URL
             content, content_list = self._extract_content_from_main_html(main_html, url)
-            print(f"✅ content提取成功: {len(content)}字符, {len(content_list)}个内容块")
+            print(f"Content extraction successful: {len(content)} chars, {len(content_list)} content blocks")
             
             return content, content_list
             
@@ -556,130 +556,130 @@ Output format should be a JSON-formatted string representing a dictionary where 
             return "", []
     
     def _generate_main_html_with_parser(self, original_html: str, classification_result: Dict[str, int]) -> str:
-        """使用MapItemToHtmlTagsParser生成main_html（按照ray_test_qa.py的流程）"""
+        """Generate main_html using MapItemToHtmlTagsParser (following ray_test_qa.py flow)."""
         try:
-            # 获取typical_raw_tag_html (简化的HTML)
+            # Get typical_raw_tag_html (simplified HTML)
             simplified_html, typical_raw_tag_html, _ = self._simplify_html(original_html)
-            print(f"🔧 simplified HTML长度: {len(simplified_html)}")
-            print(f"🔧 typical_raw_tag_html长度: {len(typical_raw_tag_html)}")
-            
-            # 按照ray_test_qa.py的流程
+            print(f"Simplified HTML length: {len(simplified_html)}")
+            print(f"typical_raw_tag_html length: {len(typical_raw_tag_html)}")
+
+            # Follow the flow from ray_test_qa.py
             pre_data = self._PreDataJson({})
             pre_data[self._PreDataJsonKey.LLM_RESPONSE] = classification_result
             pre_data[self._PreDataJsonKey.TYPICAL_RAW_HTML] = original_html
             pre_data[self._PreDataJsonKey.TYPICAL_RAW_TAG_HTML] = typical_raw_tag_html
-            
-            print(f"🔧 PreDataJson设置完成，开始解析...")
-            
-            # 使用MapItemToHtmlTagsParser解析
+
+            print(f"PreDataJson setup complete, starting parsing...")
+
+            # Parse using MapItemToHtmlTagsParser
             parser = self._MapItemToHtmlTagsParser({})
             pre_data = parser.parse_single(pre_data)
-            
-            # 获取生成的main_html
+
+            # Get generated main_html
             main_html = pre_data.get(self._PreDataJsonKey.TYPICAL_MAIN_HTML, "")
-            
-            print(f"✅ MapItemToHtmlTagsParser完成，main_html长度: {len(main_html)}")
+
+            print(f"MapItemToHtmlTagsParser complete, main_html length: {len(main_html)}")
             return main_html
-            
+
         except Exception as e:
-            print(f"❌ MapItemToHtmlTagsParser失败: {e}")
+            print(f"MapItemToHtmlTagsParser failed: {e}")
             return ""
-    
+
     def _extract_content_from_main_html(self, main_html: str, url: str = None) -> tuple:
-        """使用llm-webkit的方法将main_html提取成content"""
+        """Extract content from main_html using llm-webkit method."""
         import traceback
         try:
             from llm_web_kit.simple import extract_content_from_main_html
-            
-            print(f"🔧 开始使用llm-webkit简单接口提取content...")
-            
-            # 使用简单接口提取markdown，传入URL
+
+            print(f"Starting content extraction using llm-webkit simple interface...")
+
+            # Use simple interface to extract markdown, pass in URL
             content = extract_content_from_main_html(url or "", main_html)
-            
-            print(f"✅ llm-webkit提取完成: {len(content)}字符")
-            
-            # 暂不构建content_list，直接返回空列表
+
+            print(f"llm-webkit extraction complete: {len(content)} chars")
+
+            # content_list construction deferred; return empty list for now
             return content.strip(), []
-            
+
         except Exception as e:
-            print(f"❌ llm-webkit提取失败: {e}")
-            print(f"❌ 错误详情: {traceback.format_exc()}")
-            raise RuntimeError(f"llm-webkit提取失败: {str(e)}") from e
+            print(f"llm-webkit extraction failed: {e}")
+            print(f"Error details: {traceback.format_exc()}")
+            raise RuntimeError(f"llm-webkit extraction failed: {str(e)}") from e
 
 
     def extract(self, html_or_sample, url: str = None) -> ExtractionResult:
         """
-        重写extract方法以支持预处理HTML模式
-        
+        Override extract method to support preprocessed HTML mode.
+
         Args:
-            html_or_sample: HTML字符串或DataSample对象
-            url: 可选的页面URL
-            
+            html_or_sample: HTML string or DataSample object
+            url: Optional page URL
+
         Returns:
-            ExtractionResult实例
+            ExtractionResult instance
         """
-        # 判断输入类型
-        if type(html_or_sample).__name__ == 'DataSample':  # 这是一个DataSample对象
+        # Determine input type
+        if type(html_or_sample).__name__ == 'DataSample':  # This is a DataSample object
             sample = html_or_sample
-            
-            # 检查是否使用预处理的HTML
+
+            # Check whether to use preprocessed HTML
             try:
                 if self.inference_config.use_preprocessed_html:
                     preprocessed_field = self.inference_config.preprocessed_html_field
-                    
-                    # 从sample中获取预处理的HTML内容
+
+                    # Get preprocessed HTML content from sample
                     if hasattr(sample, preprocessed_field):
                         preprocessed_html = getattr(sample, preprocessed_field)
-                        print(f"📥 使用预处理HTML字段: {preprocessed_field}")
+                        print(f"Using preprocessed HTML field: {preprocessed_field}")
                         return super().extract(preprocessed_html, sample.url)
             except Exception as e:
                 return ExtractionResult.create_error_result(
-                    f"访问预处理HTML字段 {preprocessed_field} 时发生异常: {str(e)}"
+                    f"Exception while accessing preprocessed HTML field {preprocessed_field}: {str(e)}"
                 )
         else:
-            # 这是普通的HTML字符串，使用标准处理
+            # This is a plain HTML string, use standard processing
             return super().extract(html_or_sample, url)
 
     def _extract_content(self, html: str, url: str = None) -> ExtractionResult:
         """
-        使用高级LLM推理提取内容.
-        
+        Extract content using advanced LLM inference.
+
         Args:
-            html: HTML内容。如果配置了use_preprocessed_html=True，则由Evaluator传入预处理的HTML内容
-            url: 可选的页面URL
-            
+            html: HTML content. If use_preprocessed_html=True is configured, the Evaluator passes in preprocessed HTML content.
+            url: Optional page URL
+
         Returns:
-            ExtractionResult实例
+            ExtractionResult instance
         """
         start_time = time.time()
-        
+
         try:
-            # 检查是否使用预处理的HTML（跳过HTML简化步骤）
+            # Check whether to use preprocessed HTML (skip HTML simplification step)
             if self.inference_config.use_preprocessed_html:
-                # 传入的html已经是预处理的内容（由Evaluator从指定字段提取），直接用作main_html
-                print(f"📥 使用预处理HTML，跳过HTML简化步骤")
+                # The passed-in html is already preprocessed content (extracted from the specified field by Evaluator), use it directly as main_html
+                print(f"Using preprocessed HTML, skipping HTML simplification step")
                 content, content_list = self._extract_content_from_main_html(html, url)
                 
                 extraction_time = time.time() - start_time
-                
-                # 创建结果对象
+
+                # Create result object
                 result = ExtractionResult(
                     content=content,
                     # content_list=content_list,
-                    title=self._extract_title(html),  # 从主内容提取标题
+                    title=self._extract_title(html),  # Extract title from main content
                     language=self._detect_language(content),
-                    confidence_score=0.9,  # 预处理HTML的置信度设为0.9
+                    confidence_score=0.9,  # Confidence score for preprocessed HTML is set to 0.9
                     extraction_time=extraction_time,
                     success=True
                 )
-                
+
                 return result
-            
-            # 标准流程：HTML简化 + LLM推理
-            # 步骤1: HTML简化处理
+
+            # Standard flow: HTML simplification + LLM inference
+            # Step 1: HTML simplification
             simplified_html, typical_raw_tag_html, _ = self._simplify_html(html)
-            
-            # 步骤2: 检查长度限制
+
+            # Step 2: Check length limit
             item_count = simplified_html.count('_item_id')
             if item_count > self.inference_config.max_item_count:
                 return ExtractionResult.create_error_result(
@@ -689,14 +689,14 @@ Output format should be a JSON-formatted string representing a dictionary where 
             if item_count == 0:
                 return ExtractionResult.create_error_result("No _item_id found in simplified HTML")
             
-            # 步骤3: 延迟加载模型
+            # Step 3: Lazy load model
             self._load_model()
-            
-            # 步骤4: 创建提示并进行LLM推理
+
+            # Step 4: Create prompt and perform LLM inference
             prompt = self._create_prompt(simplified_html)
             chat_prompt = self._add_template(prompt)
-            
-            # 配置采样参数
+
+            # Configure sampling parameters
             if self.inference_config.use_logits_processor and self.token_state_manager:
                 sampling_params = self._SamplingParams(
                     temperature=self.inference_config.temperature,
@@ -711,30 +711,30 @@ Output format should be a JSON-formatted string representing a dictionary where 
                     max_tokens=self.inference_config.max_output_tokens
                 )
             
-            # 根据模型类型选择生成方式
+            # Choose generation method based on model type
             if hasattr(self, '_use_transformers') and self._use_transformers:
-                # 使用transformers生成
+                # Use transformers for generation
                 json_result = self._generate_with_transformers(chat_prompt)
             else:
-                # 使用vLLM生成
+                # Use vLLM for generation
                 output = self.model.generate(chat_prompt, sampling_params)
                 json_result = self._clean_output(output)
-            
-            # 步骤5: 格式转换和内容重建
-            print(f"🔄 开始格式转换...")
+
+            # Step 5: Format conversion and content reconstruction
+            print(f"Starting format conversion...")
             classification_result = self._reformat_classification_result(json_result)
-            print(f"🔍 格式转换结果: {len(classification_result)} 个分类项")
-            
-            print(f"🔄 开始重建内容...")
+            print(f"Format conversion result: {len(classification_result)} classification items")
+
+            print(f"Starting content reconstruction...")
             main_content, content_list = self._reconstruct_content(html, classification_result, url)
-            print(f"🔍 重建结果: 主内容长度={len(main_content)}, 内容块数量={len(content_list) if content_list else 0}")
+            print(f"Reconstruction result: main content length={len(main_content)}, content block count={len(content_list) if content_list else 0}")
             
-            # 计算置信度
+            # Calculate confidence
             confidence = self._calculate_confidence(main_content, content_list, item_count)
             
             extraction_time = time.time() - start_time
-            
-            # 创建结果对象
+
+            # Create result object
             result = ExtractionResult(
                 content=main_content,
                 # content_list=content_list,
@@ -744,8 +744,8 @@ Output format should be a JSON-formatted string representing a dictionary where 
                 extraction_time=extraction_time,
                 success=True
             )
-            
-            # 添加调试信息到错误消息字段（用于开发调试）
+
+            # Add debug info to error message field (for development debugging)
             debug_info = f"item_count: {item_count}, llm_output_length: {len(json_result)}"
             if not result.success:
                 result.error_message = f"{result.error_message or ''} | {debug_info}".strip(' |')
@@ -762,7 +762,7 @@ Output format should be a JSON-formatted string representing a dictionary where 
             )
     
     def _extract_title(self, html: str) -> Optional[str]:
-        """提取页面标题."""
+        """Extract page title."""
         try:
             import re
             title_match = re.search(r'<title[^>]*>(.*?)</title>', html, re.IGNORECASE | re.DOTALL)
@@ -773,11 +773,11 @@ Output format should be a JSON-formatted string representing a dictionary where 
         return None
     
     def _detect_language(self, content: str) -> Optional[str]:
-        """检测内容语言."""
+        """Detect content language."""
         if not content:
             return None
-            
-        # 简单的语言检测逻辑
+
+        # Simple language detection logic
         chinese_chars = len(re.findall(r'[\u4e00-\u9fff]', content))
         english_chars = len(re.findall(r'[a-zA-Z]', content))
         
@@ -789,20 +789,20 @@ Output format should be a JSON-formatted string representing a dictionary where 
             return None
     
     def _calculate_confidence(self, content: str, content_list: List[Dict], item_count: int) -> float:
-        """计算提取置信度."""
+        """Calculate extraction confidence."""
         if not content:
             return 0.0
-        
-        # 基于内容长度的评分
+
+        # Score based on content length
         length_score = min(len(content) / 1000, 1.0)
-        
-        # 基于结构化内容的评分
+
+        # Score based on structured content
         structure_score = min(len(content_list) / 10, 1.0) if content_list else 0.0
-        
-        # 基于处理复杂度的评分（item数量越多，置信度稍微降低）
-        complexity_penalty = max(0, (item_count - 100) / 900)  # 100-1000范围内线性降低
+
+        # Score based on processing complexity (more items slightly reduce confidence)
+        complexity_penalty = max(0, (item_count - 100) / 900)  # Linear decrease in range 100-1000
         complexity_score = max(0.5, 1.0 - complexity_penalty)
-        
-        # 综合评分
+
+        # Combined score
         confidence = (length_score * 0.5 + structure_score * 0.3 + complexity_score * 0.2)
-        return min(confidence, 1.0) 
+        return min(confidence, 1.0)

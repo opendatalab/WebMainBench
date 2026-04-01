@@ -27,11 +27,11 @@ class DripperExtractor(BaseExtractor):
         except ImportError:
             raise ImportError("Please install dripper package")
         
-        # 先初始化inference_config，再调用父类初始化（因为父类会调用_setup()）
+        # Initialize inference_config first, then call parent initialization (since parent calls _setup())
         self.dripper = Dripper(config)
         self.html2text = HTML2TextWrapper()
 
-        # 现在可以安全地调用父类初始化（会调用_setup()）
+        # Now it is safe to call parent initialization (which calls _setup())
         super().__init__(name, config)
     
     def _setup(self) -> None:
@@ -40,14 +40,14 @@ class DripperExtractor(BaseExtractor):
 
     def _extract_content(self, html: str, url: str = None) -> ExtractionResult:
         """
-        使用高级LLM推理提取内容.
+        Extract content using advanced LLM inference.
         
         Args:
-            html: HTML内容。如果配置了use_preprocessed_html=True，则由Evaluator传入预处理的HTML内容
-            url: 可选的页面URL
+            html: HTML content. If use_preprocessed_html=True is configured, preprocessed HTML is passed in by Evaluator.
+            url: Optional page URL
             
         Returns:
-            ExtractionResult实例
+            ExtractionResult instance
         """
         start_time = time.time()
         
@@ -60,7 +60,7 @@ class DripperExtractor(BaseExtractor):
 
             extraction_time = time.time() - start_time
             
-            # 创建结果对象
+            # Create result object
             result = ExtractionResult(
                 content=main_content,
                 main_html=main_html,
@@ -71,7 +71,7 @@ class DripperExtractor(BaseExtractor):
                 success=True
             )
             
-            # 添加调试信息到错误消息字段（用于开发调试）
+            # Add debug info to error message field (for development debugging)
             return result
             
         except Exception as e:
@@ -84,7 +84,7 @@ class DripperExtractor(BaseExtractor):
             )
     
     def _extract_title(self, html: str) -> Optional[str]:
-        """提取页面标题."""
+        """Extract page title."""
         try:
             import re
             title_match = re.search(r'<title[^>]*>(.*?)</title>', html, re.IGNORECASE | re.DOTALL)

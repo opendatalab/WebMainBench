@@ -64,11 +64,11 @@ def extract_main_html(labeled_html: str) -> str:
         if 'display: none' in style_attr or 'display:none' in style_attr:
             return
         if element.get(SELECT_ATTR) == 'true':
-            # 当该元素本身被selected的，则以该元素为根的子树中的所有元素都保留
+            # When the element itself is selected, keep all elements in the subtree rooted at it
             for item in element.iter():
                 elements_to_remained.add(item)
         else:
-            # 检查该元素的子元素是否被selected
+            # Check if child elements of this element are selected
             for item in element.iterchildren():
                 walk_tree_to_add_elements(item)
 
