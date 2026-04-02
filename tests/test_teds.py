@@ -135,8 +135,8 @@ class TestTEDSBasic(unittest.TestCase):
 
     def test_s_teds_identical_structure(self):
         """Test tables with identical structure but different content (S-TEDS should ignore content)"""
-        pred = "<table><tr><td>Content A</td></tr></table>"
-        gt = "<table><tr><td>Content B</td></tr></table>"
+        pred = "<table><tr><td>内容A</td></tr></table>"
+        gt = "<table><tr><td>内容B</td></tr></table>"
 
         result = self.s_teds_metric.calculate(
             predicted=pred,
@@ -163,8 +163,8 @@ class TestTEDSBasic(unittest.TestCase):
 
     def test_s_teds_colspan_sensitivity(self):
         """Test S-TEDS sensitivity to colspan"""
-        pred = "<table><tr><th colspan='2'>Title</th></tr></table>"
-        gt = "<table><tr><th>Title 1</th><th>Title 2</th></tr></table>"
+        pred = "<table><tr><th colspan='2'>标题</th></tr></table>"
+        gt = "<table><tr><th>标题1</th><th>标题2</th></tr></table>"
 
         result = self.s_teds_metric.calculate(
             predicted=pred,
@@ -177,8 +177,8 @@ class TestTEDSBasic(unittest.TestCase):
 
     def test_unicode_content(self):
         """Test tables containing Unicode characters"""
-        pred = "<table><tr><td>Test text</td><td>Текст на русском</td></tr></table>"
-        gt = "<table><tr><td>Test text</td><td>Текст на русском</td></tr></table>"
+        pred = "<table><tr><td>测试文本</td><td>Текст на русском</td></tr></table>"
+        gt = "<table><tr><td>测试文本</td><td>Текст на русском</td></tr></table>"
 
         result = self.teds_metric.calculate(
             predicted=pred,
@@ -211,8 +211,8 @@ class TestTEDSBasic(unittest.TestCase):
 
     def test_teds_structure_same_content_different(self):
         """Test tables with identical structure but different content - verify fixed TEDS does not return 0"""
-        pred = "<table><tr><td>I do not like you</td></tr></table>"
-        gt = "<table><tr><td>I like you</td></tr></table>"
+        pred = "<table><tr><td>我不喜欢你</td></tr></table>"
+        gt = "<table><tr><td>我喜欢你</td></tr></table>"
 
         result = self.teds_metric.calculate(
             predicted=pred,
@@ -316,8 +316,8 @@ class TestTEDSAdvanced(unittest.TestCase):
 
     def test_teds_content_similarity(self):
         """Test TEDS with similar content but different text"""
-        table1 = "<table><tr><td>Apples are delicious</td><td>Bananas are also good</td></tr></table>"
-        table2 = "<table><tr><td>Apples are tasty</td><td>Bananas are good too</td></tr></table>"
+        table1 = "<table><tr><td>苹果很好吃</td><td>香蕉也不错</td></tr></table>"
+        table2 = "<table><tr><td>苹果很美味</td><td>香蕉也很好</td></tr></table>"
 
         result = self.teds.calculate(
             table1,
@@ -348,7 +348,7 @@ class TestStructureTEDS(unittest.TestCase):
     def test_s_teds_identical_structure(self):
         """Test S-TEDS with identical structure but different content"""
         table1 = "<table><tr><th>Name</th><th>Age</th></tr><tr><td>John</td><td>25</td></tr></table>"
-        table2 = "<table><tr><th>Product</th><th>Price</th></tr><tr><td>Apple</td><td>5</td></tr></table>"
+        table2 = "<table><tr><th>产品</th><th>价格</th></tr><tr><td>苹果</td><td>5</td></tr></table>"
 
         result = self.s_teds.calculate(
             table1,
