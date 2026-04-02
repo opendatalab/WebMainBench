@@ -13,48 +13,48 @@ class TestContentMetrics(unittest.TestCase):
         self.calculator = MetricCalculator()
 
         # Test data
-        self.predicted_content = """# Title
+        self.predicted_content = """# 标题
 
-This is a paragraph of text.
+这是一段文字内容。
 
 ```python
 def hello():
     print("Hello World")
 ```
 
-This is a formula: $E = mc^2$
+这是公式: $E = mc^2$
 
-And a block formula:
+还有行间公式:
 $$\\int_{0}^{\\infty} e^{-x} dx = 1$$
 
-| Col1 | Col2 |
+| 列1 | 列2 |
 |-----|-----|
-| Data1 | Data2 |
-| Data3 | Data4 |
+| 数据1 | 数据2 |
+| 数据3 | 数据4 |
 
-Finally more text content.
+最后是更多文字内容。
 """
 
-        self.groundtruth_content = """# Title
+        self.groundtruth_content = """# 标题
 
-This is a paragraph of correct text.
+这是一段正确的文字内容。
 
-```python
+```python  
 def hello():
     print("Hello, World!")
 ```
 
-This is the correct formula: $E = mc^2$
+这是正确的公式: $E = mc^2$
 
-Correct block formula:
+正确的行间公式:
 $$\\int_{0}^{\\infty} e^{-x} dx = 1$$
 
-| Col1 | Col2 |
+| 列1 | 列2 |
 |-----|-----|
-| Correct Data1 | Correct Data2 |
-| Correct Data3 | Correct Data4 |
+| 正确数据1 | 正确数据2 |
+| 正确数据3 | 正确数据4 |
 
-Finally correct text content.
+最后是正确的文字内容。
 """
 
     def test_available_metrics(self):
@@ -64,7 +64,7 @@ Finally correct text content.
         # Verify all required metrics exist
         expected_metrics = ['code_edit', 'formula_edit', 'table_edit', 'table_TEDS', 'text_edit']
         for metric in expected_metrics:
-            self.assertIn(metric, metrics, f"Missing metric: {metric}")
+            self.assertIn(metric, metrics, f"缺少指标: {metric}")
 
     def test_metric_calculation_success(self):
         """Test successful metric calculation"""
@@ -76,9 +76,9 @@ Finally correct text content.
         # Verify all metrics were calculated successfully
         expected_metrics = ['code_edit', 'formula_edit', 'table_edit', 'table_TEDS', 'text_edit', 'overall']
         for metric_name in expected_metrics:
-            self.assertIn(metric_name, results, f"Missing metric result: {metric_name}")
+            self.assertIn(metric_name, results, f"缺少指标结果: {metric_name}")
             self.assertTrue(results[metric_name].success,
-                            f"Metric {metric_name} calculation failed: {results[metric_name].error_message}")
+                            f"指标 {metric_name} 计算失败: {results[metric_name].error_message}")
 
     def test_code_edit_metric(self):
         """Test code edit distance metric"""
@@ -92,7 +92,7 @@ Finally correct text content.
         self.assertIsInstance(code_result.score, float)
         # Verify deterministic score for fixed content
         self.assertAlmostEqual(code_result.score, 0.9487179487179487, places=5,
-                               msg=f"code_edit score should be 0.9487179487179487, actual: {code_result.score}")
+                               msg=f"code_edit分数应该是0.9487179487179487，实际: {code_result.score}")
 
         # Verify details
         self.assertEqual(code_result.details['content_type'], 'code')
@@ -112,7 +112,7 @@ Finally correct text content.
         self.assertIsInstance(formula_result.score, float)
         # Verify deterministic score for fixed content
         self.assertAlmostEqual(formula_result.score, 1.000000, places=5,
-                               msg=f"formula_edit score should be 1.000000, actual: {formula_result.score}")
+                               msg=f"formula_edit分数应该是1.000000，实际: {formula_result.score}")
 
         # Verify details
         self.assertEqual(formula_result.details['content_type'], 'formula')
@@ -130,7 +130,7 @@ Finally correct text content.
         self.assertIsInstance(table_result.score, float)
         # Verify deterministic score for fixed content
         self.assertAlmostEqual(table_result.score, 0.9333333333333333, places=5,
-                               msg=f"table_edit score should be 0.9333333333333333, actual: {table_result.score}")
+                               msg=f"table_edit分数应该是0.9333333333333333，实际: {table_result.score}")
 
         # Verify details
         self.assertEqual(table_result.details['content_type'], 'table')
@@ -148,7 +148,7 @@ Finally correct text content.
         self.assertIsInstance(teds_result.score, float)
         # Verify deterministic score for fixed content
         self.assertAlmostEqual(teds_result.score, 0.97857, places=5,
-                               msg=f"table_TEDS score should be 0.97857, actual: {teds_result.score}")
+                               msg=f"table_TEDS分数应该是0.97857，实际: {teds_result.score}")
 
         # Verify details
         self.assertEqual(teds_result.details['content_type'], 'table')
@@ -165,7 +165,7 @@ Finally correct text content.
         self.assertIsInstance(text_result.score, float)
         # Verify deterministic score for fixed content
         self.assertAlmostEqual(text_result.score, 0.8904109589041096, places=5,
-                               msg=f"text_edit score should be 0.8904109589041096, actual: {text_result.score}")
+                               msg=f"text_edit分数应该是0.8904109589041096，实际: {text_result.score}")
 
         # Verify details
         self.assertEqual(text_result.details['content_type'], 'text')
@@ -194,7 +194,7 @@ Finally correct text content.
         overall_result = results['overall']
         self.assertTrue(overall_result.success)
         self.assertAlmostEqual(overall_result.score, expected_overall, places=5,
-                               msg="overall score should be the average of all other metrics")
+                               msg="overall分数应该是其他指标的平均值")
 
         # Verify overall details
         self.assertEqual(overall_result.details['source'], 'average_of_all_metrics')
@@ -212,7 +212,7 @@ Finally correct text content.
         for metric_name in ['code_edit', 'formula_edit', 'table_edit', 'text_edit']:
             if metric_name in results and results[metric_name].success:
                 self.assertAlmostEqual(results[metric_name].score, 1.0, places=5,
-                                       msg=f"Identical content {metric_name} should get a perfect score, actual: {results[metric_name].score}")
+                                       msg=f"相同内容的{metric_name}应该得到满分，实际: {results[metric_name].score}")
 
     def test_empty_content(self):
         """Test the case with empty content"""
@@ -225,7 +225,7 @@ Finally correct text content.
         for metric_name, result in results.items():
             if metric_name != 'overall':  # overall may have special handling
                 self.assertTrue(result.success or result.score == 0.0,
-                                f"Empty content {metric_name} should be handled correctly")
+                                f"空内容的{metric_name}应该正确处理")
 
 
 class TestErrorHandling(unittest.TestCase):
@@ -266,9 +266,9 @@ class TestRealSampleMetrics(unittest.TestCase):
     def test_text_code_sample_edit_distance(self):
         """Test edit distance of text+code samples"""
         # Data based on actual debug results
-        groundtruth = """# Python Programming Example
+        groundtruth = """# Python编程示例
 
-This is an introduction to Python programming.
+这是一段关于Python编程的介绍文本。
 
 ```python
 def hello_world():
@@ -276,11 +276,11 @@ def hello_world():
     return True
 ```
 
-The above code demonstrates a simple Python function."""
+以上代码展示了一个简单的Python函数。"""
 
-        predicted = """# Python Programming Example
+        predicted = """# Python编程示例
 
-This is an introduction to Python programming.
+这是一段关于Python编程的介绍文本。
 
 ```
 def hello_world():
@@ -288,7 +288,7 @@ def hello_world():
     return True
 ```
 
-The above code demonstrates a simple Python function."""
+以上代码展示了一个简单的Python函数。"""
 
         # Calculate edit distance (based on actual debug results)
         results = self.calculator.calculate_all(
@@ -300,13 +300,13 @@ The above code demonstrates a simple Python function."""
         self.assertIn("text_edit", results)
         self.assertTrue(results["text_edit"].success)
         self.assertAlmostEqual(results["text_edit"].score, 0.9552238805970149, places=5,
-                               msg=f"text_edit score should be 0.9552238805970149, actual: {results['text_edit'].score}")
+                               msg=f"text_edit分数应该是0.9552238805970149，实际: {results['text_edit'].score}")
 
         # Verify code edit distance (slight difference due to missing python identifier)
         self.assertIn("code_edit", results)
         self.assertTrue(results["code_edit"].success)
         self.assertAlmostEqual(results["code_edit"].score, 1.0, places=5,
-                               msg=f"code_edit score should be 1.0, actual: {results['code_edit'].score}")
+                               msg=f"code_edit分数应该是1.0，实际: {results['code_edit'].score}")
 
     def test_html_table_edit_distance(self):
         """Test edit distance for table samples"""
@@ -881,52 +881,52 @@ The above code demonstrates a simple Python function."""
         self.assertIn("table_TEDS", results)
         self.assertTrue(results["table_TEDS"].success)
         self.assertAlmostEqual(results["table_TEDS"].score, 0.9984520490180891, places=5,
-                               msg=f"table_TEDS score should be 0.0.9984520490180891, actual: {results['table_TEDS'].score}")
+                               msg=f"table_TEDS分数应该是0.0.9984520490180891，实际: {results['table_TEDS'].score}")
 
     def test_table_sample_edit_distance(self):
         """Test edit distance for tables with consistent rendering but inconsistent style"""
         groundtruth = """
-| Product | Sales | Revenue |
+| 产品 | 销量 | 收入 |
 |------|------|------|
-| Product A | 100 | 1000 |
-| Product B | 200 | 3000 |
+| 产品A | 100 | 1000 |
+| 产品B | 200 | 3000 |
 """
 
-        predicted = """
-<table><tr><th>Product</th><th>Sales</th><th>Revenue</th></tr><tr><td>Product A</td><td>100</td><td>1000</td></tr><tr><td>Product B</td><td>200</td><td>3000</td></tr></table>"""
+        predicted = """ 
+<table><tr><th>产品</th><th>销量</th><th>收入</th></tr><tr><td>产品A</td><td>100</td><td>1000</td></tr><tr><td>产品B</td><td>200</td><td>3000</td></tr></table>"""
 
         results = self.calculator.calculate_all(
             predicted_content=predicted,
             groundtruth_content=groundtruth
         )
 
-        # Verify table edit distance (fixed score due to separator length difference)
+        # 验证表格编辑距离（分隔符长度差异导致的固定分数）
         self.assertIn("table_edit", results)
         self.assertTrue(results["table_edit"].success)
         self.assertAlmostEqual(results["table_edit"].score, 1.0, places=5,
-                               msg=f"table_edit score should be 1.0, actual: {results['table_edit'].score}")
+                               msg=f"table_edit分数应该是1.0，实际: {results['table_edit'].score}")
 
-        # Verify TEDS metric (identical table structure, perfect score)
+        # 验证TEDS指标（表格结构完全相同，满分）
         self.assertIn("table_TEDS", results)
         self.assertTrue(results["table_TEDS"].success)
         self.assertAlmostEqual(results["table_TEDS"].score, 1.0, places=5,
-                               msg=f"table_TEDS score should be 1.0, actual: {results['table_TEDS'].score}")
+                               msg=f"table_TEDS分数应该是1.0，实际: {results['table_TEDS'].score}")
 
     def test_formula_sample_edit_distance(self):
-        """Test edit distance for formula samples"""
-        groundtruth = """## Math Formula Examples
+        """测试公式样本的编辑距离"""
+        groundtruth = """## 数学公式示例
 
-This is an inline formula: $E = mc^2$
+这是一个行内公式: $E = mc^2$
 
-This is a block formula:
+这是一个行间公式:
 
 $$\\int_{-\\infty}^{\\infty} e^{-x^2} dx = \\sqrt{\\pi}$$"""
 
-        predicted = """## Math Formula Examples
+        predicted = """## 数学公式示例
 
-This is an inline formula: \\$E = mc^2\\$
+这是一个行内公式: \\$E = mc^2\\$
 
-This is a block formula:
+这是一个行间公式:
 
 \\$\\$\\int_{-\\infty}^{\\infty} e^{-x^2} dx = \\sqrt{\\pi}\\$"""
 
@@ -950,9 +950,9 @@ This is a block formula:
     def test_overall_score_calculation(self):
         """Test overall score calculation"""
         # Use the first sample to test overall score
-        groundtruth = """# Python Programming Example
+        groundtruth = """# Python编程示例
 
-This is an introduction to Python programming.
+这是一段关于Python编程的介绍文本。
 
 ```python
 def hello_world():
@@ -960,11 +960,11 @@ def hello_world():
     return True
 ```
 
-The above code demonstrates a simple Python function."""
+以上代码展示了一个简单的Python函数。"""
 
-        predicted = """# Python Programming Example
+        predicted = """# Python编程示例
 
-This is an introduction to Python programming.
+这是一段关于Python编程的介绍文本。
 
 ```
 def hello_world():
@@ -972,7 +972,7 @@ def hello_world():
     return True
 ```
 
-The above code demonstrates a simple Python function."""
+以上代码展示了一个简单的Python函数。"""
 
         results = self.calculator.calculate_all(
             predicted_content=predicted,
@@ -998,22 +998,22 @@ The above code demonstrates a simple Python function."""
 
     def test_all_metrics_coverage(self):
         """Test that all 6 metrics are calculated"""
-        groundtruth = """# Comprehensive Example
+        groundtruth = """# 综合示例
 
-This is text content.
+这是文本内容。
 
 ```python
 def test():
     return True
 ```
 
-This is a formula: $x = y$
+这是公式: $x = y$
 
 | A | B |
 |---|---|
 | 1 | 2 |
 
-More text."""
+更多文本。"""
 
         predicted = groundtruth  # Use identical content for testing
 
@@ -1055,49 +1055,49 @@ def run_visual_test():
         print(f"  - {metric}")
     print()
 
-    # Test data
-    predicted_content = """# Title
+    # 测试数据
+    predicted_content = """# 标题
 
-This is a paragraph of text.
+这是一段文字内容。
 
 ```python
 def hello():
     print("Hello World")
 ```
 
-This is a formula: $E = mc^2$
+这是公式: $E = mc^2$
 
-And a block formula:
+还有行间公式:
 $$\\int_{0}^{\\infty} e^{-x} dx = 1$$
 
-| Col1 | Col2 |
+| 列1 | 列2 |
 |-----|-----|
-| Data1 | Data2 |
-| Data3 | Data4 |
+| 数据1 | 数据2 |
+| 数据3 | 数据4 |
 
-Finally more text content.
+最后是更多文字内容。
 """
 
-    groundtruth_content = """# Title
+    groundtruth_content = """# 标题
 
-This is a paragraph of correct text.
+这是一段正确的文字内容。
 
-```python
+```python  
 def hello():
     print("Hello, World!")
 ```
 
-This is the correct formula: $E = mc^2$
+这是正确的公式: $E = mc^2$
 
-Correct block formula:
+正确的行间公式:
 $$\\int_{0}^{\\infty} e^{-x} dx = 1$$
 
-| Col1 | Col2 |
+| 列1 | 列2 |
 |-----|-----|
-| Correct Data1 | Correct Data2 |
-| Correct Data3 | Correct Data4 |
+| 正确数据1 | 正确数据2 |
+| 正确数据3 | 正确数据4 |
 
-Finally correct text content.
+最后是正确的文字内容。
 """
 
     # Calculate all metrics

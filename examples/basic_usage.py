@@ -22,37 +22,37 @@ def create_sample_dataset():
         {
             "track_id": "sample-001-programming-tutorial",
             "html": '''<html><body>
-                <h1 cc-select="true">Python Programming Tutorial</h1>
-                <p cc-select="true">This is a basic Python tutorial demonstrating how to define functions.</p>
+                <h1 cc-select="true">Python编程教程</h1>
+                <p cc-select="true">这是一个Python基础教程，展示如何定义函数。</p>
                 <pre cc-select="true"><code>def greet(name):
-    """Greeting function"""
+    """问候函数"""
     return f"Hello, {name}!"
 
-# Usage example
+# 使用示例
 result = greet("World")
 print(result)</code></pre>
-                <p cc-select="true">This function can be used to greet anyone.</p>
+                <p cc-select="true">这个函数可以用来问候任何人。</p>
             </body></html>''',
-            "groundtruth_content": '''# Python Programming Tutorial
+            "groundtruth_content": '''# Python编程教程
 
-This is a basic Python tutorial demonstrating how to define functions.
+这是一个Python基础教程，展示如何定义函数。
 
 ```python
 def greet(name):
-    """Greeting function"""
+    """问候函数"""
     return f"Hello, {name}!"
 
-# Usage example
+# 使用示例
 result = greet("World")
 print(result)
 ```
 
-This function can be used to greet anyone.''',
+这个函数可以用来问候任何人。''',
             "groundtruth_content_list": [
-                {"type": "heading", "content": "Python Programming Tutorial", "level": 1},
-                {"type": "paragraph", "content": "This is a basic Python tutorial demonstrating how to define functions."},
-                {"type": "code", "content": 'def greet(name):\n    """Greeting function"""\n    return f"Hello, {name}!"\n\n# Usage example\nresult = greet("World")\nprint(result)'},
-                {"type": "paragraph", "content": "This function can be used to greet anyone."}
+                {"type": "heading", "content": "Python编程教程", "level": 1},
+                {"type": "paragraph", "content": "这是一个Python基础教程，展示如何定义函数。"},
+                {"type": "code", "content": 'def greet(name):\n    """问候函数"""\n    return f"Hello, {name}!"\n\n# 使用示例\nresult = greet("World")\nprint(result)'},
+                {"type": "paragraph", "content": "这个函数可以用来问候任何人。"}
             ],
             "url": "https://python-tutorial.example.com/functions",
             "layout_id": "python-tutorial_1",
@@ -70,44 +70,44 @@ This function can be used to greet anyone.''',
         {
             "track_id": "sample-002-math-formulas",
             "html": '''<html><body>
-                <h1 cc-select="true">Math Formula Examples</h1>
-                <p cc-select="true">Here are some basic math formulas.</p>
-                <p cc-select="true">Pythagorean theorem: a² + b² = c²</p>
+                <h1 cc-select="true">数学公式示例</h1>
+                <p cc-select="true">这里展示一些基本的数学公式。</p>
+                <p cc-select="true">勾股定理：a² + b² = c²</p>
                 <div cc-select="true" class="formula">
-                    <p>The solution to the quadratic equation is:</p>
+                    <p>二次方程的解为：</p>
                     <p>x = (-b ± √(b² - 4ac)) / 2a</p>
                 </div>
-                <p cc-select="true">Euler's formula is one of the most beautiful formulas in mathematics: e^(iπ) + 1 = 0</p>
+                <p cc-select="true">欧拉公式是数学中最美丽的公式之一：e^(iπ) + 1 = 0</p>
                 <table cc-select="true">
-                    <tr><th>Function</th><th>Derivative</th></tr>
+                    <tr><th>函数</th><th>导数</th></tr>
                     <tr><td>x²</td><td>2x</td></tr>
                     <tr><td>sin(x)</td><td>cos(x)</td></tr>
                 </table>
             </body></html>''',
-            "groundtruth_content": '''# Math Formula Examples
+            "groundtruth_content": '''# 数学公式示例
 
-Here are some basic math formulas.
+这里展示一些基本的数学公式。
 
-Pythagorean theorem: $a^2 + b^2 = c^2$
+勾股定理：$a^2 + b^2 = c^2$
 
-The solution to the quadratic equation is:
+二次方程的解为：
 
 $$x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$$
 
-Euler's formula is one of the most beautiful formulas in mathematics: $e^{i\\pi} + 1 = 0$
+欧拉公式是数学中最美丽的公式之一：$e^{i\\pi} + 1 = 0$
 
-| Function | Derivative |
+| 函数 | 导数 |
 |------|------|
 | x² | 2x |
 | sin(x) | cos(x) |''',
             "groundtruth_content_list": [
-                {"type": "heading", "content": "Math Formula Examples", "level": 1},
-                {"type": "paragraph", "content": "Here are some basic math formulas."},
-                {"type": "paragraph", "content": "Pythagorean theorem: a² + b² = c²"},
-                {"type": "paragraph", "content": "The solution to the quadratic equation is:"},
+                {"type": "heading", "content": "数学公式示例", "level": 1},
+                {"type": "paragraph", "content": "这里展示一些基本的数学公式。"},
+                {"type": "paragraph", "content": "勾股定理：a² + b² = c²"},
+                {"type": "paragraph", "content": "二次方程的解为："},
                 {"type": "equation-interline", "content": "x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}"},
-                {"type": "paragraph", "content": "Euler's formula is one of the most beautiful formulas in mathematics: e^(iπ) + 1 = 0"},
-                {"type": "table", "content": "| Function | Derivative |\n|------|------|\n| x² | 2x |\n| sin(x) | cos(x) |"}
+                {"type": "paragraph", "content": "欧拉公式是数学中最美丽的公式之一：e^(iπ) + 1 = 0"},
+                {"type": "table", "content": "| 函数 | 导数 |\n|------|------|\n| x² | 2x |\n| sin(x) | cos(x) |"}
             ],
             "url": "https://math-examples.edu/formulas",
             "layout_id": "math-examples_2",
@@ -125,66 +125,66 @@ Euler's formula is one of the most beautiful formulas in mathematics: $e^{i\\pi}
         {
             "track_id": "sample-003-data-analysis",
             "html": '''<html><body>
-                <h1 cc-select="true">Data Analysis Report</h1>
-                <p cc-select="true">The following is a sales data analysis for Q1 2024.</p>
-                <h2 cc-select="true">Data Processing Code</h2>
+                <h1 cc-select="true">数据分析报告</h1>
+                <p cc-select="true">以下是2024年第一季度的销售数据分析。</p>
+                <h2 cc-select="true">数据处理代码</h2>
                 <pre cc-select="true"><code>import pandas as pd
 import numpy as np
 
-# Read data
+# 读取数据
 df = pd.read_csv('sales_q1_2024.csv')
 
-# Calculate statistics
+# 计算统计信息
 monthly_avg = df.groupby('month')['sales'].mean()
-print(f"Average sales: {monthly_avg}")</code></pre>
-                <h2 cc-select="true">Sales Statistics</h2>
+print(f"平均销售额: {monthly_avg}")</code></pre>
+                <h2 cc-select="true">销售统计</h2>
                 <table cc-select="true">
-                    <tr><th>Month</th><th>Sales (10k)</th><th>Growth Rate</th></tr>
-                    <tr><td>Jan</td><td>120.5</td><td>+15.2%</td></tr>
-                    <tr><td>Feb</td><td>135.8</td><td>+12.7%</td></tr>
-                    <tr><td>Mar</td><td>148.3</td><td>+9.2%</td></tr>
+                    <tr><th>月份</th><th>销售额(万元)</th><th>增长率</th></tr>
+                    <tr><td>1月</td><td>120.5</td><td>+15.2%</td></tr>
+                    <tr><td>2月</td><td>135.8</td><td>+12.7%</td></tr>
+                    <tr><td>3月</td><td>148.3</td><td>+9.2%</td></tr>
                 </table>
-                <p cc-select="true">Standard deviation formula: σ = √(Σ(xi - μ)² / n)</p>
-                <p cc-select="true">Overall, Q1 sales performance was strong, showing a steady growth trend.</p>
+                <p cc-select="true">标准差公式：σ = √(Σ(xi - μ)² / n)</p>
+                <p cc-select="true">总体来看，第一季度销售表现良好，呈现稳定增长趋势。</p>
             </body></html>''',
-            "groundtruth_content": '''# Data Analysis Report
+            "groundtruth_content": '''# 数据分析报告
 
-The following is a sales data analysis for Q1 2024.
+以下是2024年第一季度的销售数据分析。
 
-## Data Processing Code
+## 数据处理代码
 
 ```python
 import pandas as pd
 import numpy as np
 
-# Read data
+# 读取数据
 df = pd.read_csv('sales_q1_2024.csv')
 
-# Calculate statistics
+# 计算统计信息
 monthly_avg = df.groupby('month')['sales'].mean()
-print(f"Average sales: {monthly_avg}")
+print(f"平均销售额: {monthly_avg}")
 ```
 
-## Sales Statistics
+## 销售统计
 
-| Month | Sales (10k) | Growth Rate |
+| 月份 | 销售额(万元) | 增长率 |
 |------|-------------|--------|
-| Jan | 120.5 | +15.2% |
-| Feb | 135.8 | +12.7% |
-| Mar | 148.3 | +9.2% |
+| 1月 | 120.5 | +15.2% |
+| 2月 | 135.8 | +12.7% |
+| 3月 | 148.3 | +9.2% |
 
-Standard deviation formula: $\\sigma = \\sqrt{\\frac{\\Sigma(x_i - \\mu)^2}{n}}$
+标准差公式：$\\sigma = \\sqrt{\\frac{\\Sigma(x_i - \\mu)^2}{n}}$
 
-Overall, Q1 sales performance was strong, showing a steady growth trend.''',
+总体来看，第一季度销售表现良好，呈现稳定增长趋势。''',
             "groundtruth_content_list": [
-                {"type": "heading", "content": "Data Analysis Report", "level": 1},
-                {"type": "paragraph", "content": "The following is a sales data analysis for Q1 2024."},
-                {"type": "heading", "content": "Data Processing Code", "level": 2},
-                {"type": "code", "content": "import pandas as pd\nimport numpy as np\n\n# Read data\ndf = pd.read_csv('sales_q1_2024.csv')\n\n# Calculate statistics\nmonthly_avg = df.groupby('month')['sales'].mean()\nprint(f\"Average sales: {monthly_avg}\")"},
-                {"type": "heading", "content": "Sales Statistics", "level": 2},
-                {"type": "table", "content": "| Month | Sales (10k) | Growth Rate |\n|------|-------------|--------|\n| Jan | 120.5 | +15.2% |\n| Feb | 135.8 | +12.7% |\n| Mar | 148.3 | +9.2% |"},
-                {"type": "paragraph", "content": "Standard deviation formula: σ = √(Σ(xi - μ)² / n)"},
-                {"type": "paragraph", "content": "Overall, Q1 sales performance was strong, showing a steady growth trend."}
+                {"type": "heading", "content": "数据分析报告", "level": 1},
+                {"type": "paragraph", "content": "以下是2024年第一季度的销售数据分析。"},
+                {"type": "heading", "content": "数据处理代码", "level": 2},
+                {"type": "code", "content": "import pandas as pd\nimport numpy as np\n\n# 读取数据\ndf = pd.read_csv('sales_q1_2024.csv')\n\n# 计算统计信息\nmonthly_avg = df.groupby('month')['sales'].mean()\nprint(f\"平均销售额: {monthly_avg}\")"},
+                {"type": "heading", "content": "销售统计", "level": 2},
+                {"type": "table", "content": "| 月份 | 销售额(万元) | 增长率 |\n|------|-------------|--------|\n| 1月 | 120.5 | +15.2% |\n| 2月 | 135.8 | +12.7% |\n| 3月 | 148.3 | +9.2% |"},
+                {"type": "paragraph", "content": "标准差公式：σ = √(Σ(xi - μ)² / n)"},
+                {"type": "paragraph", "content": "总体来看，第一季度销售表现良好，呈现稳定增长趋势。"}
             ],
             "url": "https://data-report.company.com/q1-2024-analysis",
             "layout_id": "data-report_3",
@@ -202,68 +202,68 @@ Overall, Q1 sales performance was strong, showing a steady growth trend.''',
         {
             "track_id": "sample-004-algorithm-explanation",
             "html": '''<html><body>
-                <h1 cc-select="true">Algorithm Complexity Analysis</h1>
-                <p cc-select="true">Here we introduce the time complexity of common algorithms.</p>
-                <h2 cc-select="true">Quicksort Implementation</h2>
+                <h1 cc-select="true">算法复杂度分析</h1>
+                <p cc-select="true">这里介绍常见算法的时间复杂度。</p>
+                <h2 cc-select="true">快速排序实现</h2>
                 <pre cc-select="true"><code>def quicksort(arr):
     if len(arr) <= 1:
         return arr
-
+    
     pivot = arr[len(arr) // 2]
     left = [x for x in arr if x < pivot]
     middle = [x for x in arr if x == pivot]
     right = [x for x in arr if x > pivot]
-
+    
     return quicksort(left) + middle + quicksort(right)</code></pre>
-                <h2 cc-select="true">Complexity Comparison</h2>
+                <h2 cc-select="true">复杂度对比</h2>
                 <table cc-select="true">
-                    <tr><th>Algorithm</th><th>Best Case</th><th>Average Case</th><th>Worst Case</th></tr>
-                    <tr><td>Quicksort</td><td>O(n log n)</td><td>O(n log n)</td><td>O(n²)</td></tr>
-                    <tr><td>Merge Sort</td><td>O(n log n)</td><td>O(n log n)</td><td>O(n log n)</td></tr>
-                    <tr><td>Bubble Sort</td><td>O(n)</td><td>O(n²)</td><td>O(n²)</td></tr>
+                    <tr><th>算法</th><th>最好情况</th><th>平均情况</th><th>最坏情况</th></tr>
+                    <tr><td>快速排序</td><td>O(n log n)</td><td>O(n log n)</td><td>O(n²)</td></tr>
+                    <tr><td>归并排序</td><td>O(n log n)</td><td>O(n log n)</td><td>O(n log n)</td></tr>
+                    <tr><td>冒泡排序</td><td>O(n)</td><td>O(n²)</td><td>O(n²)</td></tr>
                 </table>
-                <p cc-select="true">Master Theorem: T(n) = aT(n/b) + f(n)</p>
-                <p cc-select="true">Where a ≥ 1, b > 1 are constants, and f(n) is a positive function.</p>
+                <p cc-select="true">Master定理：T(n) = aT(n/b) + f(n)</p>
+                <p cc-select="true">其中 a ≥ 1, b > 1 是常数，f(n) 是正函数。</p>
             </body></html>''',
-            "groundtruth_content": '''# Algorithm Complexity Analysis
+            "groundtruth_content": '''# 算法复杂度分析
 
-Here we introduce the time complexity of common algorithms.
+这里介绍常见算法的时间复杂度。
 
-## Quicksort Implementation
+## 快速排序实现
 
 ```python
 def quicksort(arr):
     if len(arr) <= 1:
         return arr
-
+    
     pivot = arr[len(arr) // 2]
     left = [x for x in arr if x < pivot]
     middle = [x for x in arr if x == pivot]
     right = [x for x in arr if x > pivot]
-
+    
     return quicksort(left) + middle + quicksort(right)
 ```
 
-## Complexity Comparison
+## 复杂度对比
 
-| Algorithm | Best Case | Average Case | Worst Case |
+| 算法 | 最好情况 | 平均情况 | 最坏情况 |
 |------|----------|----------|----------|
-| Quicksort | O(n log n) | O(n log n) | O(n²) |
-| Merge Sort | O(n log n) | O(n log n) | O(n log n) |
-| Bubble Sort | O(n) | O(n²) | O(n²) |
+| 快速排序 | O(n log n) | O(n log n) | O(n²) |
+| 归并排序 | O(n log n) | O(n log n) | O(n log n) |
+| 冒泡排序 | O(n) | O(n²) | O(n²) |
 
-Master Theorem: $T(n) = aT(n/b) + f(n)$
+Master定理：$T(n) = aT(n/b) + f(n)$
 
-Where $a \\geq 1, b > 1$ are constants, and $f(n)$ is a positive function.''',
+其中 $a \\geq 1, b > 1$ 是常数，$f(n)$ 是正函数。''',
             "groundtruth_content_list": [
-                {"type": "heading", "content": "Algorithm Complexity Analysis", "level": 1},
-                {"type": "paragraph", "content": "Here we introduce the time complexity of common algorithms."},
-                {"type": "heading", "content": "Quicksort Implementation", "level": 2},
+                {"type": "heading", "content": "算法复杂度分析", "level": 1},
+                {"type": "paragraph", "content": "这里介绍常见算法的时间复杂度。"},
+                {"type": "heading", "content": "快速排序实现", "level": 2},
                 {"type": "code", "content": "def quicksort(arr):\n    if len(arr) <= 1:\n        return arr\n    \n    pivot = arr[len(arr) // 2]\n    left = [x for x in arr if x < pivot]\n    middle = [x for x in arr if x == pivot]\n    right = [x for x in arr if x > pivot]\n    \n    return quicksort(left) + middle + quicksort(right)"},
-                {"type": "heading", "content": "Complexity Comparison", "level": 2},
-                {"type": "table", "content": "| Algorithm | Best Case | Average Case | Worst Case |\n|------|----------|----------|----------|\n| Quicksort | O(n log n) | O(n log n) | O(n²) |\n| Merge Sort | O(n log n) | O(n log n) | O(n log n) |\n| Bubble Sort | O(n) | O(n²) | O(n²) |"},
+                {"type": "heading", "content": "复杂度对比", "level": 2},
+                {"type": "table", "content": "| 算法 | 最好情况 | 平均情况 | 最坏情况 |\n|------|----------|----------|----------|\n| 快速排序 | O(n log n) | O(n log n) | O(n²) |\n| 归并排序 | O(n log n) | O(n log n) | O(n log n) |\n| 冒泡排序 | O(n) | O(n²) | O(n²) |"},
                 {"type": "equation-inline", "content": "T(n) = aT(n/b) + f(n)"},
-                {"type": "paragraph", "content": "Where a ≥ 1, b > 1 are constants, and f(n) is a positive function."}
+                {"type": "paragraph", "content": "其中 a ≥ 1, b > 1 是常数，f(n) 是正函数。"}
             ],
             "url": "https://algorithm-guide.cs.edu/complexity-analysis",
             "layout_id": "algorithm-guide_4",
@@ -411,20 +411,20 @@ def demo_llm_webkit_evaluation():
         html="""
         <html>
         <body>
-            <h1>Python Programming Example</h1>
-            <p>This is an introductory text about Python programming.</p>
+            <h1>Python编程示例</h1>
+            <p>这是一段关于Python编程的介绍文本。</p>
             <pre><code>
 def hello_world():
     print("Hello, World!")
     return True
             </code></pre>
-            <p>The code above demonstrates a simple Python function.</p>
+            <p>以上代码展示了一个简单的Python函数。</p>
         </body>
         </html>
         """,
-        groundtruth_content="""# Python Programming Example
+        groundtruth_content="""# Python编程示例
 
-This is an introductory text about Python programming.
+这是一段关于Python编程的介绍文本。
 
 ```python
 def hello_world():
@@ -432,38 +432,38 @@ def hello_world():
     return True
 ```
 
-The code above demonstrates a simple Python function.""",
+以上代码展示了一个简单的Python函数。""",
         groundtruth_content_list=[
-            {"type": "heading", "content": "Python Programming Example", "level": 1},
-            {"type": "text", "content": "This is an introductory text about Python programming."},
+            {"type": "heading", "content": "Python编程示例", "level": 1},
+            {"type": "text", "content": "这是一段关于Python编程的介绍文本。"},
             {"type": "code", "content": "def hello_world():\n    print(\"Hello, World!\")\n    return True", "language": "python"},
-            {"type": "text", "content": "The code above demonstrates a simple Python function."}
+            {"type": "text", "content": "以上代码展示了一个简单的Python函数。"}
         ]
     ))
 
-    # Sample 2: table
+    # 样本2: 包含表格
     samples.append(DataSample(
         id="table_sample",
         html="""
         <html>
         <body>
-            <h2>Sales Data Summary</h2>
+            <h2>销售数据统计</h2>
             <table>
                 <thead>
                     <tr>
-                        <th>Product</th>
-                        <th>Sales</th>
-                        <th>Revenue</th>
+                        <th>产品</th>
+                        <th>销量</th>
+                        <th>收入</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td>Product A</td>
+                        <td>产品A</td>
                         <td>100</td>
                         <td>1000</td>
                     </tr>
                     <tr>
-                        <td>Product B</td>
+                        <td>产品B</td>
                         <td>200</td>
                         <td>3000</td>
                     </tr>
@@ -472,42 +472,42 @@ The code above demonstrates a simple Python function.""",
         </body>
         </html>
         """,
-        groundtruth_content="""## Sales Data Summary
+        groundtruth_content="""## 销售数据统计
 
-| Product | Sales | Revenue |
+| 产品 | 销量 | 收入 |
 |------|------|------|
-| Product A | 100 | 1000 |
-| Product B | 200 | 3000 |""",
+| 产品A | 100 | 1000 |
+| 产品B | 200 | 3000 |""",
         groundtruth_content_list=[
-            {"type": "heading", "content": "Sales Data Summary", "level": 2},
-            {"type": "table", "content": "| Product | Sales | Revenue |\n|------|------|------|\n| Product A | 100 | 1000 |\n| Product B | 200 | 3000 |"}
+            {"type": "heading", "content": "销售数据统计", "level": 2},
+            {"type": "table", "content": "| 产品 | 销量 | 收入 |\n|------|------|------|\n| 产品A | 100 | 1000 |\n| 产品B | 200 | 3000 |"}
         ]
     ))
 
-    # Sample 3: formulas
+    # 样本3: 包含公式
     samples.append(DataSample(
         id="formula_sample",
         html="""
         <html>
         <body>
-            <h2>Math Formula Example</h2>
-            <p>This is an inline formula: $E = mc^2$</p>
-            <p>This is a block formula:</p>
+            <h2>数学公式示例</h2>
+            <p>这是一个行内公式: $E = mc^2$</p>
+            <p>这是一个行间公式:</p>
             <div>$$\\int_{-\\infty}^{\\infty} e^{-x^2} dx = \\sqrt{\\pi}$$</div>
         </body>
         </html>
         """,
-        groundtruth_content="""## Math Formula Example
+        groundtruth_content="""## 数学公式示例
 
-This is an inline formula: $E = mc^2$
+这是一个行内公式: $E = mc^2$
 
-This is a block formula:
+这是一个行间公式:
 
 $$\\int_{-\\infty}^{\\infty} e^{-x^2} dx = \\sqrt{\\pi}$$""",
         groundtruth_content_list=[
-            {"type": "heading", "content": "Math Formula Example", "level": 2},
-            {"type": "text", "content": "This is an inline formula: $E = mc^2$"},
-            {"type": "text", "content": "This is a block formula:"},
+            {"type": "heading", "content": "数学公式示例", "level": 2},
+            {"type": "text", "content": "这是一个行内公式: $E = mc^2$"},
+            {"type": "text", "content": "这是一个行间公式:"},
             {"type": "formula", "content": "\\int_{-\\infty}^{\\infty} e^{-x^2} dx = \\sqrt{\\pi}"}
         ]
     ))
