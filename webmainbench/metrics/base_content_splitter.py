@@ -68,7 +68,6 @@ class BaseContentSplitter(ABC):
     def enhance_with_llm(self, basic_results: List[str], cache_key: str = None) -> List[str]:
         """Enhance basic extraction results using LLM."""
         if not basic_results:
-            _metrics_debug("Empty input; skipping LLM enhancement")
             return []
 
         # Generate cache key

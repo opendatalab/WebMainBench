@@ -148,29 +148,26 @@ hf_hub_download(
 )
 ```
 
+### Configure LLM (Optional)
+
+LLM-enhanced content splitting improves formula/table/code extraction accuracy. To enable it, copy `.env.example` to `.env` and fill in your API credentials:
+
+```bash
+cp .env.example .env
+# Edit .env and set LLM_BASE_URL, LLM_API_KEY, LLM_MODEL
+```
+
 ### Run an Evaluation
 
 ```python
 from webmainbench import DataLoader, Evaluator, ExtractorFactory
 
 dataset = DataLoader.load_jsonl("data/WebMainBench_545.jsonl")
-extractor = ExtractorFactory.create("trafilatura")
+result = Evaluator().evaluate(dataset, ExtractorFactory.create("trafilatura"))
 
-evaluator = Evaluator(llm_config={
-    "use_llm": True,
-    "llm_base_url": "https://api.openai.com/v1",
-    "llm_api_key": "sk-xxxxxxxxxxxx",
-    "llm_model": "gpt-4o",
-})
-result = evaluator.evaluate(dataset, extractor)
+m = result.overall_metrics
 
 print(f"Overall Score: {result.overall_metrics['overall']:.4f}")
-```
-
-If you don't need LLM-enhanced content splitting (for formula/table/code extraction), disable it explicitly:
-
-```python
-evaluator = Evaluator(llm_config={"use_llm": False})
 ```
 
 ### Compare Multiple Extractors

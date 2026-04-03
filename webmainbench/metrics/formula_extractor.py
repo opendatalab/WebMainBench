@@ -50,10 +50,7 @@ class FormulaSplitter(BaseContentSplitter):
         """Extract mathematical formulas"""
         regex_formulas = self.extract_basic(text)
         if self.should_use_llm(field_name):
-            _metrics_debug("Using LLM-enhanced formula extraction")
             formula_parts = self.enhance_with_llm(regex_formulas)
-            if not formula_parts:
-                _metrics_debug("No valid formulas after LLM enhancement")
         else:
             formula_parts = regex_formulas
             _metrics_debug("Skipping LLM enhancement; using regex-only results")
