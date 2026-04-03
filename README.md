@@ -92,7 +92,7 @@ All scores are in **[0, 1]**; higher is better.
 
 ### ROUGE-N F1 on Full Dataset (7,809 samples)
 
-**How to reproduce:** Use the evaluation scripts in the [MinerU-HTML](https://github.com/opendatalab/MinerU-HTML) repository:
+**Execution Method:** Use the evaluation scripts in the [MinerU-HTML](https://github.com/opendatalab/MinerU-HTML) repository:
 
 ```bash
 # Clone MinerU-HTML and prepare the full dataset (WebMainBench_7809.jsonl)

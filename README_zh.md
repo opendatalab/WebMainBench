@@ -92,7 +92,7 @@ WebMainBench 支持两套互补的评测协议：
 
 ### ROUGE-N F1 — 全量数据集（7,809 条）
 
-**复现方法：** 使用 [MinerU-HTML](https://github.com/opendatalab/MinerU-HTML) 仓库中的评测脚本：
+**执行方法：** 使用 [MinerU-HTML](https://github.com/opendatalab/MinerU-HTML) 仓库中的评测脚本：
 
 ```bash
 # 克隆 MinerU-HTML 并准备全量数据集（WebMainBench_7809.jsonl）
