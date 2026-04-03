@@ -92,30 +92,6 @@ All scores are in **[0, 1]**; higher is better.
 
 ### ROUGE-N F1 on Full Dataset (7,809 samples)
 
-**Execution Method:** Use the evaluation scripts in the [MinerU-HTML](https://github.com/opendatalab/MinerU-HTML) repository:
-
-```bash
-# Clone MinerU-HTML and prepare the full dataset (WebMainBench_7809.jsonl)
-git clone https://github.com/opendatalab/MinerU-HTML.git
-cd MinerU-HTML
-
-# Run evaluation (example for MinerU-HTML extractor)
-python eval_baselines.py \
-    --bench benchmark/WebMainBench_7809.jsonl \
-    --task_dir benchmark_results/mineru_html-html-md \
-    --extractor_name mineru_html-html-md \
-    --model_path YOUR_MODEL_PATH \
-    --default_config gpu
-
-# For CPU-based extractors (e.g. trafilatura, resiliparse, magic-html)
-python eval_baselines.py \
-    --bench benchmark/WebMainBench_7809.jsonl \
-    --task_dir benchmark_results/trafilatura-html-md \
-    --extractor_name trafilatura-html-md
-```
-
-Results are written to `benchmark_results/<extractor>/mean_eval_result.json`. See `run_eval.sh` for a complete multi-extractor example.
-
 Results from the [Dripper paper](https://arxiv.org/abs/2511.23119) (Table 2):
 
 | Extractor | Mode | All | Simple | Mid | Hard |
@@ -164,6 +140,15 @@ The dataset is hosted on Hugging Face: [opendatalab/WebMainBench](https://huggin
 ```python
 from huggingface_hub import hf_hub_download
 
+# Full dataset (7,809 samples) — used for ROUGE-N F1 evaluation
+hf_hub_download(
+    repo_id="opendatalab/WebMainBench",
+    repo_type="dataset",
+    filename="WebMainBench_7809.jsonl",
+    local_dir="data/",
+)
+
+# 545-sample subset — used for Fine-Grained Edit-Distance Metrics evaluation
 hf_hub_download(
     repo_id="opendatalab/WebMainBench",
     repo_type="dataset",
@@ -172,7 +157,35 @@ hf_hub_download(
 )
 ```
 
-### Configure LLM (Optional)
+### ROUGE-N F1 Evaluation (WebMainBench_7809.jsonl)
+
+Use the evaluation scripts in the [MinerU-HTML](https://github.com/opendatalab/MinerU-HTML) repository:
+
+```bash
+# Clone MinerU-HTML and prepare the full dataset (WebMainBench_7809.jsonl)
+git clone https://github.com/opendatalab/MinerU-HTML.git
+cd MinerU-HTML
+
+# Run evaluation (example for MinerU-HTML extractor)
+python eval_baselines.py \
+    --bench benchmark/WebMainBench_7809.jsonl \
+    --task_dir benchmark_results/mineru_html-html-md \
+    --extractor_name mineru_html-html-md \
+    --model_path YOUR_MODEL_PATH \
+    --default_config gpu
+
+# For CPU-based extractors (e.g. trafilatura, resiliparse, magic-html)
+python eval_baselines.py \
+    --bench benchmark/WebMainBench_7809.jsonl \
+    --task_dir benchmark_results/trafilatura-html-md \
+    --extractor_name trafilatura-html-md
+```
+
+Results are written to `benchmark_results/<extractor>/mean_eval_result.json`. See `run_eval.sh` for a complete multi-extractor example.
+
+### Fine-Grained Edit-Distance Metrics Evaluation (WebMainBench_545.jsonl)
+
+#### Configure LLM (Optional)
 
 LLM-enhanced content splitting improves formula/table/code extraction accuracy. To enable it, copy `.env.example` to `.env` and fill in your API credentials:
 
@@ -181,7 +194,7 @@ cp .env.example .env
 # Edit .env and set LLM_BASE_URL, LLM_API_KEY, LLM_MODEL
 ```
 
-### Run an Evaluation
+#### Run an Evaluation
 
 ```python
 from webmainbench import DataLoader, Evaluator, ExtractorFactory
@@ -194,7 +207,7 @@ m = result.overall_metrics
 print(f"Overall Score: {result.overall_metrics['overall']:.4f}")
 ```
 
-### Compare Multiple Extractors
+#### Compare Multiple Extractors
 
 ```python
 extractors = ["trafilatura", "resiliparse", "magic-html"]
