@@ -140,6 +140,15 @@ pip install -e .
 ```python
 from huggingface_hub import hf_hub_download
 
+# 全量数据集（7,809 条）— 用于 ROUGE-N F1 评测
+hf_hub_download(
+    repo_id="opendatalab/WebMainBench",
+    repo_type="dataset",
+    filename="webmainbench.jsonl",
+    local_dir="data/",
+)
+
+# 545 条样本子集 — 用于细粒度编辑距离指标评测
 hf_hub_download(
     repo_id="opendatalab/WebMainBench",
     repo_type="dataset",
@@ -148,7 +157,35 @@ hf_hub_download(
 )
 ```
 
-### 配置 LLM（可选）
+### ROUGE-N F1 评测（webmainbench.jsonl）
+
+使用 [MinerU-HTML](https://github.com/opendatalab/MinerU-HTML) 仓库中的评测脚本：
+
+```bash
+# 克隆 MinerU-HTML 并准备全量数据集（webmainbench.jsonl）
+git clone https://github.com/opendatalab/MinerU-HTML.git
+cd MinerU-HTML
+
+# 运行评测（以 MinerU-HTML 抽取器为例）
+python eval_baselines.py \
+    --bench benchmark/webmainbench.jsonl \
+    --task_dir benchmark_results/mineru_html-html-md \
+    --extractor_name mineru_html-html-md \
+    --model_path YOUR_MODEL_PATH \
+    --default_config gpu
+
+# 对于基于 CPU 的抽取器（如 trafilatura、resiliparse、magic-html）
+python eval_baselines.py \
+    --bench benchmark/webmainbench.jsonl \
+    --task_dir benchmark_results/trafilatura-html-md \
+    --extractor_name trafilatura-html-md
+```
+
+结果写入 `benchmark_results/<extractor>/mean_eval_result.json`。完整的多抽取器示例见 `run_eval.sh`。
+
+### 细粒度编辑距离指标评测（WebMainBench_545.jsonl）
+
+#### 配置 LLM（可选）
 
 LLM 增强内容拆分可提升公式/表格/代码的抽取精度。如需启用，将 `.env.example` 复制为 `.env` 并填写 API 信息：
 
@@ -157,7 +194,7 @@ cp .env.example .env
 # 编辑 .env，设置 LLM_BASE_URL、LLM_API_KEY、LLM_MODEL
 ```
 
-### 运行评测
+#### 运行评测
 
 ```python
 from webmainbench import DataLoader, Evaluator, ExtractorFactory
@@ -170,7 +207,7 @@ m = result.overall_metrics
 print(f"Overall Score: {result.overall_metrics['overall']:.4f}")
 ```
 
-### 多抽取器对比
+#### 多抽取器对比
 
 ```python
 extractors = ["trafilatura", "resiliparse", "magic-html"]
