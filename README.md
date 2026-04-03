@@ -144,7 +144,7 @@ from huggingface_hub import hf_hub_download
 hf_hub_download(
     repo_id="opendatalab/WebMainBench",
     repo_type="dataset",
-    filename="WebMainBench_7809.jsonl",
+    filename="webmainbench.jsonl",
     local_dir="data/",
 )
 
@@ -157,18 +157,18 @@ hf_hub_download(
 )
 ```
 
-### ROUGE-N F1 Evaluation (WebMainBench_7809.jsonl)
+### ROUGE-N F1 Evaluation (webmainbench.jsonl)
 
 Use the evaluation scripts in the [MinerU-HTML](https://github.com/opendatalab/MinerU-HTML) repository:
 
 ```bash
-# Clone MinerU-HTML and prepare the full dataset (WebMainBench_7809.jsonl)
+# Clone MinerU-HTML and prepare the full dataset (webmainbench.jsonl)
 git clone https://github.com/opendatalab/MinerU-HTML.git
 cd MinerU-HTML
 
 # Run evaluation (example for MinerU-HTML extractor)
 python eval_baselines.py \
-    --bench benchmark/WebMainBench_7809.jsonl \
+    --bench benchmark/webmainbench.jsonl \
     --task_dir benchmark_results/mineru_html-html-md \
     --extractor_name mineru_html-html-md \
     --model_path YOUR_MODEL_PATH \
@@ -176,7 +176,7 @@ python eval_baselines.py \
 
 # For CPU-based extractors (e.g. trafilatura, resiliparse, magic-html)
 python eval_baselines.py \
-    --bench benchmark/WebMainBench_7809.jsonl \
+    --bench benchmark/webmainbench.jsonl \
     --task_dir benchmark_results/trafilatura-html-md \
     --extractor_name trafilatura-html-md
 ```
