@@ -92,6 +92,30 @@ All scores are in **[0, 1]**; higher is better.
 
 ### ROUGE-N F1 on Full Dataset (7,809 samples)
 
+**How to reproduce:** Use the evaluation scripts in the [MinerU-HTML](https://github.com/opendatalab/MinerU-HTML) repository:
+
+```bash
+# Clone MinerU-HTML and prepare the full dataset (WebMainBench_7809.jsonl)
+git clone https://github.com/opendatalab/MinerU-HTML.git
+cd MinerU-HTML
+
+# Run evaluation (example for MinerU-HTML extractor)
+python eval_baselines.py \
+    --bench benchmark/WebMainBench_7809.jsonl \
+    --task_dir benchmark_results/mineru_html-html-md \
+    --extractor_name mineru_html-html-md \
+    --model_path YOUR_MODEL_PATH \
+    --default_config gpu
+
+# For CPU-based extractors (e.g. trafilatura, resiliparse, magic-html)
+python eval_baselines.py \
+    --bench benchmark/WebMainBench_7809.jsonl \
+    --task_dir benchmark_results/trafilatura-html-md \
+    --extractor_name trafilatura-html-md
+```
+
+Results are written to `benchmark_results/<extractor>/mean_eval_result.json`. See `run_eval.sh` for a complete multi-extractor example.
+
 Results from the [Dripper paper](https://arxiv.org/abs/2511.23119) (Table 2):
 
 | Extractor | Mode | All | Simple | Mid | Hard |

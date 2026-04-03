@@ -92,6 +92,30 @@ WebMainBench 支持两套互补的评测协议：
 
 ### ROUGE-N F1 — 全量数据集（7,809 条）
 
+**复现方法：** 使用 [MinerU-HTML](https://github.com/opendatalab/MinerU-HTML) 仓库中的评测脚本：
+
+```bash
+# 克隆 MinerU-HTML 并准备全量数据集（WebMainBench_7809.jsonl）
+git clone https://github.com/opendatalab/MinerU-HTML.git
+cd MinerU-HTML
+
+# 运行评测（以 MinerU-HTML 抽取器为例）
+python eval_baselines.py \
+    --bench benchmark/WebMainBench_7809.jsonl \
+    --task_dir benchmark_results/mineru_html-html-md \
+    --extractor_name mineru_html-html-md \
+    --model_path YOUR_MODEL_PATH \
+    --default_config gpu
+
+# 对于基于 CPU 的抽取器（如 trafilatura、resiliparse、magic-html）
+python eval_baselines.py \
+    --bench benchmark/WebMainBench_7809.jsonl \
+    --task_dir benchmark_results/trafilatura-html-md \
+    --extractor_name trafilatura-html-md
+```
+
+结果写入 `benchmark_results/<extractor>/mean_eval_result.json`。完整的多抽取器示例见 `run_eval.sh`。
+
 来自 [Dripper 论文](https://arxiv.org/abs/2511.23119)（表 2）：
 
 | 抽取器 | 模式 | All | Simple | Mid | Hard |
