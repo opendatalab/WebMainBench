@@ -122,46 +122,46 @@ class BaseMetric(ABC):
     @staticmethod
     def split_content(text: str, content_list: List[Dict[str, Any]] = None, field_name: str = None) -> Dict[str, str]:
         """
-        统一的内容分割方法，将文本分为代码、公式、表格和剩余文本4个部分。
+        Unified content splitting method that divides text into 4 parts: code, formula, table, and remaining text.
 
         Args:
-            text: 原始markdown文本
-            content_list: 结构化内容列表（来自llm-webkit等）
-            field_name: 当前处理的字段名称，传递给_extract_from_markdown
+            text: Raw markdown text
+            content_list: Structured content list (from llm-webkit etc.)
+            field_name: Name of the current field being processed, passed to _extract_from_markdown
         Returns:
             Dict with keys: 'code', 'formula', 'table', 'text'
         """
-        # 优先从content_list中提取
+        # Prefer extraction from content_list
         if content_list:
             extracted_content = BaseMetric._extract_from_content_list(content_list)
             if any(extracted_content.values()):
                 return extracted_content
 
-        # 从markdown文本中提取，传递字段名称
+        # Extract from markdown text, passing the field name
         return BaseMetric._extract_from_markdown(text or "", field_name=field_name)
 
     @staticmethod
     def _extract_from_content_list(content_list: List[Dict[str, Any]]) -> Dict[str, str]:
-        """从content_list中递归提取各种类型的内容"""
+        """Recursively extract various types of content from content_list"""
         extracted = {
             'code': [],
-            'formula': [],  
+            'formula': [],
             'table': [],
             'text': []
         }
-        
+
         def _recursive_extract(items):
             if not isinstance(items, list):
                 return
-            
+
             for item in items:
                 if not isinstance(item, dict):
                     continue
-                
+
                 item_type = item.get('type', '').lower()
                 content = item.get('content', '').strip()
-                
-                # 根据类型分类内容
+
+                # Classify content by type
                 if item_type in ['code', 'code_block', 'inline_code']:
                     if content:
                         extracted['code'].append(content)
@@ -174,15 +174,15 @@ class BaseMetric(ABC):
                 elif item_type in ['text', 'paragraph', 'heading']:
                     if content:
                         extracted['text'].append(content)
-                
-                # 递归处理子元素
+
+                # Recursively process child elements
                 for child_key in ['children', 'items', 'content_list']:
                     if child_key in item and isinstance(item[child_key], list):
                         _recursive_extract(item[child_key])
-        
+
         _recursive_extract(content_list)
-        
-        # 将列表转换为字符串
+
+        # Convert lists to strings
         return {
             'code': '\n'.join(extracted['code']),
             'formula': '\n'.join(extracted['formula']),
@@ -192,14 +192,14 @@ class BaseMetric(ABC):
 
     @staticmethod
     def _extract_from_markdown(text: str, field_name: str = None) -> Dict[str, str]:
-        """从markdown文本中提取各种类型的内容"""
+        """Extract various types of content from markdown text"""
         if not text:
             return {'code': '', 'formula': '', 'table': '', 'text': ''}
 
-        # 加载 llm 配置
+        # Load LLM config
         from ..config import LLM_CONFIG
 
-        # 直接创建具体的提取器实例
+        # Directly create concrete extractor instances
         from .code_extractor import CodeSplitter
         from .formula_extractor import FormulaSplitter
         from .table_extractor import TableSplitter
@@ -208,7 +208,7 @@ class BaseMetric(ABC):
         formula_extractor = FormulaSplitter(LLM_CONFIG)
         table_extractor = TableSplitter(LLM_CONFIG)
 
-        # 提取各类内容
+        # Extract each type of content
         code_content = code_extractor.extract(text, field_name)
         formula_content = formula_extractor.extract(text, field_name)
         table_content = table_extractor.extract(text, field_name)
@@ -217,7 +217,7 @@ class BaseMetric(ABC):
             'code': code_content,
             'formula': formula_content,
             'table': table_content,
-            'text': text  # 保留原始全部文本
+            'text': text  # Retain the original full text
         }
 
     def aggregate_results(self, results: List[MetricResult]) -> MetricResult:

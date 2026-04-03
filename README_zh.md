@@ -148,29 +148,26 @@ hf_hub_download(
 )
 ```
 
+### 配置 LLM（可选）
+
+LLM 增强内容拆分可提升公式/表格/代码的抽取精度。如需启用，将 `.env.example` 复制为 `.env` 并填写 API 信息：
+
+```bash
+cp .env.example .env
+# 编辑 .env，设置 LLM_BASE_URL、LLM_API_KEY、LLM_MODEL
+```
+
 ### 运行评测
 
 ```python
 from webmainbench import DataLoader, Evaluator, ExtractorFactory
 
 dataset = DataLoader.load_jsonl("data/WebMainBench_545.jsonl")
-extractor = ExtractorFactory.create("trafilatura")
+result = Evaluator().evaluate(dataset, ExtractorFactory.create("trafilatura"))
 
-evaluator = Evaluator(llm_config={
-    "use_llm": True,
-    "llm_base_url": "https://api.openai.com/v1",
-    "llm_api_key": "sk-xxxxxxxxxxxx",
-    "llm_model": "gpt-4o",
-})
-result = evaluator.evaluate(dataset, extractor)
+m = result.overall_metrics
 
 print(f"Overall Score: {result.overall_metrics['overall']:.4f}")
-```
-
-如不需要 LLM 增强内容拆分（用于公式/表格/代码抽取），可显式关闭：
-
-```python
-evaluator = Evaluator(llm_config={"use_llm": False})
 ```
 
 ### 多抽取器对比

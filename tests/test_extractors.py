@@ -6,25 +6,25 @@ from webmainbench.extractors.base import ExtractionResult
 class TestExtractors(unittest.TestCase):
 
     def setUp(self):
-        # 自动发现抽取器
+        # Auto-discover extractors
         ExtractorFactory.auto_discover()
 
     def test_trafilatura_extractor(self):
-        # 测试 Trafilatura 抽取器
+        # Test Trafilatura extractor
         extractor = ExtractorFactory.create("trafilatura")
         html_content = """
         <html>
             <body>
-                <h1 cc-select="true">Python编程教程</h1>
-                <p cc-select="true">这是一个Python基础教程，展示如何定义函数。</p>
+                <h1 cc-select="true">Python Programming Tutorial</h1>
+                <p cc-select="true">This is a basic Python tutorial demonstrating how to define functions.</p>
                 <pre cc-select="true"><code>def greet(name):
-    ""问候函数""
+    ""Greeting function""
     return f"Hello, {name}!"
 
-# 使用示例
+# Usage example
 result = greet("World")
 print(result)</code></pre>
-                <p cc-select="true">这个函数可以用来问候任何人。</p>
+                <p cc-select="true">This function can be used to greet anyone.</p>
             </body>
         </html>
         """
@@ -33,22 +33,22 @@ print(result)</code></pre>
         self.assertEqual(result.success in [True, False], True)
 
     def test_magic_html_extractor(self):
-        # 测试 Magic HTML 抽取器
+        # Test Magic HTML extractor
         try:
             extractor = ExtractorFactory.create("magic-html")
             html_content = """
             <html>
                 <body>
-                    <h1 cc-select="true">Python编程教程</h1>
-                    <p cc-select="true">这是一个Python基础教程，展示如何定义函数。</p>
+                    <h1 cc-select="true">Python Programming Tutorial</h1>
+                    <p cc-select="true">This is a basic Python tutorial demonstrating how to define functions.</p>
                     <pre cc-select="true"><code>def greet(name):
-    ""问候函数""
+    ""Greeting function""
     return f"Hello, {name}!"
 
-# 使用示例
+# Usage example
 result = greet("World")
 print(result)</code></pre>
-                    <p cc-select="true">这个函数可以用来问候任何人。</p>
+                    <p cc-select="true">This function can be used to greet anyone.</p>
                 </body>
             </html>
             """
@@ -56,26 +56,26 @@ print(result)</code></pre>
             self.assertEqual(isinstance(result, ExtractionResult), True)
             self.assertEqual(result.success in [True, False], True)
         except ValueError as e:
-            # 如果抽取器未注册，跳过测试
-            self.skipTest(f"Magic HTML 抽取器未注册: {e}")
+            # If extractor is not registered, skip the test
+            self.skipTest(f"Magic HTML extractor not registered: {e}")
 
     def test_resiliparse_extractor(self):
-        # 测试 Resiliparse 抽取器
+        # Test Resiliparse extractor
         try:
             extractor = ExtractorFactory.create("resiliparse")
             html_content = """
             <html>
                 <body>
-                    <h1 cc-select="true">Python编程教程</h1>
-                    <p cc-select="true">这是一个Python基础教程，展示如何定义函数。</p>
+                    <h1 cc-select="true">Python Programming Tutorial</h1>
+                    <p cc-select="true">This is a basic Python tutorial demonstrating how to define functions.</p>
                     <pre cc-select="true"><code>def greet(name):
-    ""问候函数""
+    ""Greeting function""
     return f"Hello, {name}!"
 
-# 使用示例
+# Usage example
 result = greet("World")
 print(result)</code></pre>
-                    <p cc-select="true">这个函数可以用来问候任何人。</p>
+                    <p cc-select="true">This function can be used to greet anyone.</p>
                 </body>
             </html>
             """
@@ -83,8 +83,8 @@ print(result)</code></pre>
             self.assertEqual(isinstance(result, ExtractionResult), True)
             self.assertEqual(result.success in [True, False], True)
         except ValueError as e:
-            # 如果抽取器未注册，跳过测试
-            self.skipTest(f"Resiliparse 抽取器未注册: {e}")
+            # If extractor is not registered, skip the test
+            self.skipTest(f"Resiliparse extractor not registered: {e}")
 
 
 if __name__ == '__main__':

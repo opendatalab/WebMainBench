@@ -47,6 +47,9 @@ coverage.xml
 
 webmainbench.egg-info/*
 
+# cache files
+webmainbench/.cache/
+
 # PyPI packaging
 build/
 dist/

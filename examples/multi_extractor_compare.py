@@ -1,56 +1,56 @@
 from webmainbench import DataLoader, Evaluator, ExtractorFactory, DataSaver
 from pathlib import Path
 
-# 如需调用LLM修正抽取结果，在 webmainbench/config.py 中配置 LLM api
+# To use LLM to correct extraction results, configure the LLM API in webmainbench/config.py
 
 def all_extractor_comparison():
-    """演示多抽取器对比"""
-    
-    print("\n=== 多抽取器对比演示 ===\n")
-    
-    # 创建数据集
+    """Demonstrate multi-extractor comparison"""
+
+    print("\n=== Multi-Extractor Comparison Demo ===\n")
+
+    # Create dataset
     dataset_path = Path("../data/WebMainBench_llm-webkit_v1_WebMainBench_7887_within_formula.jsonl")
     dataset = DataLoader.load_jsonl(dataset_path)
 
-    # 创建webkit抽取器
+    # Create webkit extractor
     config = {
-        "use_preprocessed_html": True,          # 🔑 关键配置：启用预处理HTML模式
-        "preprocessed_html_field": "llm_webkit_html"  # 指定预处理HTML字段名
+        "use_preprocessed_html": True,          # Key config: enable preprocessed HTML mode
+        "preprocessed_html_field": "llm_webkit_html"  # Specify the preprocessed HTML field name
     }
 
     webkit_extractor = ExtractorFactory.create("llm-webkit", config=config)
-    # 创建magic-extractor抽取器
+    # Create magic-extractor extractor
     magic_extractor = ExtractorFactory.create("magic-html")
-    # 创建trafilatura抽取器,抽取成markdown
+    # Create trafilatura extractor, extract to markdown
     trafilatura_extractor = ExtractorFactory.create("trafilatura")
-    # 创建trafilatura抽取器,抽取成txt
+    # Create trafilatura extractor, extract to txt
     trafilatura_txt_extractor = ExtractorFactory.create("trafilatura_txt")
-    # 创建resiliparse抽取器
+    # Create resiliparse extractor
     resiliparse_extractor = ExtractorFactory.create("resiliparse")
-    
-    # 运行对比
+
+    # Run comparison
     evaluator = Evaluator()
     extractors = [webkit_extractor, magic_extractor, trafilatura_extractor,trafilatura_txt_extractor, resiliparse_extractor]
     # extractors = [webkit_extractor]
 
-    
+
     results = evaluator.compare_extractors(
         dataset=dataset,
         extractors=extractors
     )
-    
-    # 显示对比结果
-    print("对比结果:")
+
+    # Display comparison results
+    print("Comparison results:")
     print("-" * 40)
     for extractor_name, result in results.items():
         overall_score = result.overall_metrics.get('overall', 0)
         print(f"{extractor_name}: {overall_score:.4f}")
-    
-    # 保存多抽取器对比榜单
+
+    # Save multi-extractor comparison leaderboard
     all_results = []
     for extractor_name, result in results.items():
         all_results.append(result.to_dict())
-    
+
     results_dir = Path("results")
     results_dir.mkdir(exist_ok=True)
     leaderboard_path = results_dir / "leaderboard.csv"
@@ -60,10 +60,10 @@ def all_extractor_comparison():
     DataSaver.save_evaluation_results(all_results, evaluation_results_path)
     DataSaver.save_dataset_with_extraction(
         results=all_results,
-        dataset=dataset,  # 原始数据集对象
+        dataset=dataset,  # Original dataset object
         file_path=jsonl_dataset_path
     )
-    print(f"\n📊 榜单已保存到: {leaderboard_path}")
+    print(f"\nLeaderboard saved to: {leaderboard_path}")
 
 
 if __name__ == "__main__":

@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
-WebMainBench 基本使用示例
+WebMainBench Basic Usage Example
 """
 
 import json
 from pathlib import Path
 
-# 导入 WebMainBench 模块
+# Import WebMainBench modules
 from webmainbench import (
     DataLoader, DataSaver, BenchmarkDataset, DataSample,
     ExtractorFactory, Evaluator, 
@@ -15,9 +15,9 @@ from webmainbench import (
 
 
 def create_sample_dataset():
-    """创建示例数据集"""
-    
-    # 创建示例数据 - 包含多种内容类型（代码、公式、表格等）
+    """Create a sample dataset"""
+
+    # Create sample data - includes multiple content types (code, formulas, tables, etc.)
     samples = [
         {
             "track_id": "sample-001-programming-tutorial",
@@ -280,8 +280,8 @@ Master定理：$T(n) = aT(n/b) + f(n)$
         }
     ]
     
-    # 创建数据集
-    dataset = BenchmarkDataset(name="sample_dataset", description="示例评测数据集")
+    # Create dataset
+    dataset = BenchmarkDataset(name="sample_dataset", description="Sample evaluation dataset")
     
     for sample_data in samples:
         sample = DataSample.from_dict(sample_data)
@@ -291,121 +291,121 @@ Master定理：$T(n) = aT(n/b) + f(n)$
 
 
 def demo_basic_mock_evaluation():
-    """演示基本评测流程"""
-    
-    print("=== WebMainBench 基本使用示例 ===\n")
-    
-    # 设置日志
+    """Demonstrate the basic evaluation workflow"""
+
+    print("=== WebMainBench Basic Usage Example ===\n")
+
+    # Set up logging
     setup_logging(level="INFO")
-    
-    # 1. 创建或加载数据集
-    print("1. 创建示例数据集...")
+
+    # 1. Create or load dataset
+    print("1. Creating sample dataset...")
     dataset = create_sample_dataset()
-    print(f"数据集包含 {len(dataset)} 个样本")
-    print(f"数据集统计: {dataset.get_statistics()}\n")
-    
-    # 2. 保存数据集到文件
+    print(f"Dataset contains {len(dataset)} samples")
+    print(f"Dataset statistics: {dataset.get_statistics()}\n")
+
+    # 2. Save dataset to file
     data_dir = Path("data")
     data_dir.mkdir(exist_ok=True)
-    
+
     dataset_path = data_dir / "sample_dataset.jsonl"
     DataSaver.save_jsonl(dataset, dataset_path, include_results=False)
-    print(f"数据集已保存到: {dataset_path}\n")
-    
-    # 3. 重新加载数据集
-    print("2. 重新加载数据集...")
+    print(f"Dataset saved to: {dataset_path}\n")
+
+    # 3. Reload dataset
+    print("2. Reloading dataset...")
     loaded_dataset = DataLoader.load_jsonl(dataset_path)
-    print(f"加载的数据集包含 {len(loaded_dataset)} 个样本\n")
-    
-    # 4. 列出可用的抽取器
-    print("3. 可用的抽取器:")
+    print(f"Loaded dataset contains {len(loaded_dataset)} samples\n")
+
+    # 4. List available extractors
+    print("3. Available extractors:")
     available_extractors = ExtractorFactory.list_available()
     for extractor_name in available_extractors:
         print(f"  - {extractor_name}")
     print()
-    
-    # 5. 创建评测器
-    print("4. 创建评测器...")
+
+    # 5. Create evaluator
+    print("4. Creating evaluator...")
     evaluator = Evaluator()
-    print(f"可用的评测指标: {evaluator.metric_calculator.list_available_metrics()}\n")
-    
-    # 6. 创建一个模拟抽取器进行演示
-    print("5. 创建模拟抽取器...")
-    
+    print(f"Available evaluation metrics: {evaluator.metric_calculator.list_available_metrics()}\n")
+
+    # 6. Create a mock extractor for demonstration
+    print("5. Creating mock extractor...")
+
     from webmainbench.extractors import BaseExtractor, ExtractionResult
-    
+
     class MockExtractor(BaseExtractor):
-        """模拟抽取器，用于演示"""
-        
+        """Mock extractor for demonstration"""
+
         def _setup(self):
             pass
-        
+
         def _extract_content(self, html, url=None):
-            # 简单的模拟抽取逻辑
-            if "标题" in html:
-                content = "# 提取的标题\n\n提取的正文内容。"
+            # Simple mock extraction logic
+            if "heading" in html.lower() or "title" in html.lower():
+                content = "# Extracted Title\n\nExtracted body content."
                 content_list = [
-                    {"type": "heading", "content": "提取的标题", "level": 1},
-                    {"type": "paragraph", "content": "提取的正文内容。"}
+                    {"type": "heading", "content": "Extracted Title", "level": 1},
+                    {"type": "paragraph", "content": "Extracted body content."}
                 ]
             else:
-                content = "提取的内容"
-                content_list = [{"type": "paragraph", "content": "提取的内容"}]
-            
+                content = "Extracted content"
+                content_list = [{"type": "paragraph", "content": "Extracted content"}]
+
             return ExtractionResult(
                 content=content,
                 content_list=content_list,
                 success=True,
                 confidence_score=0.85
             )
-    
-    # 注册模拟抽取器
+
+    # Register mock extractor
     ExtractorFactory.register("mock", MockExtractor)
     mock_extractor = ExtractorFactory.create("mock")
-    print("模拟抽取器已创建\n")
-    
-    # 7. 运行评测
-    print("6. 运行评测...")
+    print("Mock extractor created\n")
+
+    # 7. Run evaluation
+    print("6. Running evaluation...")
     result = evaluator.evaluate(
         dataset=loaded_dataset,
         extractor=mock_extractor,
-        max_samples=2  # 限制样本数量用于演示
+        max_samples=2  # Limit sample count for demonstration
     )
-    
-    # 8. 显示结果
-    print("\n7. 评测结果:")
+
+    # 8. Display results
+    print("\n7. Evaluation results:")
     print("=" * 50)
     formatted_results = format_results(result.to_dict())
     print(formatted_results)
-    
-    # 9. 保存结果
+
+    # 9. Save results
     results_dir = Path("results")
     results_dir.mkdir(exist_ok=True)
-    
+
     results_path = results_dir / "mock_evaluation_results.json"
     DataSaver.save_evaluation_results(result, results_path)
-    print(f"\n结果已保存到: {results_path}")
-    
-    # 10. 生成报告
+    print(f"\nResults saved to: {results_path}")
+
+    # 10. Generate report
     report_path = results_dir / "mock_evaluation_report.csv"
     DataSaver.save_summary_report(result, report_path)
-    print(f"报告已保存到: {report_path}")
+    print(f"Report saved to: {report_path}")
 
 
 def demo_llm_webkit_evaluation():
-    """演示LLM-WebKit抽取器的6项指标评测"""
-    
-    print("=== LLM-WebKit Extractor 6项指标评测示例 ===\n")
-    
-    # 设置日志
+    """Demonstrate 6-metric evaluation with LLM-WebKit extractor"""
+
+    print("=== LLM-WebKit Extractor 6-Metric Evaluation Example ===\n")
+
+    # Set up logging
     setup_logging(level="INFO")
-    
-    # 1. 创建包含各种内容类型的测试数据集
-    print("1. 创建包含多种内容类型的测试数据集...")
-    
+
+    # 1. Create test dataset with various content types
+    print("1. Creating test dataset with multiple content types...")
+
     samples = []
-    
-    # 样本1: 包含文本和代码
+
+    # Sample 1: text and code
     samples.append(DataSample(
         id="text_code_sample",
         html="""
@@ -440,7 +440,7 @@ def hello_world():
             {"type": "text", "content": "以上代码展示了一个简单的Python函数。"}
         ]
     ))
-    
+
     # 样本2: 包含表格
     samples.append(DataSample(
         id="table_sample",
@@ -483,7 +483,7 @@ def hello_world():
             {"type": "table", "content": "| 产品 | 销量 | 收入 |\n|------|------|------|\n| 产品A | 100 | 1000 |\n| 产品B | 200 | 3000 |"}
         ]
     ))
-    
+
     # 样本3: 包含公式
     samples.append(DataSample(
         id="formula_sample",
@@ -511,238 +511,237 @@ $$\\int_{-\\infty}^{\\infty} e^{-x^2} dx = \\sqrt{\\pi}$$""",
             {"type": "formula", "content": "\\int_{-\\infty}^{\\infty} e^{-x^2} dx = \\sqrt{\\pi}"}
         ]
     ))
-    
-    # 创建数据集并添加样本
-    dataset = BenchmarkDataset(name="llm_webkit_test", description="LLM-WebKit 6项指标测试数据集")
+
+    # Create dataset and add samples
+    dataset = BenchmarkDataset(name="llm_webkit_test", description="LLM-WebKit 6-metric test dataset")
     for sample in samples:
         dataset.add_sample(sample)
-    
-    print(f"测试数据集包含 {len(dataset)} 个样本")
-    print(f"样本类型: 文本+代码, 表格, 公式\n")
-    
-    # 2. 创建LLM-WebKit抽取器
-    print("2. 创建LLM-WebKit抽取器...")
-    
-    # 显示所有可用的抽取器
+
+    print(f"Test dataset contains {len(dataset)} samples")
+    print(f"Sample types: text+code, table, formula\n")
+
+    # 2. Create LLM-WebKit extractor
+    print("2. Creating LLM-WebKit extractor...")
+
+    # Show all available extractors
     available_extractors = ExtractorFactory.list_available()
-    print(f"可用的抽取器: {available_extractors}")
-    
-    # 直接创建LLM-WebKit抽取器，设置模型路径
+    print(f"Available extractors: {available_extractors}")
+
+    # Create LLM-WebKit extractor directly with model path
     config = {
         "model_path": "/Users/chupei/model/checkpoint-3296"
     }
     extractor = ExtractorFactory.create("llm-webkit", config=config)
-    print(f"✅ LLM-WebKit抽取器创建成功，模型路径: {config['model_path']}")
-    
+    print(f"LLM-WebKit extractor created successfully, model path: {config['model_path']}")
+
     print()
-    
-    # 3. 创建评测器并显示所有可用指标
-    print("3. 创建评测器...")
+
+    # 3. Create evaluator and show all available metrics
+    print("3. Creating evaluator...")
     evaluator = Evaluator()
     available_metrics = evaluator.metric_calculator.list_available_metrics()
-    print(f"✅ 可用的评测指标 ({len(available_metrics)}项):")
-    
-    # 按照6项指标分类显示
+    print(f"Available evaluation metrics ({len(available_metrics)} total):")
+
+    # Display by the 6 metric categories
     target_metrics = ["overall", "text_edit", "code_edit", "table_edit", "table_TEDS", "formula_edit"]
-    
+
     for metric in target_metrics:
         if metric in available_metrics:
-            print(f"  ✅ {metric}")
+            print(f"  {metric}")
         else:
-            print(f"  ❌ {metric} (未注册)")
-    
+            print(f"  {metric} (not registered)")
+
     print()
-    
-    # 4. 运行评测
-    print("4. 开始评测...")
+
+    # 4. Run evaluation
+    print("4. Starting evaluation...")
     print("=" * 60)
-    
+
     result = evaluator.evaluate(
         dataset=dataset,
         extractor=extractor,
-        max_samples=None  # 评测所有样本
+        max_samples=None  # Evaluate all samples
     )
-    
-    # 5. 显示详细的6项指标结果
-    print("\n5. 📊 6项指标详细评测结果:")
+
+    # 5. Display detailed 6-metric results
+    print("\n5. 6-metric detailed evaluation results:")
     print("=" * 60)
-    
+
     results_dict = result.to_dict()
-    
-    # 从overall_metrics中提取指标结果
+
+    # Extract metric results from overall_metrics
     metrics = results_dict.get('overall_metrics', {})
-    
-    # 按照指标分类显示
-    print(f"\n🏆 综合指标:")
+
+    # Display by metric category
+    print(f"\nOverall metrics:")
     if 'overall' in metrics:
-        print(f"  overall (综合得分): {metrics['overall']:.4f}")
+        print(f"  overall (combined score): {metrics['overall']:.4f}")
     else:
-        print("  overall: 未计算")
-    
-    print(f"\n📝 文本相关指标:")
+        print("  overall: not calculated")
+
+    print(f"\nText-related metrics:")
     if 'text_edit' in metrics:
-        print(f"  text_edit (文本编辑距离): {metrics['text_edit']:.4f}")
+        print(f"  text_edit (text edit distance): {metrics['text_edit']:.4f}")
     else:
-        print("  text_edit: 未计算")
+        print("  text_edit: not calculated")
     if 'code_edit' in metrics:
-        print(f"  code_edit (代码编辑距离): {metrics['code_edit']:.4f}")
+        print(f"  code_edit (code edit distance): {metrics['code_edit']:.4f}")
     else:
-        print("  code_edit: 未计算")
-    
-    print(f"\n📊 表格相关指标:")
+        print("  code_edit: not calculated")
+
+    print(f"\nTable-related metrics:")
     if 'table_edit' in metrics:
-        print(f"  table_edit (表格编辑距离): {metrics['table_edit']:.4f}")
+        print(f"  table_edit (table edit distance): {metrics['table_edit']:.4f}")
     else:
-        print("  table_edit: 未计算")
+        print("  table_edit: not calculated")
     if 'table_TEDS' in metrics:
-        print(f"  table_TEDS (表格结构相似度): {metrics['table_TEDS']:.4f}")
+        print(f"  table_TEDS (table structure similarity): {metrics['table_TEDS']:.4f}")
     else:
-        print("  table_TEDS: 未计算")
-    
-    print(f"\n🧮 公式相关指标:")
+        print("  table_TEDS: not calculated")
+
+    print(f"\nFormula-related metrics:")
     if 'formula_edit' in metrics:
-        print(f"  formula_edit (公式编辑距离): {metrics['formula_edit']:.4f}")
+        print(f"  formula_edit (formula edit distance): {metrics['formula_edit']:.4f}")
     else:
-        print("  formula_edit: 未计算")
-    
-    print(f"\n📈 详细统计:")
-    print(f"  总样本数: {len(dataset)}")
+        print("  formula_edit: not calculated")
+
+    print(f"\nDetailed statistics:")
+    print(f"  Total samples: {len(dataset)}")
     success_count = len([s for s in results_dict.get('sample_results', []) if s.get('extraction_success', False)])
     failure_count = len(dataset) - success_count
-    print(f"  成功样本数: {success_count}")
-    print(f"  失败样本数: {failure_count}")
-    
-    # 6. 保存结果到文件
+    print(f"  Successful samples: {success_count}")
+    print(f"  Failed samples: {failure_count}")
+
+    # 6. Save results to file
     print("\n" + "=" * 60)
-    print("6. 保存评测结果...")
-    
+    print("6. Saving evaluation results...")
+
     results_dir = Path("results")
     results_dir.mkdir(exist_ok=True)
-    
-    # 保存详细结果
+
+    # Save detailed results
     results_path = results_dir / "llm_webkit_evaluation_results.json"
-    DataSaver.save_evaluation_results(result, results_path)  # 直接传递result对象
-    print(f"✅ 详细结果已保存到: {results_path}")
-    
-    # 生成CSV报告
+    DataSaver.save_evaluation_results(result, results_path)  # Pass result object directly
+    print(f"Detailed results saved to: {results_path}")
+
+    # Generate CSV report
     report_path = results_dir / "llm_webkit_evaluation_report.csv"
-    DataSaver.save_summary_report(result, report_path)  # 直接传递result对象
-    print(f"✅ CSV报告已保存到: {report_path}")
-    
+    DataSaver.save_summary_report(result, report_path)  # Pass result object directly
+    print(f"CSV report saved to: {report_path}")
+
     print("\n" + "=" * 60)
-    print("✅ LLM-WebKit 6项指标评测完成！")
+    print("LLM-WebKit 6-metric evaluation complete!")
 
 
 def demo_dataset_with_extraction():
-    """演示保存带有抽取内容的数据集"""
-    print("=== 演示：保存带有抽取内容的数据集 ===")
-    
+    """Demonstrate saving a dataset with extracted content"""
+    print("=== Demo: Saving a Dataset with Extracted Content ===")
+
     from webmainbench import DataLoader, DataSaver, Evaluator, ExtractorFactory
     from pathlib import Path
-    
-    # 配置文件路径
+
+    # Configure file paths
     data_dir = Path("data")
     dataset_path = data_dir / "sample_dataset.jsonl"
     # dataset_path = "/Users/chupei/Downloads/WebMainBench_dataset_merge_2549.jsonl"
-    
-    print(f"📂 数据集文件: {dataset_path}")
-    
-    # 🔧 创建llm-webkit抽取器（统一使用）
+
+    print(f"Dataset file: {dataset_path}")
+
+    # Create llm-webkit extractor (used uniformly)
     extractor_config = {"model_path": "/Users/chupei/model/checkpoint-3296"}
     extractor = ExtractorFactory.create("llm-webkit", config=extractor_config)
-    print(f"🤖 使用抽取器: {extractor.name}")
-    
-    # 创建评测器
+    print(f"Using extractor: {extractor.name}")
+
+    # Create evaluator
     evaluator = Evaluator()
-    
-    # 🔧 选择评测模式：内存模式 vs 批处理模式
-    USE_BATCHED_MODE = True  # 设置为True使用批处理模式（适用于大数据集）
-    
+
+    # Choose evaluation mode: in-memory mode vs batched mode
+    USE_BATCHED_MODE = True  # Set to True to use batched mode (suitable for large datasets)
+
     if USE_BATCHED_MODE:
-        print("🔄 使用批处理模式（内存优化）")
-        
-        # 🚀 批处理评测（适用于大数据集）
+        print("Using batched mode (memory-optimized)")
+
+        # Batched evaluation (suitable for large datasets)
         result = evaluator.evaluate_batched(
             jsonl_file_path=dataset_path,
-            extractor=extractor,  # 直接传递extractor对象
-            batch_size=10,        # 小批次
-            max_samples=20        # 演示用
+            extractor=extractor,  # Pass extractor object directly
+            batch_size=10,        # Small batch size
+            max_samples=20        # For demonstration
         )
-        print(f"✅ 批处理评测完成，总体得分: {result.overall_metrics.get('overall', 0):.4f}")
-        
-        # 为了保存带有抽取内容的数据集，需要重新加载原始数据集
-        # 注：这里只是短暂加载用于保存，不影响前面的内存优化评测
+        print(f"Batched evaluation complete, overall score: {result.overall_metrics.get('overall', 0):.4f}")
+
+        # To save the dataset with extraction content, reload the original dataset temporarily
+        # Note: this is only a brief load for saving and does not affect the memory-optimized evaluation above
         dataset = DataLoader.load_jsonl(dataset_path, include_results=False)
         dataset.name = result.dataset_name
-            
+
     else:
-        print("🔄 使用传统内存模式")
-        
-        # 从文件加载数据集
-        print(f"📂 从文件加载数据集: {dataset_path}")
+        print("Using traditional in-memory mode")
+
+        # Load dataset from file
+        print(f"Loading dataset from file: {dataset_path}")
         dataset = DataLoader.load_jsonl(dataset_path, include_results=False)
         dataset.name = "WebMainBench_with_extraction"
-        dataset.description = "演示抽取内容保存的测试数据集"
-        
-        print(f"📊 加载数据集完成，包含 {len(dataset.samples)} 个样本")
-        
-        # 运行评测
+        dataset.description = "Test dataset demonstrating extraction content saving"
+
+        print(f"Dataset loaded, contains {len(dataset.samples)} samples")
+
+        # Run evaluation
         result = evaluator.evaluate(dataset, extractor)
-    
-    print(f"✅ 评测完成，总体得分: {result.overall_metrics.get('overall', 0):.4f}")
-    
-    # 保存带有抽取内容的数据集
+
+    print(f"Evaluation complete, overall score: {result.overall_metrics.get('overall', 0):.4f}")
+
+    # Save dataset with extracted content
     results_dir = Path("results")
     enriched_dataset_path = results_dir / f"{dataset.name}_with_{extractor.name}_extraction.jsonl"
-    
+
     DataSaver.save_dataset_with_extraction(
         results=result,
-        dataset=dataset, 
+        dataset=dataset,
         file_path=enriched_dataset_path,
         extractor_name=extractor.name
     )
-    
-    print(f"💾 已保存带有抽取内容的数据集到: {enriched_dataset_path}")
-    
-    # 保存评测结果和摘要报告
+
+    print(f"Dataset with extracted content saved to: {enriched_dataset_path}")
+
+    # Save evaluation results and summary report
     evaluation_results_path = results_dir / f"{dataset.name}_{extractor.name}_evaluation_results.json"
     summary_report_path = results_dir / f"{dataset.name}_{extractor.name}_evaluation_report.csv"
-    
+
     DataSaver.save_evaluation_results(result, evaluation_results_path)
     DataSaver.save_summary_report(result, summary_report_path)
-    
-    print(f"📊 已保存评测结果到: {evaluation_results_path}")
-    print(f"📈 已保存摘要报告到: {summary_report_path}")
-    
-    # 显示保存的字段信息
-    print("\n📋 保存的新字段包括:")
-    print(f"  - {extractor.name}_content: 抽取的内容")
-    print(f"  - {extractor.name}_content_list: 抽取的结构化内容列表")
-    print(f"  - {extractor.name}_success: 抽取是否成功")
-    print(f"  - {extractor.name}_time: 抽取耗时")
-    print(f"  - {extractor.name}_*_score: 各项指标分数")
+
+    print(f"Evaluation results saved to: {evaluation_results_path}")
+    print(f"Summary report saved to: {summary_report_path}")
+
+    # Display saved field info
+    print("\nNewly saved fields include:")
+    print(f"  - {extractor.name}_content: extracted content")
+    print(f"  - {extractor.name}_content_list: extracted structured content list")
+    print(f"  - {extractor.name}_success: whether extraction succeeded")
+    print(f"  - {extractor.name}_time: extraction time")
+    print(f"  - {extractor.name}_*_score: metric scores")
 
 
 def demo_multi_extraction():
-    """演示保存带有多个抽取器抽取内容的数据集（支持批处理模式）"""
-    print("=== 演示：保存带有多个抽取器抽取内容的数据集 ===")
+    """Demonstrate saving a dataset with content from multiple extractors (supports batched mode)"""
+    print("=== Demo: Saving a Dataset with Multiple Extractor Results ===")
 
     from webmainbench import DataLoader, DataSaver, Evaluator, ExtractorFactory
     from pathlib import Path
     import time
 
-
-    # 设置日志
+    # Set up logging
     setup_logging(level="INFO")
 
-    # 配置文件路径
+    # Configure file paths
     data_dir = Path("../data")
     # dataset_path = data_dir / "sample_dataset.jsonl"
     dataset_path = "/home/lulindong/Pycharm_projects/cc/WebMainBench_1904_v1_WebMainBench_dataset_merge_with_llm_webkit.jsonl"
 
-    print(f"📂 数据集文件: {dataset_path}")
+    print(f"Dataset file: {dataset_path}")
 
-    # 🔧 定义要使用的抽取器列表及配置
+    # Define list of extractors and their configurations
     extractors_info = [
         {"name": "resiliparse", "config": {
             "main_content": True,
@@ -755,68 +754,68 @@ def demo_multi_extraction():
         {"name": "magic-html", "config": {}},
     ]
 
-    # 🔧 选择评测模式：内存模式 vs 批处理模式
-    USE_BATCHED_MODE = True  # 大数据集建议设为True
-    BATCH_SIZE = 10  # 批处理大小
-    MAX_SAMPLES = None  # 演示用（全量评测可设为None）
+    # Choose evaluation mode: in-memory mode vs batched mode
+    USE_BATCHED_MODE = True  # Recommended True for large datasets
+    BATCH_SIZE = 10  # Batch size
+    MAX_SAMPLES = None  # For demonstration (set None for full evaluation)
 
-    # 创建结果目录
+    # Create results directory
     results_dir = Path("results")
     results_dir.mkdir(exist_ok=True)
 
-    # 存储所有抽取器的评测结果和性能数据
+    # Store evaluation results and performance data for all extractors
     all_results = []
     extractor_performance = []
 
-    # 为每个抽取器运行评测
+    # Run evaluation for each extractor
     for info in extractors_info:
         extractor_name = info["name"]
         config = info["config"]
 
         try:
-            # 创建抽取器实例
+            # Create extractor instance
             extractor = ExtractorFactory.create(extractor_name, config=config)
-            print(f"\n🤖 使用抽取器: {extractor.name}")
+            print(f"\nUsing extractor: {extractor.name}")
         except Exception as e:
-            print(f"⚠️ {extractor_name} 抽取器创建失败: {e}")
+            print(f"Failed to create extractor {extractor_name}: {e}")
             continue
 
-        # 记录总耗时
+        # Record total elapsed time
         start_time = time.time()
 
-        # 初始化评测器
+        # Initialize evaluator
         evaluator = Evaluator()
 
-        # 选择批处理模式或传统模式
+        # Choose batched or traditional mode
         if USE_BATCHED_MODE:
-            print(f"🔄 使用批处理模式（批大小: {BATCH_SIZE}，最大样本: {MAX_SAMPLES or '全部'}）")
-            # 批处理评测（内存优化）
+            print(f"Using batched mode (batch size: {BATCH_SIZE}, max samples: {MAX_SAMPLES or 'all'})")
+            # Batched evaluation (memory-optimized)
             result = evaluator.evaluate_batched(
                 jsonl_file_path=dataset_path,
                 extractor=extractor,
                 batch_size=BATCH_SIZE,
                 max_samples=MAX_SAMPLES
             )
-            # 为保存数据集，临时加载原始数据（不影响内存优化）
+            # Temporarily load original data for saving (does not affect memory-optimized evaluation)
             dataset = DataLoader.load_jsonl(dataset_path, include_results=False, max_samples=MAX_SAMPLES)
             dataset.name = result.dataset_name
         else:
-            print("🔄 使用传统内存模式")
-            # 加载完整数据集到内存
+            print("Using traditional in-memory mode")
+            # Load full dataset into memory
             dataset = DataLoader.load_jsonl(dataset_path, include_results=False, max_samples=MAX_SAMPLES)
             dataset.name = "WebMainBench_with_multi_extraction"
-            dataset.description = "多抽取器内容保存演示数据集"
-            print(f"📊 加载数据集完成，包含 {len(dataset.samples)} 个样本")
+            dataset.description = "Multi-extractor content saving demo dataset"
+            print(f"Dataset loaded, contains {len(dataset.samples)} samples")
 
-            # 传统模式评测
+            # Traditional mode evaluation
             result = evaluator.evaluate(dataset, extractor)
 
-        # 计算耗时指标
+        # Calculate elapsed time metrics
         total_time = time.time() - start_time
         total_samples = len(dataset.samples)
         avg_time_per_sample = total_time / total_samples if total_samples else 0
 
-        # 保存性能数据
+        # Save performance data
         extractor_performance.append({
             "name": extractor_name,
             "total_samples": total_samples,
@@ -824,19 +823,19 @@ def demo_multi_extraction():
             "avg_time_per_sample": avg_time_per_sample
         })
 
-        # 输出评测结果
-        print(f"⏱️ 总耗时: {total_time:.4f}秒（单样本平均: {avg_time_per_sample:.4f}秒）")
-        print(f"📊 核心指标:")
+        # Output evaluation results
+        print(f"Total time: {total_time:.4f}s (avg per sample: {avg_time_per_sample:.4f}s)")
+        print(f"Core metrics:")
         print(f"   code_edit: {result.overall_metrics.get('code_edit', 0):.4f}")
         print(f"   formula_edit: {result.overall_metrics.get('formula_edit', 0):.4f}")
         print(f"   table_TEDS: {result.overall_metrics.get('table_TEDS', 0):.4f}")
         print(f"   table_edit: {result.overall_metrics.get('table_edit', 0):.4f}")
         print(f"   text_edit: {result.overall_metrics.get('text_edit', 0):.4f}")
-        print(f"✅ 总体得分: {result.overall_metrics.get('overall', 0):.4f}")
+        print(f"Overall score: {result.overall_metrics.get('overall', 0):.4f}")
 
         all_results.append(result)
 
-        # 保存带有当前抽取器内容的数据集
+        # Save dataset with current extractor's content
         enriched_dataset_path = results_dir / f"{dataset.name}_{extractor.name}_extraction_infer.jsonl"
         DataSaver.save_dataset_with_extraction(
             results=result,
@@ -844,153 +843,153 @@ def demo_multi_extraction():
             file_path=enriched_dataset_path,
             extractor_name=extractor.name
         )
-        print(f"💾 已保存抽取内容到: {enriched_dataset_path}")
+        print(f"Extracted content saved to: {enriched_dataset_path}")
 
-        # 保存单个抽取器的评测结果
+        # Save individual extractor evaluation results
         eval_results_path = results_dir / f"{dataset.name}_{extractor.name}_evaluation_results.json"
         DataSaver.save_evaluation_results(result, eval_results_path)
-        print(f"📋 已保存评测结果到: {eval_results_path}")
+        print(f"Evaluation results saved to: {eval_results_path}")
 
-    # 保存所有抽取器的汇总报告
+    # Save summary report for all extractors
     if all_results:
         summary_path = results_dir / f"{dataset.name}_multi_extractors_summary_report.csv"
         DataSaver.save_summary_report(all_results, summary_path)
-        print(f"\n📈 已保存汇总报告到: {summary_path}")
+        print(f"\nSummary report saved to: {summary_path}")
 
-    # 展示性能对比
+    # Display performance comparison
     if extractor_performance:
-        print("\n⚡ 抽取器性能对比:")
+        print("\nExtractor performance comparison:")
         for perf in extractor_performance:
             print(f"  {perf['name']}:")
-            print(f"    样本数: {perf['total_samples']}")
-            print(f"    总耗时: {perf['total_time']:.4f}秒")
-            print(f"    单样本耗时: {perf['avg_time_per_sample']:.4f}秒")
-            print(f"    效率: {1 / perf['avg_time_per_sample']:.2f}样本/秒")
+            print(f"    Samples: {perf['total_samples']}")
+            print(f"    Total time: {perf['total_time']:.4f}s")
+            print(f"    Time per sample: {perf['avg_time_per_sample']:.4f}s")
+            print(f"    Throughput: {1 / perf['avg_time_per_sample']:.2f} samples/s")
 
-    # 展示保存的字段信息
-    print("\n📋 保存的新字段说明:")
+    # Display saved field information
+    print("\nSaved new field descriptions:")
     for info in extractors_info:
         name = info["name"]
-        print(f"  {name}相关字段:")
-        print(f"    - {name}_content: 抽取的原始内容")
-        print(f"    - {name}_content_list: 结构化内容列表（含type字段）")
-        print(f"    - {name}_success: 抽取是否成功（布尔值）")
-        print(f"    - {name}_time: 单样本抽取耗时（秒）")
-        print(f"    - {name}_*_score: 各指标得分（如{name}_text_edit）")
+        print(f"  {name} related fields:")
+        print(f"    - {name}_content: extracted raw content")
+        print(f"    - {name}_content_list: structured content list (with type field)")
+        print(f"    - {name}_success: whether extraction succeeded (boolean)")
+        print(f"    - {name}_time: per-sample extraction time (seconds)")
+        print(f"    - {name}_*_score: metric scores (e.g. {name}_text_edit)")
 
 
 def demo_llm_webkit_with_preprocessed_html_evaluation():
-    """演示LLM-WebKit预处理HTML功能的评测"""
-    
-    print("\n=== LLM-WebKit 预处理HTML功能演示 ===\n")
-    
-    # 设置日志
+    """Demonstrate evaluation of LLM-WebKit preprocessed HTML feature"""
+
+    print("\n=== LLM-WebKit Preprocessed HTML Feature Demo ===\n")
+
+    # Set up logging
     setup_logging(level="INFO")
-    
-    # 1. 从真实数据集加载包含预处理HTML的数据
-    print("1. 从真实数据集加载预处理HTML数据...")
+
+    # 1. Load preprocessed HTML data from the real dataset
+    print("1. Loading preprocessed HTML data from the real dataset...")
     dataset_path = Path("data/track_id_diff_result_56.jsonl")
-    print(f"📂 数据集文件: {dataset_path}")
-    
-    # 加载数据集
+    print(f"Dataset file: {dataset_path}")
+
+    # Load dataset
     dataset = DataLoader.load_jsonl(dataset_path, include_results=False)
     dataset.name = "real_preprocessed_html_test"
-    dataset.description = "基于真实数据的预处理HTML功能测试"
-    
-    print(f"✅ 真实数据集加载成功，包含 {len(dataset)} 个样本")
-    print("📋 真实数据样本包含:")
-    print("  - html: 原始网页HTML")
-    print("  - llm_webkit_html: LLM预处理后的简化HTML（包含_item_id标记）")
-    print("  - groundtruth_content: 人工标注的标准答案")
-    print("  - llm_webkit_md: LLM提取的markdown内容")
-    
-    
-    # 2. 创建预处理HTML模式的LLM-WebKit抽取器
-    print("2. 创建预处理HTML模式的LLM-WebKit抽取器...")
-    
+    dataset.description = "Preprocessed HTML feature test based on real data"
+
+    print(f"Real dataset loaded successfully, contains {len(dataset)} samples")
+    print("Real data samples include:")
+    print("  - html: raw web page HTML")
+    print("  - llm_webkit_html: LLM-preprocessed simplified HTML (with _item_id markers)")
+    print("  - groundtruth_content: manually annotated ground truth")
+    print("  - llm_webkit_md: LLM-extracted markdown content")
+
+
+    # 2. Create LLM-WebKit extractor in preprocessed HTML mode
+    print("2. Creating LLM-WebKit extractor in preprocessed HTML mode...")
+
     config = {
-        "use_preprocessed_html": True,          # 🔑 关键配置：启用预处理HTML模式
-        "preprocessed_html_field": "llm_webkit_html"  # 指定预处理HTML字段名
+        "use_preprocessed_html": True,          # Key config: enable preprocessed HTML mode
+        "preprocessed_html_field": "llm_webkit_html"  # Specify preprocessed HTML field name
     }
-    
+
     extractor = ExtractorFactory.create("llm-webkit", config=config)
-    
-    # 4. 运行评测
-    print("4. 开始评测...")
+
+    # 4. Run evaluation
+    print("4. Starting evaluation...")
     print("=" * 50)
-    
+
     evaluator = Evaluator()
     result = evaluator.evaluate(
         dataset=dataset,
         extractor=extractor,
         max_samples=None
     )
-    
-    # 5. 显示评测结果
-    print("\n5. 📊 预处理HTML模式评测结果:")
+
+    # 5. Display evaluation results
+    print("\n5. Preprocessed HTML mode evaluation results:")
     print("=" * 50)
-    
+
     results_dict = result.to_dict()
     metrics = results_dict.get('overall_metrics', {})
-    
-    # 显示关键指标
-    print(f"\n🏆 综合指标:")
+
+    # Display key metrics
+    print(f"\nOverall metrics:")
     print(f"  overall: {metrics.get('overall', 0):.4f}")
-    
-    print(f"\n📝 内容提取质量:")
+
+    print(f"\nContent extraction quality:")
     print(f"  text_edit: {metrics.get('text_edit', 0):.4f}")
     print(f"  code_edit: {metrics.get('code_edit', 0):.4f}")
     print(f"  table_edit: {metrics.get('table_edit', 0):.4f}")
     print(f"  table_TEDS: {metrics.get('table_TEDS', 0):.4f}")
-    
-    print(f"\n⚡ 性能统计:")
+
+    print(f"\nPerformance statistics:")
     sample_results = results_dict.get('sample_results', [])
     if sample_results:
         extraction_times = [s.get('extraction_time', 0) for s in sample_results if s.get('extraction_success')]
         if extraction_times:
             avg_time = sum(extraction_times) / len(extraction_times)
-            print(f"  平均提取时间: {avg_time:.3f}秒")
-            print(f"  处理速度: {1/avg_time:.1f}样本/秒")
-    
+            print(f"  Average extraction time: {avg_time:.3f}s")
+            print(f"  Processing speed: {1/avg_time:.1f} samples/s")
+
     success_count = len([s for s in sample_results if s.get('extraction_success', False)])
-    print(f"  成功样本数: {success_count}/{len(dataset)}")
-    
-    # 7. 保存结果
-    print(f"\n7. 💾 保存评测结果...")
-    
+    print(f"  Successful samples: {success_count}/{len(dataset)}")
+
+    # 7. Save results
+    print(f"\n7. Saving evaluation results...")
+
     results_dir = Path("results")
     results_dir.mkdir(exist_ok=True)
-    # 新增：保存带抽取结果的增强数据集（JSONL格式）
+    # Save enhanced dataset with extraction results (JSONL format)
     jsonl_dataset_path = results_dir / f"{extractor.name}_preprocessed_html_dataset_with_results.jsonl"
     DataSaver.save_dataset_with_extraction(
         results=result,
-        dataset=dataset,  # 原始数据集对象
+        dataset=dataset,  # Original dataset object
         file_path=jsonl_dataset_path,
-        extractor_name="llm-webkit"  # 抽取器名称前缀
+        extractor_name="llm-webkit"  # Extractor name prefix
     )
-    print(f"✅ 带抽取结果的JSONL数据集已保存到: {jsonl_dataset_path}")
+    print(f"JSONL dataset with extraction results saved to: {jsonl_dataset_path}")
     results_path = results_dir / f"{extractor.name}_preprocessed_html_evaluation_results.json"
     report_path = results_dir / f"{extractor.name}_preprocessed_html_evaluation_report.csv"
-    
+
     DataSaver.save_evaluation_results(result, results_path)
     DataSaver.save_summary_report(result, report_path)
-    
-    print(f"✅ 详细结果已保存到: {results_path}")
-    print(f"✅ CSV报告已保存到: {report_path}")
+
+    print(f"Detailed results saved to: {results_path}")
+    print(f"CSV report saved to: {report_path}")
     
 
 
 if __name__ == "__main__":
     try:
         # demo_basic_mock_evaluation()
-        # demo_llm_webkit_evaluation()  # 使用LLM-WebKit评测示例
+        # demo_llm_webkit_evaluation()  # LLM-WebKit evaluation example
         demo_llm_webkit_with_preprocessed_html_evaluation()
         # demo_extractor_comparison()
-        # demo_dataset_with_extraction()  # 演示保存带有抽取内容的数据集
-        # demo_multi_extraction() # 演示多个抽取器同时评测
-        print("\n✅ 示例运行完成！")
-        
+        # demo_dataset_with_extraction()  # Demo saving dataset with extracted content
+        # demo_multi_extraction() # Demo evaluating with multiple extractors simultaneously
+        print("\nExample completed!")
+
     except Exception as e:
-        print(f"\n❌ 运行出错: {e}")
+        print(f"\nRuntime error: {e}")
         import traceback
         traceback.print_exc() 

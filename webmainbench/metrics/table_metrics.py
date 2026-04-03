@@ -10,105 +10,105 @@ from .text_metrics import EditDistanceMetric
 from bs4 import BeautifulSoup
 
 class TableEditMetric(EditDistanceMetric):
-    """表格编辑距离指标"""
-    
+    """Table edit distance metric."""
+
     version = "1.0.0"
     description = "Table content edit distance metric"
-    
+
     def _calculate_score(self, predicted: str, groundtruth: str,
                         predicted_content_list: List[Dict[str, Any]] = None,
                         groundtruth_content_list: List[Dict[str, Any]] = None,
                         **kwargs) -> MetricResult:
-        """计算表格内容的编辑距离"""
+        """Calculate edit distance for table content."""
 
-        # 1. 提取原始表格内容
+        # 1. Extract raw table content
         pred_raw = self._extract_table_content(predicted, predicted_content_list)
         gt_raw = self._extract_table_content(groundtruth, groundtruth_content_list)
 
-        # 2. 复用TEDSMetric的归一化方法，统一转换为HTML格式
-        teds = TEDSMetric("temp_teds")  # 实例化TEDSMetric以调用其方法
-        pred_html = teds._normalize_to_html(pred_raw)  # 调用TEDS的归一化方法
+        # 2. Reuse TEDSMetric's normalization method to convert to HTML format uniformly
+        teds = TEDSMetric("temp_teds")  # Instantiate TEDSMetric to call its methods
+        pred_html = teds._normalize_to_html(pred_raw)  # Call TEDS normalization
         gt_html = teds._normalize_to_html(gt_raw)
 
-        # 3. 基于归一化后的文本计算编辑距离
+        # 3. Calculate edit distance based on normalized text
         result = super()._calculate_score(pred_html, gt_html, **kwargs)
         result.metric_name = self.name
         result.details.update({
             "predicted_table_length": len(pred_html),
             "groundtruth_table_length": len(gt_html),
             "content_type": "table",
-            "normalization": "teds_based"  # 标记使用TEDS的归一化方法
+            "normalization": "teds_based"  # Mark as using TEDS normalization method
         })
-        
+
         return result
-    
+
     def _extract_table_content(self, text: str, content_list: List[Dict[str, Any]] = None) -> str:
-        """从文本和content_list中提取表格内容"""
-        # 使用统一的内容分割方法
+        """Extract table content from text and content_list."""
+        # Use unified content splitting method
         content_parts = self.split_content(text, content_list)
         return content_parts.get('table', '')
 
     def _extract_tables_from_content_list(self, content_list: List[Dict[str, Any]]) -> List[str]:
-        """递归从content_list中提取表格内容"""
+        """Recursively extract table content from content_list."""
         tables = []
-        
+
         def _recursive_extract(items):
             if not isinstance(items, list):
                 return
-            
+
             for item in items:
                 if not isinstance(item, dict):
                     continue
-                
-                # 检查当前项是否为表格
+
+                # Check if current item is a table
                 item_type = item.get('type', '')
                 if item_type in ['table']:
                     content = item.get('content', '')
                     if content:
                         tables.append(content)
-                
-                # 递归检查children字段
+
+                # Recursively check children field
                 children = item.get('children')
                 if children:
                     _recursive_extract(children)
-                
-                # 递归检查items字段
+
+                # Recursively check items field
                 items_field = item.get('items')
                 if items_field:
                     _recursive_extract(items_field)
-        
+
         _recursive_extract(content_list)
         return tables
 
 
 class TableTEDSMetric(TEDSMetric):
-    """表格TEDS指标"""
-    
+    """Table TEDS metric."""
+
     version = "1.0.0"
     description = "Table TEDS (Tree-Edit Distance based Similarity) metric"
-    
+
     def _calculate_score(self, predicted: str, groundtruth: str,
                         predicted_content_list: List[Dict[str, Any]] = None,
                         groundtruth_content_list: List[Dict[str, Any]] = None,
                         **kwargs) -> MetricResult:
-        """计算表格的TEDS分数"""
-        
-        # 从content_list中提取表格内容
+        """Calculate TEDS score for tables."""
+
+        # Extract table content from content_list
         pred_table = self._extract_table_content(predicted, predicted_content_list)
         gt_table = self._extract_table_content(groundtruth, groundtruth_content_list)
-        
-        # 使用父类的TEDS计算
+
+        # Use parent class TEDS calculation
         result = super()._calculate_score(pred_table, gt_table, **kwargs)
         result.metric_name = self.name
         result.details.update({
             "content_type": "table",
             "algorithm": "TEDS"
         })
-        
+
         return result
-    
+
     def _extract_table_content(self, text: str, content_list: List[Dict[str, Any]] = None) -> str:
-        """从文本和content_list中提取表格内容"""
-        # 使用统一的内容分割方法
+        """Extract table content from text and content_list."""
+        # Use unified content splitting method
         content_parts = self.split_content(text, content_list)
-        return content_parts.get('table', '') 
+        return content_parts.get('table', '')

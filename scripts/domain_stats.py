@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-域名分布统计脚本
-统计数据集中的域名分布、TLD分布、以及域名与meta信息的关系
+Domain distribution statistics script
+Analyzes domain distribution, TLD distribution, and the relationship between domains and meta information in the dataset
 
-使用方法:
+Usage:
     python scripts/domain_stats.py data/WebMainBench_7887_with_meta.jsonl
 """
 
@@ -16,7 +16,7 @@ import csv
 
 
 class DomainStatsAnalyzer:
-    """域名统计分析器"""
+    """Domain statistics analyzer"""
     
     def __init__(self, input_file):
         self.input_file = input_file
@@ -34,17 +34,17 @@ class DomainStatsAnalyzer:
         })
         
     def load_data(self):
-        """加载JSONL数据"""
-        print(f"加载数据: {self.input_file}")
+        """Load JSONL data."""
+        print(f"Loading data: {self.input_file}")
         with open(self.input_file, 'r', encoding='utf-8') as f:
             for line in f:
                 if line.strip():
                     item = json.loads(line)
                     self.data.append(item)
-        print(f"已加载 {len(self.data)} 条数据\n")
+print(f"Loaded {len(self.data)} records\n")
     
     def extract_domain(self, url):
-        """从URL提取域名"""
+        """Extract domain from URL."""
         try:
             parsed = urlparse(url)
             return parsed.netloc.lower()
@@ -52,15 +52,15 @@ class DomainStatsAnalyzer:
             return None
     
     def extract_tld(self, domain):
-        """提取顶级域名"""
+        """Extract top-level domain."""
         if domain and '.' in domain:
             return domain.split('.')[-1]
         return None
     
     def analyze(self):
-        """执行分析"""
+        """Run analysis."""
         print("="*60)
-        print("开始分析域名分布")
+        print("Starting domain distribution analysis")
         print("="*60 + "\n")
         
         for item in self.data:
@@ -70,15 +70,15 @@ class DomainStatsAnalyzer:
             if not domain:
                 continue
             
-            # 统计域名
+            # Count domains
             self.domain_counter[domain] += 1
             
-            # 统计TLD
+            # Count TLDs
             tld = self.extract_tld(domain)
             if tld:
                 self.tld_counter[tld] += 1
             
-            # 统计域名的meta信息
+            # Count meta information for domains
             meta = item.get('meta', {})
             self.domain_meta[domain]['count'] += 1
             self.domain_meta[domain]['languages'][meta.get('language', 'unknown')] += 1
@@ -93,39 +93,39 @@ class DomainStatsAnalyzer:
                 self.domain_meta[domain]['has_equation'] += 1
     
     def print_basic_stats(self):
-        """打印基本统计信息"""
+        """Print basic statistics."""
         print("="*60)
-        print("1. 基本统计")
+        print("1. Basic Statistics")
         print("="*60)
         
         total_samples = len(self.data)
         unique_domains = len(self.domain_counter)
         
-        print(f"总样本数: {total_samples}")
-        print(f"独立域名数: {unique_domains}")
-        print(f"平均每域名样本数: {total_samples/unique_domains:.2f}")
+print(f"Total samples: {total_samples}")
+print(f"Unique domains: {unique_domains}")
+print(f"Average samples per domain: {total_samples/unique_domains:.2f}")
         
-        # 域名样本数分布
+        # Domain sample count distribution
         samples_per_domain = list(self.domain_counter.values())
-        print(f"\n每域名样本数统计:")
-        print(f"  最小值: {min(samples_per_domain)}")
-        print(f"  最大值: {max(samples_per_domain)}")
-        print(f"  平均值: {sum(samples_per_domain)/len(samples_per_domain):.2f}")
-        print(f"  中位数: {sorted(samples_per_domain)[len(samples_per_domain)//2]}")
+print(f"\nSamples per domain statistics:")
+print(f"  Min: {min(samples_per_domain)}")
+print(f"  Max: {max(samples_per_domain)}")
+print(f"  Mean: {sum(samples_per_domain)/len(samples_per_domain):.2f}")
+print(f"  Median: {sorted(samples_per_domain)[len(samples_per_domain)//2]}")
         
-        # 单样本域名占比
+        # Single-sample domain ratio
         single_sample_domains = sum(1 for count in samples_per_domain if count == 1)
-        print(f"\n只有1个样本的域名: {single_sample_domains} ({single_sample_domains/unique_domains*100:.1f}%)")
+print(f"\nDomains with only 1 sample: {single_sample_domains} ({single_sample_domains/unique_domains*100:.1f}%)")
         print()
     
     def print_tld_distribution(self):
-        """打印TLD分布"""
+        """Print TLD distribution."""
         print("="*60)
-        print("2. 顶级域名(TLD)分布")
+        print("2. Top-Level Domain (TLD) Distribution")
         print("="*60)
         
         total = sum(self.tld_counter.values())
-        print(f"\n总共 {len(self.tld_counter)} 种TLD\n")
+print(f"\nTotal of {len(self.tld_counter)} TLD types\n")
         
         for tld, count in self.tld_counter.most_common(20):
             percentage = count / total * 100
@@ -133,13 +133,13 @@ class DomainStatsAnalyzer:
             print(f"  .{tld:15} {count:5} ({percentage:5.2f}%) {bar}")
         
         if len(self.tld_counter) > 20:
-            print(f"\n  ... 还有 {len(self.tld_counter) - 20} 种TLD")
+            print(f"\n  ... and {len(self.tld_counter) - 20} more TLD types")
         print()
     
     def print_top_domains(self, n=30):
-        """打印热门域名"""
+        """Print top domains."""
         print("="*60)
-        print(f"3. Top {n} 域名")
+        print(f"3. Top {n} Domains")
         print("="*60 + "\n")
         
         total = sum(self.domain_counter.values())
@@ -150,39 +150,39 @@ class DomainStatsAnalyzer:
         print()
     
     def print_domain_meta_analysis(self):
-        """打印域名的meta信息分析"""
+        """Print domain meta information analysis."""
         print("="*60)
-        print("4. 域名与内容类型分析")
+        print("4. Domain and Content Type Analysis")
         print("="*60 + "\n")
         
-        # 找出包含特殊内容最多的域名
+        # Find domains with the most special content
         domains_with_table = [(d, info['has_table']) for d, info in self.domain_meta.items() if info['has_table'] > 0]
         domains_with_code = [(d, info['has_code']) for d, info in self.domain_meta.items() if info['has_code'] > 0]
         domains_with_equation = [(d, info['has_equation']) for d, info in self.domain_meta.items() if info['has_equation'] > 0]
         
-        print(f"包含表格的域名数: {len(domains_with_table)}")
+print(f"Domains with tables: {len(domains_with_table)}")
         if domains_with_table:
-            print("  Top 10 域名(按表格数量):")
+print("  Top 10 domains (by table count):")
             for domain, count in sorted(domains_with_table, key=lambda x: -x[1])[:10]:
-                print(f"    {domain:50} {count} 个样本")
+print(f"    {domain:50} {count} samples")
         
-        print(f"\n包含代码的域名数: {len(domains_with_code)}")
+print(f"\nDomains with code: {len(domains_with_code)}")
         if domains_with_code:
-            print("  Top 10 域名(按代码数量):")
+print("  Top 10 domains (by code count):")
             for domain, count in sorted(domains_with_code, key=lambda x: -x[1])[:10]:
-                print(f"    {domain:50} {count} 个样本")
+print(f"    {domain:50} {count} samples")
         
-        print(f"\n包含公式的域名数: {len(domains_with_equation)}")
+print(f"\nDomains with equations: {len(domains_with_equation)}")
         if domains_with_equation:
-            print("  Top 10 域名(按公式数量):")
+print("  Top 10 domains (by equation count):")
             for domain, count in sorted(domains_with_equation, key=lambda x: -x[1])[:10]:
-                print(f"    {domain:50} {count} 个样本")
+print(f"    {domain:50} {count} samples")
         print()
     
     def print_language_by_tld(self):
-        """打印TLD的语言分布"""
+        """Print language distribution by TLD."""
         print("="*60)
-        print("5. TLD与语言分布")
+        print("5. TLD and Language Distribution")
         print("="*60 + "\n")
         
         tld_languages = defaultdict(Counter)
@@ -193,22 +193,22 @@ class DomainStatsAnalyzer:
                 for lang, count in info['languages'].items():
                     tld_languages[tld][lang] += count
         
-        # 显示主要TLD的语言分布
+        # Display language distribution for major TLDs
         for tld, lang_counter in sorted(tld_languages.items(), 
                                        key=lambda x: sum(x[1].values()), 
                                        reverse=True)[:10]:
             total = sum(lang_counter.values())
-            print(f".{tld} (共{total}个样本):")
+print(f".{tld} ({total} samples total):")
             for lang, count in lang_counter.most_common(3):
                 print(f"  {lang:15} {count:4} ({count/total*100:5.1f}%)")
             print()
     
     def save_reports(self, output_dir='results'):
-        """保存统计报告"""
+        """Save statistics reports."""
         output_path = Path(output_dir)
         output_path.mkdir(parents=True, exist_ok=True)
         
-        # 保存域名统计CSV
+        # Save domain statistics CSV
         domain_csv = output_path / 'domain_statistics.csv'
         with open(domain_csv, 'w', encoding='utf-8', newline='') as f:
             writer = csv.writer(f)
@@ -237,9 +237,9 @@ class DomainStatsAnalyzer:
                     info['has_equation']
                 ])
         
-        print(f"✓ 域名统计CSV已保存: {domain_csv}")
+print(f"✓ Domain statistics CSV saved: {domain_csv}")
         
-        # 保存TLD统计CSV
+        # Save TLD statistics CSV
         tld_csv = output_path / 'tld_statistics.csv'
         with open(tld_csv, 'w', encoding='utf-8', newline='') as f:
             writer = csv.writer(f)
@@ -253,17 +253,17 @@ class DomainStatsAnalyzer:
                     f"{count/total*100:.2f}%"
                 ])
         
-        print(f"✓ TLD统计CSV已保存: {tld_csv}")
+print(f"✓ TLD statistics CSV saved: {tld_csv}")
         
-        # 保存域名列表
+        # Save domain list
         domains_txt = output_path / 'unique_domains.txt'
         with open(domains_txt, 'w', encoding='utf-8') as f:
             for domain in sorted(self.domain_counter.keys()):
                 f.write(f"{domain}\n")
         
-        print(f"✓ 域名列表已保存: {domains_txt}")
+print(f"✓ Domain list saved: {domains_txt}")
         
-        # 保存JSON格式的详细统计
+        # Save detailed statistics in JSON format
         stats_json = output_path / 'domain_stats.json'
         stats_data = {
             'summary': {
@@ -278,11 +278,11 @@ class DomainStatsAnalyzer:
         with open(stats_json, 'w', encoding='utf-8') as f:
             json.dump(stats_data, f, indent=2, ensure_ascii=False)
         
-        print(f"✓ JSON统计已保存: {stats_json}")
+print(f"✓ JSON statistics saved: {stats_json}")
         print()
     
     def run(self, output_dir='results'):
-        """执行完整分析流程"""
+        """Execute full analysis pipeline."""
         self.load_data()
         self.analyze()
         self.print_basic_stats()
@@ -292,21 +292,21 @@ class DomainStatsAnalyzer:
         self.print_language_by_tld()
         
         print("="*60)
-        print("保存统计报告")
+        print("Saving Statistics Reports")
         print("="*60 + "\n")
         self.save_reports(output_dir)
         
         print("="*60)
-        print("域名统计分析完成！")
+        print("Domain statistics analysis complete!")
         print("="*60 + "\n")
 
 
 def main():
     parser = argparse.ArgumentParser(
-        description='统计数据集中的域名分布信息',
+        description='Analyze domain distribution information in the dataset',
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog='''
-示例:
+Examples:
   python scripts/domain_stats.py data/WebMainBench_7887_with_meta.jsonl
   
   python scripts/domain_stats.py data/WebMainBench_7887_with_meta.jsonl \\
@@ -316,23 +316,23 @@ def main():
     
     parser.add_argument(
         'input_file',
-        help='输入的JSONL文件路径'
+        help='Path to the input JSONL file'
     )
     
     parser.add_argument(
         '--output-dir',
         default='results',
-        help='输出目录 (默认: results)'
+        help='Output directory (default: results)'
     )
     
     args = parser.parse_args()
     
-    # 检查文件是否存在
+    # Check if file exists
     if not Path(args.input_file).exists():
-        print(f"错误: 文件不存在: {args.input_file}")
+print(f"Error: File does not exist: {args.input_file}")
         return 1
     
-    # 执行分析
+    # Run analysis
     analyzer = DomainStatsAnalyzer(args.input_file)
     analyzer.run(args.output_dir)
     

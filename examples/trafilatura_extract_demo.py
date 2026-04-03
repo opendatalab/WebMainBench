@@ -1,20 +1,20 @@
 import time
 from webmainbench.extractors import ExtractorFactory
 
-# 配置 Trafilatura 抽取器（这里可根据需要添加更多配置）
+# Configure Trafilatura extractor (add more configuration as needed)
 config = {}
 
 try:
-    # 创建 Trafilatura 抽取器实例
+    # Create Trafilatura extractor instance
     extractor = ExtractorFactory.create("trafilatura", config=config)
-    print(f"✅ Extractor创建成功: {extractor.description}")
-    print(f"📋 版本: {extractor.version}")
-    print(f"⚙️ 配置: {extractor.get_config()}\n")
+    print(f"✅ Extractor created successfully: {extractor.description}")
+    print(f"📋 Version: {extractor.version}")
+    print(f"⚙️ Config: {extractor.get_config()}\n")
 except Exception as e:
-    print(f"❌ Extractor创建失败: {e}")
+    print(f"❌ Failed to create extractor: {e}")
 
 
-# 测试 HTML
+# Test HTML
 test_html = """
 <html><head>
 <style id="cc-extraStyle" name="cc">
@@ -2835,39 +2835,39 @@ wminst.Util.loadScript("//www.i.cdn.cnn.com/zion/zion-mb.min.js",(function(){try
 });</script><iframe data-anno-uid="anno-uid-s9kz8jbpth" name="goog_topics_frame" src="https://securepubads.g.doubleclick.net/static/topics/topics_frame.html" style="display: none;"></iframe></body></html>
 """
 
-print("🔍 开始内容提取...")
+print("🔍 Starting content extraction...")
 start_time = time.time()
 
 try:
     result = extractor.extract(test_html)
     end_time = time.time()
 
-    print(f"⏱️ 提取耗时: {end_time - start_time:.2f}秒\n")
+    print(f"⏱️ Extraction time: {end_time - start_time:.2f}s\n")
 
-    # 显示提取结果
+    # Display extraction results
     if result.success:
-        print("✅ 内容提取成功！\n")
+        print("✅ Content extracted successfully!\n")
 
-        print("📄 提取的主要内容:")
+        print("📄 Extracted main content:")
         print("=" * 50)
         print(result.content[:500] + "..." if len(result.content) > 500 else result.content)
         print("=" * 50)
 
-        print(f"\n📊 提取统计:")
-        print(f"  • 内容长度: {len(result.content)} 字符")
-        print(f"  • 标题: {result.title}")
-        print(f"  • 语言: {result.language}")
-        print(f"  • 提取时间: {result.extraction_time:.3f}秒")
+        print(f"\n📊 Extraction statistics:")
+        print(f"  • Content length: {len(result.content)} characters")
+        print(f"  • Title: {result.title}")
+        print(f"  • Language: {result.language}")
+        print(f"  • Extraction time: {result.extraction_time:.3f}s")
 
         if result.content_list:
-            print(f"  • 结构化内容块: {len(result.content_list)}个")
-            for i, item in enumerate(result.content_list[:3]):  # 显示前3个
+        print(f"  • Structured content blocks: {len(result.content_list)}")
+            for i, item in enumerate(result.content_list[:3]):  # Show first 3
                 print(f"    [{i + 1}] {item.get('type', 'unknown')}: {item.get('content', '')[:50]}...")
     else:
-        print("❌ 内容提取失败")
-        print(f"错误信息: {result.error_message}")
+        print("❌ Content extraction failed")
+        print(f"Error message: {result.error_message}")
         if result.error_traceback:
-            print(f"错误详情:\n{result.error_traceback}")
+            print(f"Error details:\n{result.error_traceback}")
 
 except Exception as e:
-    print(f"❌ 提取过程中发生异常: {e}")
+    print(f"❌ Exception during extraction: {e}")

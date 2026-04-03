@@ -14,3 +14,4 @@ markdown
 jieba
 apted
 openai
+dotenv

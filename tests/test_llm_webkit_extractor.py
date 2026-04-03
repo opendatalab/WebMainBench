@@ -5,7 +5,7 @@ from webmainbench.extractors.base import ExtractionResult
 
 
 def _is_llm_webkit_available():
-    """检查LLM-WebKit是否可用（用于预处理HTML模式）."""
+    """Check if LLM-WebKit is available (for preprocessed HTML mode)."""
     try:
         from webmainbench.extractors.factory import ExtractorFactory
         config = {"use_preprocessed_html": True}
@@ -16,40 +16,40 @@ def _is_llm_webkit_available():
 
 
 class TestLLMWebKitExtractor(unittest.TestCase):
-    """LLM-WebKit extractor功能测试."""
+    """LLM-WebKit extractor functional tests."""
 
     def setUp(self):
-        """测试前准备."""
-        # 自动发现抽取器
+        """Test setup."""
+        # Auto-discover extractors
         ExtractorFactory.auto_discover()
-        
-        # 准备测试用的预处理HTML内容
+
+        # Prepare preprocessed HTML content for testing
         self.preprocessed_main_html = """
         <div _item_id="1">
-            <h1>人工智能的发展趋势</h1>
-            <p>人工智能（AI）技术正在快速发展，对各行各业产生深远影响。</p>
+            <h1>Trends in Artificial Intelligence Development</h1>
+            <p>Artificial Intelligence (AI) technology is rapidly advancing, with far-reaching impact across all industries.</p>
         </div>
         <div _item_id="2">
-            <h2>机器学习的进步</h2>
-            <p>深度学习和大语言模型的突破使得AI系统能够理解和生成更自然的语言。</p>
+            <h2>Advances in Machine Learning</h2>
+            <p>Breakthroughs in deep learning and large language models have enabled AI systems to understand and generate more natural language.</p>
         </div>
         <div _item_id="3">
-            <h2>自动化应用</h2>
-            <p>从制造业的机器人到软件开发的代码生成，AI正在各个领域实现流程自动化。</p>
+            <h2>Automation Applications</h2>
+            <p>From robots in manufacturing to code generation in software development, AI is automating processes across all domains.</p>
         </div>
         """
-        
-        # 模拟提取结果
-        self.mock_extracted_content = "人工智能的发展趋势\n\n人工智能（AI）技术正在快速发展，对各行各业产生深远影响。\n\n机器学习的进步\n\n深度学习和大语言模型的突破使得AI系统能够理解和生成更自然的语言。"
+
+        # Simulate extraction results
+        self.mock_extracted_content = "Trends in Artificial Intelligence Development\n\nArtificial Intelligence (AI) technology is rapidly advancing, with far-reaching impact across all industries.\n\nAdvances in Machine Learning\n\nBreakthroughs in deep learning and large language models have enabled AI systems to understand and generate more natural language."
         self.mock_extracted_content_list = [
-            {"type": "heading", "content": "人工智能的发展趋势"},
-            {"type": "paragraph", "content": "人工智能（AI）技术正在快速发展，对各行各业产生深远影响。"},
-            {"type": "heading", "content": "机器学习的进步"},
-            {"type": "paragraph", "content": "深度学习和大语言模型的突破使得AI系统能够理解和生成更自然的语言。"}
+            {"type": "heading", "content": "Trends in Artificial Intelligence Development"},
+            {"type": "paragraph", "content": "Artificial Intelligence (AI) technology is rapidly advancing, with far-reaching impact across all industries."},
+            {"type": "heading", "content": "Advances in Machine Learning"},
+            {"type": "paragraph", "content": "Breakthroughs in deep learning and large language models have enabled AI systems to understand and generate more natural language."}
         ]
 
     def test_preprocessed_html_config(self):
-        """测试预处理HTML配置参数."""
+        """Test preprocessed HTML configuration parameters."""
         config = {
             "use_preprocessed_html": True,
             "preprocessed_html_field": "custom_html_field"
@@ -58,39 +58,39 @@ class TestLLMWebKitExtractor(unittest.TestCase):
         try:
             extractor = ExtractorFactory.create("llm-webkit", config=config)
             
-            # 验证配置是否正确设置
+            # Verify that the configuration is correctly set
             self.assertTrue(extractor.inference_config.use_preprocessed_html)
             self.assertEqual(extractor.inference_config.preprocessed_html_field, "custom_html_field")
-            
+
         except Exception as e:
-            # 如果依赖不可用，跳过测试
+            # If dependency is not available, skip the test
             self.skipTest(f"LLM-WebKit dependencies not available: {e}")
 
     @patch('webmainbench.extractors.llm_webkit_extractor.LlmWebkitExtractor._extract_content_from_main_html')
     def test_preprocessed_html_extract_content(self, mock_extract_from_main):
-        """测试使用预处理HTML的_extract_content方法."""
-        # 配置mock返回值
+        """Test the _extract_content method using preprocessed HTML."""
+        # Configure mock return value
         mock_extract_from_main.return_value = (self.mock_extracted_content, self.mock_extracted_content_list)
-        
+
         config = {
             "use_preprocessed_html": True,
-            "model_path": "/fake/model/path"  # 测试用的假路径
+            "model_path": "/fake/model/path"  # Fake path for testing
         }
         
         try:
             extractor = ExtractorFactory.create("llm-webkit", config=config)
             
-            # 调用_extract_content方法
+            # Call the _extract_content method
             result = extractor._extract_content(self.preprocessed_main_html, "https://example.com")
-            
-            # 验证mock被正确调用
+
+            # Verify mock was called correctly
             mock_extract_from_main.assert_called_once_with(self.preprocessed_main_html, "https://example.com")
-            
-            # 验证结果
+
+            # Verify results
             self.assertIsInstance(result, ExtractionResult)
             self.assertTrue(result.success)
             self.assertEqual(result.content, self.mock_extracted_content)
-            self.assertEqual(result.confidence_score, 0.9)  # 预处理HTML的固定置信度
+            self.assertEqual(result.confidence_score, 0.9)  # Fixed confidence score for preprocessed HTML
             self.assertIsNotNone(result.extraction_time)
             
         except Exception as e:
@@ -98,34 +98,35 @@ class TestLLMWebKitExtractor(unittest.TestCase):
 
     @patch('webmainbench.extractors.llm_webkit_extractor.LlmWebkitExtractor._extract_content_from_main_html')
     def test_standard_html_mode(self, mock_extract_from_main):
-        """测试标准HTML模式（非预处理）."""
-        # 不设置use_preprocessed_html，应该走标准流程
+        """Test standard HTML mode (non-preprocessed)."""
+        # Not setting use_preprocessed_html, should follow the standard process
         config = {
             "use_preprocessed_html": False,
             "model_path": "/fake/model/path"
         }
-        
+
         try:
             extractor = ExtractorFactory.create("llm-webkit", config=config)
-            
-            # 使用标准HTML
+
+            # Use standard HTML
             standard_html = "<html><head><title>Test</title></head><body><p>Test content</p></body></html>"
-            
-            # 由于标准模式需要HTML简化等步骤，我们只测试配置
+
+            # Since standard mode requires HTML simplification and other steps, we only test the configuration
             self.assertFalse(extractor.inference_config.use_preprocessed_html)
-            
-            # 确保_extract_content_from_main_html没有被直接调用（因为要先经过HTML简化）
-            # 这里我们不实际调用_extract_content，因为它需要完整的依赖
+
+            # Ensure _extract_content_from_main_html was not called directly
+            # (because HTML simplification needs to happen first)
+            # We do not actually call _extract_content here because it requires full dependencies
             
         except Exception as e:
             self.skipTest(f"LLM-WebKit dependencies not available: {e}")
 
     def test_config_defaults(self):
-        """测试配置默认值."""
+        """Test configuration default values."""
         try:
             extractor = ExtractorFactory.create("llm-webkit")
-            
-            # 验证默认配置
+
+            # Verify default configuration
             self.assertFalse(extractor.inference_config.use_preprocessed_html)
             self.assertEqual(extractor.inference_config.preprocessed_html_field, "llm_webkit_html")
             
@@ -134,8 +135,8 @@ class TestLLMWebKitExtractor(unittest.TestCase):
 
     @patch('webmainbench.extractors.llm_webkit_extractor.LlmWebkitExtractor._extract_content_from_main_html')
     def test_error_handling_in_preprocessed_mode(self, mock_extract_from_main):
-        """测试预处理模式下的错误处理."""
-        # 配置mock抛出异常
+        """Test error handling in preprocessed mode."""
+        # Configure mock to raise an exception
         mock_extract_from_main.side_effect = Exception("Mock extraction error")
         
         config = {
@@ -146,10 +147,10 @@ class TestLLMWebKitExtractor(unittest.TestCase):
         try:
             extractor = ExtractorFactory.create("llm-webkit", config=config)
             
-            # 调用应该捕获异常并返回错误结果
+            # The call should catch the exception and return an error result
             result = extractor._extract_content(self.preprocessed_main_html)
-            
-            # 验证错误处理
+
+            # Verify error handling
             self.assertIsInstance(result, ExtractionResult)
             self.assertFalse(result.success)
             self.assertIn("LLM-WebKit extraction failed", result.error_message)
@@ -160,75 +161,75 @@ class TestLLMWebKitExtractor(unittest.TestCase):
 
     @unittest.skipUnless(
         _is_llm_webkit_available(),
-        "跳过：需要LLM-WebKit依赖"
+        "Skip: LLM-WebKit dependencies required"
     )
     def test_preprocessed_html_integration(self):
-        """集成测试：演示预处理HTML功能的实际使用."""
+        """Integration test: demonstrates actual usage of the preprocessed HTML feature."""
         print("\n" + "="*50)
-        print("🚀 预处理HTML功能集成测试")
+        print("Preprocessed HTML Feature Integration Test")
         print("="*50)
-        
-        # 准备预处理HTML内容（模拟llm-webkit第一阶段的输出）
+
+        # Prepare preprocessed HTML content (simulate output from first stage of llm-webkit)
         preprocessed_main_html = """
         <div _item_id="1">
-            <h1>人工智能的发展趋势</h1>
-            <p>人工智能（AI）技术正在快速发展，对各行各业产生深远影响。本文将探讨AI的主要发展趋势和未来展望。</p>
+            <h1>Introduction to Deep Learning</h1>
+            <p>Artificial Intelligence (AI) technology is rapidly advancing, with far-reaching impact across all industries. This article explores the major trends and future prospects of AI.</p>
         </div>
         <div _item_id="2">
-            <h2>机器学习的进步</h2>
-            <p>深度学习和大语言模型的突破使得AI系统能够理解和生成更自然的语言，在对话、翻译、创作等领域表现出色。</p>
+            <h2>Advances in Machine Learning</h2>
+            <p>Breakthroughs in deep learning and large language models have enabled AI systems to understand and generate more natural language, excelling in dialogue, translation, and creative tasks.</p>
         </div>
         <div _item_id="3">
-            <h2>自动化应用</h2>
-            <p>从制造业的机器人到软件开发的代码生成，AI正在各个领域实现流程自动化，提高效率并降低成本。</p>
+            <h2>Automation Applications</h2>
+            <p>From robots in manufacturing to code generation in software development, AI is automating processes across all domains, improving efficiency and reducing costs.</p>
         </div>
         """
-        
+
         try:
-            # 测试1: 标准模式 vs 预处理模式的配置对比
-            print("\n📋 测试1: 配置对比")
-            
-            # 标准模式配置
+            # Test 1: Configuration comparison between standard mode and preprocessed mode
+            print("\nTest 1: Configuration comparison")
+
+            # Standard mode configuration
             standard_config = {
                 "use_preprocessed_html": False,
                 "model_path": "/fake/model/path"
             }
             standard_extractor = ExtractorFactory.create("llm-webkit", config=standard_config)
-            print(f"标准模式 - use_preprocessed_html: {standard_extractor.inference_config.use_preprocessed_html}")
-            
-            # 预处理模式配置
+            print(f"Standard mode - use_preprocessed_html: {standard_extractor.inference_config.use_preprocessed_html}")
+
+            # Preprocessed mode configuration
             preprocessed_config = {
                 "use_preprocessed_html": True,
                 "preprocessed_html_field": "llm_webkit_html",
                 "model_path": "/fake/model/path"
             }
             preprocessed_extractor = ExtractorFactory.create("llm-webkit", config=preprocessed_config)
-            print(f"预处理模式 - use_preprocessed_html: {preprocessed_extractor.inference_config.use_preprocessed_html}")
-            print(f"预处理字段: {preprocessed_extractor.inference_config.preprocessed_html_field}")
-            
-            # 测试2: 验证配置正确性
-            print("\n✅ 测试2: 配置验证")
+            print(f"Preprocessed mode - use_preprocessed_html: {preprocessed_extractor.inference_config.use_preprocessed_html}")
+            print(f"Preprocessed field: {preprocessed_extractor.inference_config.preprocessed_html_field}")
+
+            # Test 2: Verify configuration correctness
+            print("\nTest 2: Configuration validation")
             self.assertFalse(standard_extractor.inference_config.use_preprocessed_html)
             self.assertTrue(preprocessed_extractor.inference_config.use_preprocessed_html)
             self.assertEqual(preprocessed_extractor.inference_config.preprocessed_html_field, "llm_webkit_html")
-            print("配置验证通过！")
-            
-            # 测试3: 标题提取功能
-            print("\n🏷️ 测试3: 标题提取功能")
-            html_with_title = "<html><head><title>AI发展趋势报告</title></head><body>" + preprocessed_main_html + "</body></html>"
+            print("Configuration validation passed!")
+
+            # Test 3: Title extraction feature
+            print("\nTest 3: Title extraction feature")
+            html_with_title = "<html><head><title>AI Development Trends Report</title></head><body>" + preprocessed_main_html + "</body></html>"
             title = preprocessed_extractor._extract_title(html_with_title)
-            print(f"提取的标题: {title}")
-            self.assertEqual(title, "AI发展趋势报告")
-            
-            # 测试4: 语言检测功能
-            print("\n🌐 测试4: 语言检测功能")
-            test_content = "人工智能技术正在快速发展，对各行各业产生深远影响。"
+            print(f"Extracted title: {title}")
+            self.assertEqual(title, "AI Development Trends Report")
+
+            # Test 4: Language detection feature
+            print("\nTest 4: Language detection feature")
+            test_content = "Artificial intelligence technology is rapidly advancing, with far-reaching impact across all industries."
             language = preprocessed_extractor._detect_language(test_content)
-            print(f"检测到的语言: {language}")
-            self.assertEqual(language, "zh")
-            
-            print("\n✅ 预处理HTML功能集成测试完成！")
-            
+            print(f"Detected language: {language}")
+            self.assertEqual(language, "en")
+
+            print("\nPreprocessed HTML feature integration test complete!")
+
         except Exception as e:
             self.skipTest(f"LLM-WebKit dependencies not available: {e}")
 
@@ -237,74 +238,74 @@ class TestLLMWebKitExtractor(unittest.TestCase):
         "LLM-WebKit dependencies not available"
     )
     def test_preprocessed_html_e2e(self):
-        """预处理HTML功能的端到端测试."""
+        """End-to-end test for the preprocessed HTML feature."""
         try:
-            # 场景：已有一批通过llm-webkit第一阶段处理的数据
+            # Scenario: a batch of data already processed through the first stage of llm-webkit
             dataset_samples = [
                 {
                     "id": "sample_1",
                     "url": "https://example.com/article1",
                     "llm_webkit_html": """
                     <div _item_id="1">
-                        <h1>深度学习入门指南</h1>
-                        <p>深度学习是机器学习的一个重要分支。</p>
+                        <h1>Introduction to Deep Learning</h1>
+                        <p>Deep learning is an important branch of machine learning.</p>
                     </div>
                     """,
                 },
                 {
-                    "id": "sample_2", 
+                    "id": "sample_2",
                     "url": "https://example.com/article2",
                     "llm_webkit_html": """
                     <div _item_id="1">
-                        <h1>自然语言处理应用</h1>
-                        <p>NLP技术在各个领域都有广泛应用。</p>
+                        <h1>Natural Language Processing Applications</h1>
+                        <p>NLP technology has wide applications across many domains.</p>
                     </div>
                     """,
                 }
             ]
-            
-            # 创建预处理HTML模式的extractor
+
+            # Create extractor in preprocessed HTML mode
             config = {
                 "use_preprocessed_html": True,
                 "preprocessed_html_field": "llm_webkit_html"
             }
             extractor = ExtractorFactory.create("llm-webkit", config=config)
-            
-            # 验证配置
+
+            # Verify configuration
             self.assertTrue(extractor.inference_config.use_preprocessed_html)
             self.assertEqual(extractor.inference_config.preprocessed_html_field, "llm_webkit_html")
-            
-            # 批量处理测试
+
+            # Batch processing test
             results = []
             for sample in dataset_samples:
                 result = extractor._extract_content(sample['llm_webkit_html'], sample['url'])
                 results.append(result)
-            
-            # 核心断言验证
+
+            # Core assertion validation
             successful_results = [r for r in results if r.success]
-            
-            # 1. 所有样本都应该成功处理
-            self.assertEqual(len(successful_results), len(dataset_samples), 
-                           "所有样本都应该处理成功")
-            
-            # 2. 验证每个结果的基本属性
+
+            # 1. All samples should be processed successfully
+            self.assertEqual(len(successful_results), len(dataset_samples),
+                           "All samples should be processed successfully")
+
+            # 2. Verify basic properties of each result
             for i, result in enumerate(successful_results):
                 with self.subTest(sample_id=dataset_samples[i]['id']):
-                    # 内容不应为空
-                    self.assertGreater(len(result.content), 0, "提取的内容不应为空")
-                    
-                    # 预处理HTML的固定置信度
-                    self.assertEqual(result.confidence_score, 0.9, "预处理HTML的置信度应为0.9")
-                    
-                    # 应该包含相关关键词
-                    if "深度学习" in dataset_samples[i]['llm_webkit_html']:
-                        self.assertIn("深度学习", result.content, "应该包含深度学习相关内容")
-                    elif "自然语言处理" in dataset_samples[i]['llm_webkit_html']:
-                        self.assertIn("自然语言处理", result.content, "应该包含NLP相关内容")
-                    
-                    # 提取时间应该合理
-                    self.assertGreater(result.extraction_time, 0, "提取时间应该大于0")
-                    self.assertLess(result.extraction_time, 10, "提取时间应该在合理范围内")
+                    # Content should not be empty
+                    self.assertGreater(len(result.content), 0, "Extracted content should not be empty")
+
+                    # Fixed confidence score for preprocessed HTML
+                    self.assertEqual(result.confidence_score, 0.9, "Preprocessed HTML confidence score should be 0.9")
+
+                    # Should contain relevant keywords
+                    if "Deep learning" in dataset_samples[i]['llm_webkit_html']:
+                        self.assertIn("Deep learning", result.content, "Should contain deep learning related content")
+                    elif "Natural Language Processing" in dataset_samples[i]['llm_webkit_html']:
+                        self.assertIn("Natural Language Processing", result.content, "Should contain NLP related content")
+
+                    # Extraction time should be reasonable
+                    self.assertGreater(result.extraction_time, 0, "Extraction time should be greater than 0")
+                    self.assertLess(result.extraction_time, 10, "Extraction time should be within a reasonable range")
             
         except Exception as e:
             self.skipTest(f"LLM-WebKit dependencies not available: {e}")

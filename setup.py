@@ -36,11 +36,11 @@ setup(
         "jsonlines>=3.1.0",
         "requests>=2.28.0",
         "beautifulsoup4>=4.12.0",
-        "numpy>=1.21.0,<2.0.0",  # 避免NumPy 2.x兼容性问题
-        "rapidfuzz>=3.0.0",  # 用于文本编辑距离计算
-        "apted>=1.0.3",  # 用于树编辑距离计算（TEDS）
-        "jieba>=0.42.0",  # 用于中文分词
-        "rouge>=1.0.0",  # 用于 ROUGE 指标
+        "numpy>=1.21.0,<2.0.0",  # Avoid NumPy 2.x compatibility issues
+        "rapidfuzz>=3.0.0",  # For text edit distance calculation
+        "apted>=1.0.3",  # For tree edit distance calculation (TEDS)
+        "jieba>=0.42.0",  # For Chinese word segmentation
+        "rouge>=1.0.0",  # For ROUGE metrics
     ],
     extras_require={
         "all": [

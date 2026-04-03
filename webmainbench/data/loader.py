@@ -31,7 +31,7 @@ class DataLoader:
         with jsonlines.open(file_path, 'r') as reader:
             for idx, line in enumerate(reader):
                 try:
-                    # 使用DataSample.from_dict()来正确处理字段映射和过滤
+                    # Use DataSample.from_dict() to properly handle field mapping and filtering
                     sample = DataSample.from_dict(line)
                     dataset.add_sample(sample)
                     
@@ -159,15 +159,15 @@ class DataLoader:
                     categories: Optional[List[str]] = None,
                     max_samples: Optional[int] = None) -> Iterator[DataSample]:
         """
-        流式读取JSONL文件，逐个返回DataSample，减少内存使用。
-        
+        Stream JSONL file, yielding DataSamples one by one to reduce memory usage.
+
         Args:
-            file_path: JSONL文件路径
-            categories: 类别过滤列表
-            max_samples: 最大样本数限制
-            
+            file_path: Path to JSONL file
+            categories: Category filter list
+            max_samples: Maximum sample count limit
+
         Yields:
-            DataSample: 逐个生成的数据样本
+            DataSample: Data samples yielded one by one
         """
         file_path = Path(file_path)
         
@@ -175,18 +175,18 @@ class DataLoader:
         with jsonlines.open(file_path, 'r') as reader:
             for line_idx, line in enumerate(reader):
                 try:
-                    # 创建样本
+                    # Create sample
                     sample = DataSample.from_dict(line)
                     
-                    # 类别过滤
+                    # Category filter
                     if categories and sample.content_type not in categories:
                         continue
                     
-                    # 返回样本
+                    # Yield sample
                     yield sample
                     sample_count += 1
                     
-                    # 检查样本数限制
+                    # Check sample count limit
                     if max_samples and sample_count >= max_samples:
                         break
                         
@@ -200,16 +200,16 @@ class DataLoader:
                            categories: Optional[List[str]] = None,
                            max_samples: Optional[int] = None) -> Iterator[List[DataSample]]:
         """
-        流式读取JSONL文件，按批次返回DataSample列表。
-        
+        Stream JSONL file, returning DataSample lists in batches.
+
         Args:
-            file_path: JSONL文件路径
-            batch_size: 批次大小
-            categories: 类别过滤列表
-            max_samples: 最大样本数限制
-            
+            file_path: Path to JSONL file
+            batch_size: Batch size
+            categories: Category filter list
+            max_samples: Maximum sample count limit
+
         Yields:
-            List[DataSample]: 批次数据样本列表
+            List[DataSample]: Batch list of data samples
         """
         batch = []
         sample_count = 0
@@ -218,7 +218,7 @@ class DataLoader:
             batch.append(sample)
             sample_count += 1
             
-            # 达到批次大小或样本数限制时返回批次
+            # Yield batch when batch size or sample count limit is reached
             if len(batch) >= batch_size or (max_samples and sample_count >= max_samples):
                 yield batch
                 batch = []
@@ -226,6 +226,6 @@ class DataLoader:
                 if max_samples and sample_count >= max_samples:
                     break
         
-        # 返回最后一批（如果有）
+        # Yield the last batch (if any)
         if batch:
             yield batch 
