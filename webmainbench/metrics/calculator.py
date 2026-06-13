@@ -26,11 +26,11 @@ class MetricCalculator:
     def _setup_default_metrics(self) -> None:
         """Setup default metrics."""
         # Register new content-type metrics
-        self.add_metric("code_edit", CodeEditMetric("code_edit"))
-        self.add_metric("formula_edit", FormulaEditMetric("formula_edit"))
-        self.add_metric("table_edit", TableEditMetric("table_edit"))
-        self.add_metric("table_TEDS", TableTEDSMetric("table_TEDS"))
-        self.add_metric("text_edit", TextEditMetric("text_edit"))
+        self.add_metric("code_edit", CodeEditMetric("code_edit", self.config))
+        self.add_metric("formula_edit", FormulaEditMetric("formula_edit", self.config))
+        self.add_metric("table_edit", TableEditMetric("table_edit", self.config))
+        self.add_metric("table_TEDS", TableTEDSMetric("table_TEDS", self.config))
+        self.add_metric("text_edit", TextEditMetric("text_edit", self.config))
     
     def add_metric(self, name: str, metric: BaseMetric) -> None:
         """

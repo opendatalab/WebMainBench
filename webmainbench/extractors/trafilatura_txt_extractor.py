@@ -6,22 +6,22 @@ from typing import Dict, Any, Optional, List
 from dataclasses import dataclass
 from .base import BaseExtractor, ExtractionResult
 from .factory import extractor
-from trafilatura import extract,html2txt,baseline
+from trafilatura import extract
 import re
 
 
 @dataclass
 class TrafilaturaInferenceConfig:
     """Configuration for Trafilatura extractor."""
-    favor_precision: bool = True  # Favor precision: only extract the most core content, filter more redundancy (e.g. sidebars, ads), enabled by default
-    favor_recall: bool = True  # Favor recall: extract all potentially valid content as much as possible, minimize omissions, enabled by default
-    include_comments: bool = False  # Whether to keep comments, disabled by default
-    include_tables: bool = True  # Whether to keep extracted HTML tables, enabled by default
+    favor_precision: bool = False  # Match trafilatura.extract default
+    favor_recall: bool = False  # Match trafilatura.extract default
+    include_comments: bool = True  # Match trafilatura.extract default
+    include_tables: bool = True  # Match trafilatura.extract default
     include_images: bool = False  # Whether to keep extracted image information, disabled by default
     include_links: bool = False  # Whether to keep links, disabled by default
     with_metadata: bool = False  # Whether to keep metadata, disabled by default
     skip_elements: bool = False  # Whether to keep CSS-hidden elements, disabled by default
-    output_format: str = "markdown"  # Supports multiple output formats: "csv", "json", "html", "markdown", "txt", "xml", etc.
+    output_format: str = "txt"  # Plain text benchmark variant; matches trafilatura.extract default
 
 
 @extractor("trafilatura_txt")
@@ -58,26 +58,18 @@ class TrafilaturaExtractor(BaseExtractor):
             ExtractionResult instance
         """
         try:
-            # Perform content extraction using configuration parameters
-            # content = extract(
-            #     html,
-            #     url=url,
-            #     favor_precision=self.inference_config.favor_precision,
-            #     favor_recall=self.inference_config.favor_recall,
-            #     include_comments=self.inference_config.include_comments,
-            #     include_tables=self.inference_config.include_tables,
-            #     include_images=self.inference_config.include_images,
-            #     include_links=self.inference_config.include_links,
-            #     with_metadata=self.inference_config.with_metadata,
-            #     output_format=self.inference_config.output_format  # Pass in output format
-            #
-            # )
-
-            # Extract content to txt with maximum recall
-            # content = html2txt(html)
-
-            # Extract txt result with more accurate output
-            postbody, content, len_text = baseline(html)
+            content = extract(
+                html,
+                url=url,
+                favor_precision=self.inference_config.favor_precision,
+                favor_recall=self.inference_config.favor_recall,
+                include_comments=self.inference_config.include_comments,
+                include_tables=self.inference_config.include_tables,
+                include_images=self.inference_config.include_images,
+                include_links=self.inference_config.include_links,
+                with_metadata=self.inference_config.with_metadata,
+                output_format=self.inference_config.output_format,
+            )
 
             # Create content_list (simple paragraph split)
             content_list = []

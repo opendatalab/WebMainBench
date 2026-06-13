@@ -35,7 +35,8 @@ class BaseContentSplitter(ABC):
         if self.use_llm and self.config.get('llm_base_url') and self.config.get('llm_api_key'):
             self.client = OpenAI(
                 base_url=self.config.get('llm_base_url', ""),
-                api_key=self.config.get('llm_api_key', "")
+                api_key=self.config.get('llm_api_key', ""),
+                timeout=self.config.get('llm_timeout', 60),
             )
         else:
             self.client = None

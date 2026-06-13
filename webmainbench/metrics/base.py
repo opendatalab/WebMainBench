@@ -119,8 +119,7 @@ class BaseMetric(ABC):
             results.append(result)
         return results
 
-    @staticmethod
-    def split_content(text: str, content_list: List[Dict[str, Any]] = None, field_name: str = None) -> Dict[str, str]:
+    def split_content(self, text: str, content_list: List[Dict[str, Any]] = None, field_name: str = None) -> Dict[str, str]:
         """
         Unified content splitting method that divides text into 4 parts: code, formula, table, and remaining text.
 
@@ -138,7 +137,7 @@ class BaseMetric(ABC):
                 return extracted_content
 
         # Extract from markdown text, passing the field name
-        return BaseMetric._extract_from_markdown(text or "", field_name=field_name)
+        return BaseMetric._extract_from_markdown(text or "", field_name=field_name, config=self.config)
 
     @staticmethod
     def _extract_from_content_list(content_list: List[Dict[str, Any]]) -> Dict[str, str]:
@@ -191,22 +190,23 @@ class BaseMetric(ABC):
         }
 
     @staticmethod
-    def _extract_from_markdown(text: str, field_name: str = None) -> Dict[str, str]:
+    def _extract_from_markdown(text: str, field_name: str = None, config: Dict[str, Any] = None) -> Dict[str, str]:
         """Extract various types of content from markdown text"""
         if not text:
             return {'code': '', 'formula': '', 'table': '', 'text': ''}
 
         # Load LLM config
         from ..config import LLM_CONFIG
+        splitter_config = {**LLM_CONFIG, **(config or {})}
 
         # Directly create concrete extractor instances
         from .code_extractor import CodeSplitter
         from .formula_extractor import FormulaSplitter
         from .table_extractor import TableSplitter
 
-        code_extractor = CodeSplitter(LLM_CONFIG)
-        formula_extractor = FormulaSplitter(LLM_CONFIG)
-        table_extractor = TableSplitter(LLM_CONFIG)
+        code_extractor = CodeSplitter(splitter_config)
+        formula_extractor = FormulaSplitter(splitter_config)
+        table_extractor = TableSplitter(splitter_config)
 
         # Extract each type of content
         code_content = code_extractor.extract(text, field_name)
