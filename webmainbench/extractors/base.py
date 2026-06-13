@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from typing import Dict, List, Any, Optional, Union
 import time
 import traceback
+from ..utils.html_cleaner import clean_browser_annotation_artifacts
 
 
 @dataclass
@@ -154,6 +155,9 @@ class BaseExtractor(ABC):
                     extraction_time=time.time() - start_time
                 )
             
+            if self.config.get("clean_html_annotations", True):
+                html = clean_browser_annotation_artifacts(html)
+
             # Perform extraction
             result = self._extract_content(html, url)
             result.extraction_time = time.time() - start_time

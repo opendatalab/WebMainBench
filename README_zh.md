@@ -113,10 +113,10 @@ WebMainBench 支持两套互补的评测协议：
 | 抽取器 | 版本 | overall | text\_edit | code\_edit | formula\_edit | table\_edit | table\_TEDS |
 |---|---|---|---|---|---|---|---|
 | **mineru-html** | 4.1.1 | **0.8256** | 0.8621 | 0.9093 | 0.9399 | 0.6780 | 0.7388 |
-| magic-html | 0.1.5 | 0.5141 | 0.7791 | 0.4117 | 0.7204 | 0.2611 | 0.3984 |
-| trafilatura (md) | 2.0.0 | 0.3858 | 0.6887 | 0.1305 | 0.6242 | 0.1653 | 0.3203 |
-| resiliparse | 0.14.5 | 0.2954 | 0.7381 | 0.0641 | 0.6747 | 0.0000 | 0.0000 |
-| trafilatura (txt) | 2.0.0 | 0.2657 | 0.7126 | 0.0000 | 0.6162 | 0.0000 | 0.0000 |
+| magic-html | 0.1.5 | 0.4996 | 0.7800 | 0.4150 | 0.6385 | 0.2638 | 0.4006 |
+| trafilatura (md) | 2.0.0 | 0.4013 | 0.7826 | 0.1801 | 0.6237 | 0.1202 | 0.2999 |
+| resiliparse | 0.14.5 | 0.2898 | 0.7435 | 0.0422 | 0.6631 | 0.0000 | 0.0000 |
+| trafilatura (txt) | 2.0.0 | 0.3718 | 0.7819 | 0.0000 | 0.6389 | 0.1278 | 0.3106 |
 
 欢迎提交新抽取器的评测结果 — 请提 PR！
 
@@ -194,13 +194,23 @@ cp .env.example .env
 # 编辑 .env，设置 LLM_BASE_URL、LLM_API_KEY、LLM_MODEL
 ```
 
+手动构造评测器时，需要把同一份 LLM 配置同时传给 `llm_config` 和 `metric_config`；`llm_config` 用于校验 API，`metric_config` 用于启用 LLM 增强的指标拆分。
+
 #### 运行评测
 
 ```python
+import os
 from webmainbench import DataLoader, Evaluator, ExtractorFactory
 
 dataset = DataLoader.load_jsonl("data/WebMainBench_545.jsonl")
-result = Evaluator().evaluate(dataset, ExtractorFactory.create("trafilatura"))
+llm_config = {
+    "use_llm": True,
+    "llm_base_url": os.getenv("LLM_BASE_URL", ""),
+    "llm_api_key": os.getenv("LLM_API_KEY", ""),
+    "llm_model": os.getenv("LLM_MODEL", "deepseek-chat"),
+}
+evaluator = Evaluator(llm_config=llm_config, metric_config=llm_config)
+result = evaluator.evaluate(dataset, ExtractorFactory.create("trafilatura"))
 
 m = result.overall_metrics
 
@@ -217,7 +227,16 @@ for name, result in results.items():
     print(f"{name}: {result.overall_metrics['overall']:.4f}")
 ```
 
-完整示例见 `examples/multi_extractor_compare.py`。
+复现 545 条子集细粒度榜单：
+
+```bash
+export LLM_BASE_URL="https://your-openai-compatible-endpoint/v1"
+export LLM_API_KEY="..."
+export LLM_MODEL="gpt-5-chat-latest"
+python examples/run_545_leaderboard.py data/WebMainBench_545.jsonl
+```
+
+完整示例见 `examples/run_545_leaderboard.py` 和 `examples/multi_extractor_compare.py`。
 
 ## 数据格式
 

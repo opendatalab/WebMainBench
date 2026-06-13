@@ -13,15 +13,15 @@ import re
 @dataclass
 class TrafilaturaInferenceConfig:
     """Configuration for Trafilatura extractor."""
-    favor_precision: bool = True  # Favor precision: only extract the most core content, filter more redundancy (e.g. sidebars, ads), enabled by default
-    favor_recall: bool = True  # Favor recall: extract all potentially valid content as much as possible, minimize omissions, enabled by default
-    include_comments: bool = False  # Whether to keep comments, disabled by default
-    include_tables: bool = True  # Whether to keep extracted HTML tables, enabled by default
+    favor_precision: bool = False  # Match trafilatura.extract default
+    favor_recall: bool = False  # Match trafilatura.extract default
+    include_comments: bool = True  # Match trafilatura.extract default
+    include_tables: bool = True  # Match trafilatura.extract default
     include_images: bool = False  # Whether to keep extracted image information, disabled by default
     include_links: bool = False  # Whether to keep links, disabled by default
     with_metadata: bool = False  # Whether to keep metadata, disabled by default
     skip_elements: bool = False  # Whether to keep CSS-hidden elements, disabled by default
-    output_format: str = "markdown"  # Supports multiple output formats: "csv", "json", "html", "markdown", "txt", "xml", etc.
+    output_format: str = "markdown"  # Markdown benchmark variant; trafilatura's library default is "txt"
 
 
 @extractor("trafilatura")

@@ -137,7 +137,8 @@ class Evaluator:
                 print("Validating LLM API configuration...")
                 client = OpenAI(
                     base_url=config.get('llm_base_url'),
-                    api_key=config.get('llm_api_key')
+                    api_key=config.get('llm_api_key'),
+                    timeout=config.get('llm_timeout', 60),
                 )
 
                 client.chat.completions.create(
